@@ -32,7 +32,7 @@ def load_year(year: int):
         
         api_url = response["next"]
 
-    with open(f"data/{year}.json", "w") as outfile:
+    with open(f"data/NBAstats/{year}.json", "w") as outfile:
         json.dump(dict(sorted(players.items())), outfile, indent=4)
 
     print(f"Loaded  year {year}, {len(players)} players")
