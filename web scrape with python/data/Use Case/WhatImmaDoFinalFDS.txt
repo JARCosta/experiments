@@ -1,0 +1,30 @@
+
+CD  P1  Análise e Integração de Dados***
+CD  P1  Visualização de Informação***
+        Competências Comunicacionais em Engenharia Informática e de Computadores I
+
+CD  P2  Ciência de Dados
+IA  P2  Aprendizagem Profunda (Dei)
+
+IA  P3  Planeamento, Aprendizagem e Decisão Inteligente
+SI  P3  Administração de Dados e Sistemas de Informação***
+        Competências Comunicacionais em Engenharia Informática e de Computadores II
+
+CD  P4 Computação em Nuvem e Virtualização
+IA  P4 Agentes Autónomos e Sistemas Multi-Agente***
+SI  P4 Integração Empresarial                                                           ALA aulas as 8h30
+
+
+IA  P1  Língua Natural
+
+SE  P2  Engenharia e Tecnologia de Processos de Negócio***
+
+
+
+
+TIL P4 Processamento da Fala
+
+SE  P1  Administração e Gestão de Infraestruturas e Serviços de It
+SI  P3  Processamento e Recuperação de Informação (se der dá, se não, não dá)
+SE  P4  Segurança e Gestão de Sistemas de Informação                                    Mta shit pra fazer
+CD*  P3  Computação Paralela e Distribuída

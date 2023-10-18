@@ -1,0 +1,20 @@
+Engenharia e Ciência de Dados:
+	P1 Análise e Integração de Dados***
+	P2 Ciência de Dados
+	P1 Visualização de Informação***
+	P3 Computação Paralela e Distribuída
+
+Robótica Inteligente:
+		P2 Aprendizagem Profunda (Dei)
+    P1 Introdução à Robótica 								ALA
+    P2 Processamento de Imagem e Visão 						ALA
+		P2 Robótica Social e Interação Humanos-Robôs
+    P3 Planeamento, Aprendizagem e Decisão Inteligente
+		P4 Sistemas Robóticos em Manipulação
+
+Inteligência Artificial:	(Livres)
+	P4 Agentes Autónomos e Sistemas Multi-Agente***
+
+Sistemas de Informação:		(Livres)
+	P2 Engenharia e Tecnologia de Processos de Negócio***
+	P3 Processamento e Recuperação de Informação

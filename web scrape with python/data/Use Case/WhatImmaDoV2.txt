@@ -1,0 +1,63 @@
+
+		P2 Aprendizagem Profunda (Dei)
+	P2 Ciência de Dados
+Engenharia e Ciência de Dados:
+	P1 Análise e Integração de Dados***
+	P1 Visualização de Informação***
+		P4 Computação em Nuvem e Virtualização
+	P3 Computação Paralela e Distribuída
+
+
+    P2 Aprendizagem Profunda (Dei)
+        P2 Ciência de Dados
+Inteligência Artificial:
+	P1 Língua Natural
+			P1 Procura e Planeamento ALA
+	P4 Agentes Autónomos e Sistemas Multi-Agente***
+	P3 Planeamento, Aprendizagem e Decisão Inteligente
+		P3 Representação do Conhecimento e Raciocínio
+
+
+Robótica Inteligente:
+		P2 Aprendizagem Profunda (Dei)
+    P1 Introdução à Robótica
+    P2 Processamento de Imagem e Visão
+		P2 Robótica Social e Interação Humanos-Robôs
+    P3 Planeamento, Aprendizagem e Decisão Inteligente
+		P4 Sistemas Robóticos em Manipulação
+
+
+Sistemas de Informação:
+	P1 Análise e Integração de Dados***
+		P2 Ciência de Dados
+	P2 Engenharia e Tecnologia de Processos de Negócio***
+		P3 Administração de Dados e Sistemas de Informação
+		P4 Integração Empresarial
+	P3 Processamento e Recuperação de Informação
+
+
+Sistemas Empresariais:
+		P1 Administração e Gestão de Infraestruturas e Serviços de It
+    P2 Engenharia e Tecnologia de Processos de Negócio***
+	P2 Fundamentos de Sistemas de Informação
+		P3 Arquitetura Empresarial
+	P3 Gestão de Projectos Informáticos
+	P4 Segurança e Gestão de Sistemas de Informação
+
+
+Tecnologias da Informação e Linguagem:
+		P2 Aprendizagem Profunda (Dei)
+		P1 Língua Natural
+	P1 Visualização de Informação***
+		P3 Algoritmos Avançados
+	P4 Processamento da Fala
+	P3 Processamento e Recuperação de Informação
+
+
+Livres:
+    P2 Segurança Informática em Redes e Sistemas***                  CS, GSI, SD
+    P1 Estúdio de Design de Interação***                             SC
+
+
+
+

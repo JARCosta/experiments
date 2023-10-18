@@ -1,0 +1,121 @@
+Algoritmos e Aplicações:
+		P1 Algoritmos para Lógica Computacional
+		P1 Ciência de Redes Complexas
+		S1 Computabilidade e Complexidade
+		P3 Algoritmos Avançados
+		P3 Computação Paralela e Distribuída
+		P4 Linguagens de Programação
+
+Bioinformática e Biologia Computacional:
+		P1 Biologia Computacional
+		P2 Aprendizagem Profunda (Dei)
+		P1 Ciência de Redes Complexas
+		P2 Ciência de Dados
+		P3 Algoritmos Avançados
+		P3 Tecnologias de Informação e Decisão Biomédica
+
+Ciber-Segurança:
+		P1 Ciber Segurança Forense
+		P2 Segurança em Software
+		P2 Segurança Informática em Redes e Sistemas***
+		S2 Criptografia e Protocolos de Segurança
+		P4 Segurança e Gestão de Sistemas de Informação
+		P3 Sistemas de Elevada Confiabilidade
+
+Engenharia de Software:
+		P1 Especificação de Software
+		P2 Arquitectura de Software
+	P3 Gestão de Projectos Informáticos
+		P3 Programação Avançada
+	P4 Teste e Validação de Software
+
+Engenharia e Ciência de Dados:
+	P1 Análise e Integração de Dados***
+		P2 Aprendizagem Profunda (Dei)
+	P2 Ciência de Dados
+	P1 Visualização de Informação***
+		P4 Computação em Nuvem e Virtualização
+	P3 Computação Paralela e Distribuída
+
+Gestão de Serviços de It:
+		P1 Administração e Gestão de Infraestruturas e Serviços de It
+		P2 Desempenho e Dimensionamento de Redes e Sistemas
+		P1 Engenharia de Sistema de Larga Escala
+		P2 Segurança Informática em Redes e Sistemas***
+		P3 Administração de Dados e Sistemas de Informação
+		P4 Computação em Nuvem e Virtualização
+		P4 Integração Empresarial
+
+Inteligência Artificial:
+	P2 Aprendizagem Profunda (Dei)
+	P2 Ciência de Dados
+	P1 Língua Natural
+		P1 Procura e Planeamento
+	P4 Agentes Autónomos e Sistemas Multi-Agente***
+		P3 Planeamento, Aprendizagem e Decisão Inteligente
+		P3 Representação do Conhecimento e Raciocínio
+
+Interacção e Visualização:
+		P1 Animação e Visualização Tridimensional
+		P2 Conceção Centrada no Utilizador
+		P2 Realidade Virtual
+		P1 Visualização de Informação***
+		P3 Produção de Conteúdos Multimédia
+		P4 Programação 3D
+
+Jogos:
+		P2 Computação Gráfica para Jogos
+		P1 Design de Jogos
+		P1 Inteligência Artificial para Jogos
+		P4 Agentes Autónomos e Sistemas Multi-Agente***
+		P4 Metodologia de Desenvolvimento de Jogos
+		P3 Produção de Conteúdos Multimédia
+
+Robótica Inteligente:
+		P2 Aprendizagem Profunda (Dei)
+		P1 Introdução à Robótica
+		P2 Processamento de Imagem e Visão
+		P2 Robótica Social e Interação Humanos-Robôs
+		P3 Planeamento, Aprendizagem e Decisão Inteligente
+		P4 Sistemas Robóticos em Manipulação
+
+Sistemas Ciberfísicos:
+		P2 Aplicações e Computação para a Internet das Coisas
+		P2 Ciência de Dados
+		P1 Estúdio de Design de Interação***
+		P3 Ambientes Inteligentes
+		P4 Computação Móvel e Ubíqua
+		P3 Sistemas de Elevada Confiabilidade
+
+Sistemas de Informação:
+	P1 Análise e Integração de Dados***
+	P2 Ciência de Dados
+	P2 Engenharia e Tecnologia de Processos de Negócio***
+		P3 Administração de Dados e Sistemas de Informação
+	P4 Integração Empresarial
+		P3 Processamento e Recuperação de Informação
+
+Sistemas Distribuídos:
+		P1 Desenvolvimento de Aplicações Distribuídas
+		P2 Segurança Informática em Redes e Sistemas***
+		P4 Computação em Nuvem e Virtualização
+		P4 Computação Móvel e Ubíqua
+		P3 Computação Paralela e Distribuída
+		P3 Sistemas de Elevada Confiabilidade
+
+Sistemas Empresariais:
+		P1 Administração e Gestão de Infraestruturas e Serviços de It
+		P2 Engenharia e Tecnologia de Processos de Negócio***
+	P2 Fundamentos de Sistemas de Informação
+		P3 Arquitetura Empresarial
+	P3 Gestão de Projectos Informáticos
+	P4 Segurança e Gestão de Sistemas de Informação
+
+Tecnologias da Informação e Linguagem:
+		P2 Aprendizagem Profunda (Dei)
+		P1 Língua Natural
+	P1 Visualização de Informação***
+		P3 Algoritmos Avançados
+	P4 Processamento da Fala
+	P3 Processamento e Recuperação de Informação
+

@@ -1,0 +1,42 @@
+
+
+ECD - engenharia e ciência de dados
+    P1    Análise e Integração de Dados***                      ECD, SI
+        P2    Aprendizagem Profunda (Dei)                           ECD, IA, RI, TIL, BBC
+        P2    Ciência de Dados                                      ECD, SI, IA, SC, BBC
+    P1    Visualização de Informação***                         ECD, IV, TIL
+    P3    Computação Paralela e Distribuída                     ECD, SI, AA
+        P4    Computação em Nuvem e Virtualização                   ECD, GSI, SD
+
+SI - Sistemas da Informação
+    P3    Processamento e Recuperação de Informação             SI, TIL
+    P2    Engenharia e Tecnologia de Processos de Negócio***    SI, SE
+    P3    Administração de Dados e Sistemas de Informação       SI, GSI
+
+RI - Robótica Inteligente (Alameda)
+    Introdução à Robótica                                   RI
+    Processamento de Imagem e Visão                         RI
+    Planeamento, Aprendizagem e Decisão Inteligente         IA, RI
+        Robótica Social e Interação Humanos-Robôs           RI
+        Sistemas Robóticos em Manipulação                   RI
+
+IA - Inteligência Artificial
+        P2    Ciência de Dados                                            ECD, SI, IA, SC, BBC
+        P3    Planeamento, Aprendizagem e Decisão Inteligente             IA, RI
+    P4    Agentes Autónomos e Sistemas Multi-Agente***          IA, J
+
+        P1    Língua Natural
+        P1    Procura e Planeamento (Alameda)
+        P3    Representação do Conhecimento e Raciocínio (Alameda)
+
+
+
+
+Livres:
+    P3    Gestão de Projectos Informáticos                              SE, ES
+    P2    Fundamentos de Sistemas de Informação                         SE
+    P4    Segurança e Gestão de Sistemas de Informação                  SE, CS
+
+    P2    Segurança Informática em Redes e Sistemas***                  CS, GSI, SD
+    P1    Estúdio de Design de Interação***                             SC
+

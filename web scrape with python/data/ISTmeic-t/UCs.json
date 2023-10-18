@@ -1,0 +1,396 @@
+{
+    "Algoritmos e Aplicações": {
+        "Algoritmos para Lógica Computacional": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200202",
+            "Ano 1, P 1"
+        ],
+        "Ciência de Redes Complexas": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200203",
+            "Ano 1, P 1"
+        ],
+        "Computabilidade e Complexidade": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1690378868621631",
+            "Ano 1, Sem. 1"
+        ],
+        "Algoritmos Avançados": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200204",
+            "Ano 1, P 3"
+        ],
+        "Computação Paralela e Distribuída": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200205",
+            "Ano 1, P 3"
+        ],
+        "Linguagens de Programação": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200206",
+            "Ano 1, P 4"
+        ]
+    },
+    "Bioinformática e Biologia Computacional": {
+        "Aprendizagem Profunda (Dei)": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200209",
+            "Ano 1, P 2"
+        ],
+        "Biologia Computacional": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200207",
+            "Ano 1, P 1"
+        ],
+        "Ciência de Dados": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200208",
+            "Ano 1, P 2"
+        ],
+        "Ciência de Redes Complexas": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200203",
+            "Ano 1, P 1"
+        ],
+        "Algoritmos Avançados": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200204",
+            "Ano 1, P 3"
+        ],
+        "Tecnologias de Informação e Decisão Biomédica": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200210",
+            "Ano 1, P 3"
+        ]
+    },
+    "Ciber-Segurança": {
+        "Ciber Segurança Forense": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/845953938490321",
+            "Ano 1, P 1"
+        ],
+        "Segurança em Software": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200212",
+            "Ano 1, P 2"
+        ],
+        "Segurança Informática em Redes e Sistemas": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200213",
+            "Ano 1, P 2"
+        ],
+        "Criptografia e Protocolos de Segurança": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200247",
+            "Ano 1, Sem. 2"
+        ],
+        "Segurança e Gestão de Sistemas de Informação": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200214",
+            "Ano 1, P 4"
+        ],
+        "Sistemas de Elevada Confiabilidade": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200215",
+            "Ano 1, P 3"
+        ]
+    },
+    "Engenharia de Software": {
+        "Arquitectura de Software": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200216",
+            "Ano 1, P 2"
+        ],
+        "Especificação de Software": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200217",
+            "Ano 1, P 1"
+        ],
+        "Gestão de Projectos Informáticos": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200218",
+            "Ano 1, P 3"
+        ],
+        "Programação Avançada": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200219",
+            "Ano 1, P 3"
+        ],
+        "Teste e Validação de Software": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200220",
+            "Ano 1, P 4"
+        ]
+    },
+    "Engenharia e Ciência de Dados": {
+        "Análise e Integração de Dados": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200221",
+            "Ano 1, P 1"
+        ],
+        "Aprendizagem Profunda (Dei)": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200209",
+            "Ano 1, P 2"
+        ],
+        "Ciência de Dados": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200208",
+            "Ano 1, P 2"
+        ],
+        "Visualização de Informação": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200222",
+            "Ano 1, P 1"
+        ],
+        "Computação em Nuvem e Virtualização": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200223",
+            "Ano 1, P 4"
+        ],
+        "Computação Paralela e Distribuída": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200205",
+            "Ano 1, P 3"
+        ]
+    },
+    "Gestão de Serviços de It": {
+        "Administração e Gestão de Infraestruturas e Serviços de It": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200224",
+            "Ano 1, P 1"
+        ],
+        "Desempenho e Dimensionamento de Redes e Sistemas": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200248",
+            "Ano 1, P 2"
+        ],
+        "Engenharia de Sistema de Larga Escala": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200225",
+            "Ano 1, P 1"
+        ],
+        "Segurança Informática em Redes e Sistemas": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200213",
+            "Ano 1, P 2"
+        ],
+        "Administração de Dados e Sistemas de Informação": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200226",
+            "Ano 1, P 3"
+        ],
+        "Computação em Nuvem e Virtualização": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200223",
+            "Ano 1, P 4"
+        ],
+        "Integração Empresarial": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200227",
+            "Ano 1, P 4"
+        ]
+    },
+    "Inteligência Artificial": {
+        "Aprendizagem Profunda (Dei)": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200209",
+            "Ano 1, P 2"
+        ],
+        "Ciência de Dados": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200208",
+            "Ano 1, P 2"
+        ],
+        "Língua Natural": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200228",
+            "Ano 1, P 1"
+        ],
+        "Procura e Planeamento": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200231",
+            "Ano 1, P 1"
+        ],
+        "Agentes Autónomos e Sistemas Multi-Agente": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200230",
+            "Ano 1, P 4"
+        ],
+        "Planeamento, Aprendizagem e Decisão Inteligente": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200229",
+            "Ano 1, P 3"
+        ],
+        "Representação do Conhecimento e Raciocínio": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200232",
+            "Ano 1, P 3"
+        ]
+    },
+    "Interacção e Visualização": {
+        "Animação e Visualização Tridimensional": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200233",
+            "Ano 1, P 1"
+        ],
+        "Conceção Centrada no Utilizador": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200234",
+            "Ano 1, P 2"
+        ],
+        "Realidade Virtual": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200235",
+            "Ano 1, P 2"
+        ],
+        "Visualização de Informação": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200222",
+            "Ano 1, P 1"
+        ],
+        "Produção de Conteúdos Multimédia": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200237",
+            "Ano 1, P 3"
+        ],
+        "Programação 3D": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200238",
+            "Ano 1, P 4"
+        ]
+    },
+    "Jogos": {
+        "Computação Gráfica para Jogos": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200239",
+            "Ano 1, P 2"
+        ],
+        "Design de Jogos": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200240",
+            "Ano 1, P 1"
+        ],
+        "Inteligência Artificial para Jogos": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200241",
+            "Ano 1, P 1"
+        ],
+        "Agentes Autónomos e Sistemas Multi-Agente": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200230",
+            "Ano 1, P 4"
+        ],
+        "Metodologia de Desenvolvimento de Jogos": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200242",
+            "Ano 1, P 4"
+        ],
+        "Produção de Conteúdos Multimédia": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200237",
+            "Ano 1, P 3"
+        ]
+    },
+    "Robótica Inteligente": {
+        "Aprendizagem Profunda (Dei)": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200209",
+            "Ano 1, P 2"
+        ],
+        "Introdução à Robótica": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200244",
+            "Ano 1, P 1"
+        ],
+        "Processamento de Imagem e Visão": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200245",
+            "Ano 1, P 2"
+        ],
+        "Robótica Social e Interação Humanos-Robôs": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200243",
+            "Ano 1, P 2"
+        ],
+        "Planeamento, Aprendizagem e Decisão Inteligente": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200229",
+            "Ano 1, P 3"
+        ],
+        "Sistemas Robóticos em Manipulação": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200246",
+            "Ano 1, P 4"
+        ]
+    },
+    "Sistemas Ciberfísicos": {
+        "Aplicações e Computação para a Internet das Coisas": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200249",
+            "Ano 1, P 2"
+        ],
+        "Ciência de Dados": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200208",
+            "Ano 1, P 2"
+        ],
+        "Estúdio de Design de Interação": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200250",
+            "Ano 1, P 1"
+        ],
+        "Ambientes Inteligentes": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200252",
+            "Ano 1, P 3"
+        ],
+        "Computação Móvel e Ubíqua": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200251",
+            "Ano 1, P 4"
+        ],
+        "Sistemas de Elevada Confiabilidade": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200215",
+            "Ano 1, P 3"
+        ]
+    },
+    "Sistemas de Informação": {
+        "Análise e Integração de Dados": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200221",
+            "Ano 1, P 1"
+        ],
+        "Ciência de Dados": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200208",
+            "Ano 1, P 2"
+        ],
+        "Engenharia e Tecnologia de Processos de Negócio": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200253",
+            "Ano 1, P 2"
+        ],
+        "Administração de Dados e Sistemas de Informação": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200226",
+            "Ano 1, P 3"
+        ],
+        "Integração Empresarial": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200227",
+            "Ano 1, P 4"
+        ],
+        "Processamento e Recuperação de Informação": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200254",
+            "Ano 1, P 3"
+        ]
+    },
+    "Sistemas Distribuídos": {
+        "Desenvolvimento de Aplicações Distribuídas": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200255",
+            "Ano 1, P 1"
+        ],
+        "Segurança Informática em Redes e Sistemas": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200213",
+            "Ano 1, P 2"
+        ],
+        "Computação em Nuvem e Virtualização": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200223",
+            "Ano 1, P 4"
+        ],
+        "Computação Móvel e Ubíqua": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200251",
+            "Ano 1, P 4"
+        ],
+        "Computação Paralela e Distribuída": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200205",
+            "Ano 1, P 3"
+        ],
+        "Sistemas de Elevada Confiabilidade": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200215",
+            "Ano 1, P 3"
+        ]
+    },
+    "Sistemas Empresariais": {
+        "Administração e Gestão de Infraestruturas e Serviços de It": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200224",
+            "Ano 1, P 1"
+        ],
+        "Engenharia e Tecnologia de Processos de Negócio": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200253",
+            "Ano 1, P 2"
+        ],
+        "Fundamentos de Sistemas de Informação": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200256",
+            "Ano 1, P 2"
+        ],
+        "Arquitetura Empresarial": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/845953938489538",
+            "Ano 1, P 3"
+        ],
+        "Gestão de Projectos Informáticos": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200218",
+            "Ano 1, P 3"
+        ],
+        "Segurança e Gestão de Sistemas de Informação": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200214",
+            "Ano 1, P 4"
+        ]
+    },
+    "Tecnologias da Informação e Linguagem": {
+        "Aprendizagem Profunda (Dei)": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200209",
+            "Ano 1, P 2"
+        ],
+        "Língua Natural": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200228",
+            "Ano 1, P 1"
+        ],
+        "Visualização de Informação": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200222",
+            "Ano 1, P 1"
+        ],
+        "Algoritmos Avançados": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200204",
+            "Ano 1, P 3"
+        ],
+        "Processamento da Fala": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/845953938489539",
+            "Ano 1, P 4"
+        ],
+        "Processamento e Recuperação de Informação": [
+            "https://fenix.tecnico.ulisboa.pt/cursos/meic-t/disciplina-curricular/1127428915200254",
+            "Ano 1, P 3"
+        ]
+    }
+}
