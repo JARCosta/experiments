@@ -1,0 +1,34 @@
+{
+    "contest": {
+        "_id": "66b3f7828179fdbb07b4c336",
+        "title": "Aposta no resultado do pr\u00f3ximo jogo do Runah",
+        "description": "Win or Lose",
+        "minBet": 1,
+        "maxBet": 100000,
+        "botResponses": true,
+        "options": [
+            {
+                "command": "win",
+                "title": "Win",
+                "totalAmount": 6455,
+                "totalUsers": 5,
+                "_id": "66b3f7828179fdbb07b4c337"
+            },
+            {
+                "command": "lose",
+                "title": "Lose",
+                "totalAmount": 5700,
+                "totalUsers": 8,
+                "_id": "66b3f7828179fdbb07b4c338"
+            }
+        ],
+        "totalAmount": 12155,
+        "totalUsers": 13,
+        "duration": 5,
+        "channel": "5a2ae33308308f00016e684e",
+        "state": "running",
+        "createdAt": "2024-08-07T22:38:58.887Z",
+        "updatedAt": "2024-08-07T22:43:57.801Z",
+        "startedAt": "2024-08-07T22:38:59.173Z"
+    }
+}
