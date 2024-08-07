@@ -1,0 +1,50 @@
+{
+    "msg": "added",
+    "collection": "cases",
+    "id": "cyrex",
+    "fields": {
+        "price": 12.35,
+        "disabled": false,
+        "items": [
+            {
+                "_id": "SCAR-20 | Cyrex"
+            },
+            {
+                "_id": "M4A1-S | Cyrex"
+            },
+            {
+                "_id": "SG 553 | Cyrex"
+            },
+            {
+                "_id": "USP-S | Cyrex"
+            },
+            {
+                "_id": "Tec-9 | Army Mesh"
+            },
+            {
+                "_id": "R8 Revolver | Bone Mask"
+            },
+            {
+                "_id": "Tec-9 | Urban DDPAT"
+            },
+            {
+                "_id": "PP-Bizon | Urban Dashed"
+            },
+            {
+                "_id": "Dual Berettas | Contractor"
+            },
+            {
+                "_id": "P250 | Sand Dune"
+            }
+        ],
+        "addedAt": 1521202504623,
+        "name": "Cyrex mining",
+        "image": "https://images.steamcdn.io/csgonet/cases/Cyrex-Case-Mycsgo.png",
+        "active": true,
+        "place": 2,
+        "price_eur": 0.143,
+        "price_usd": 0.151,
+        "pfRangeID": "c1796132dc39cef94c2db300",
+        "isMiningCase": true
+    }
+}

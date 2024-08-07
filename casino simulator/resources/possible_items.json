@@ -1,0 +1,52 @@
+{
+    "Dual Berettas | Contractor (Minimal Wear)": {
+        "prob": 0.16980007218796922,
+        "price_eur": 0.007,
+        "upper_range": 1698001
+    },
+    "Tec-9 | Army Mesh (Field-Tested)": {
+        "prob": 0.16885210957417904,
+        "price_eur": 0.007,
+        "upper_range": 3386522
+    },
+    "PP-Bizon | Urban Dashed (Field-Tested)": {
+        "prob": 0.1679344994101564,
+        "price_eur": 0.008,
+        "upper_range": 5065867
+    },
+    "Tec-9 | Urban DDPAT (Field-Tested)": {
+        "prob": 0.16535407778534053,
+        "price_eur": 0.008,
+        "upper_range": 6719408
+    },
+    "R8 Revolver | Bone Mask (Field-Tested)": {
+        "prob": 0.16157571614759514,
+        "price_eur": 0.008,
+        "upper_range": 8335165
+    },
+    "P250 | Sand Dune (Battle-Scarred)": {
+        "prob": 0.15565278246333097,
+        "price_eur": 0.009,
+        "upper_range": 9891693
+    },
+    "USP-S | Cyrex (Factory New)": {
+        "prob": 0.004329637268885725,
+        "price_eur": 3.1,
+        "upper_range": 9934989
+    },
+    "SG 553 | Cyrex (Well-Worn)": {
+        "prob": 0.003936398780768987,
+        "price_eur": 3.58,
+        "upper_range": 9974353
+    },
+    "M4A1-S | Cyrex (Field-Tested)": {
+        "prob": 0.0017183261912500582,
+        "price_eur": 13.93,
+        "upper_range": 9991536
+    },
+    "SCAR-20 | Cyrex (Factory New)": {
+        "prob": 0.0008463801905240163,
+        "price_eur": 45.35,
+        "upper_range": 10000000
+    }
+}

@@ -1,0 +1,136 @@
+{
+    "msg": "added",
+    "collection": "pf_case_ranges",
+    "id": "-c1796132dc39cef94c2db300",
+    "fields": {
+        "createdAt": 1721372676965,
+        "coef": 1.25,
+        "caseID": "cyrex",
+        "price": 12.35,
+        "items": [
+            {
+                "_id": "Dual Berettas | Contractor",
+                "name": "Dual Berettas | Contractor (Minimal Wear)",
+                "prob": 0.16980007218796922,
+                "price": 0.74,
+                "price_usd": 0.008,
+                "price_eur": 0.007,
+                "range": [
+                    1,
+                    1698001
+                ]
+            },
+            {
+                "_id": "Tec-9 | Army Mesh",
+                "name": "Tec-9 | Army Mesh (Field-Tested)",
+                "prob": 0.16885210957417904,
+                "price": 0.75,
+                "price_usd": 0.008,
+                "price_eur": 0.007,
+                "range": [
+                    1698002,
+                    3386522
+                ]
+            },
+            {
+                "_id": "PP-Bizon | Urban Dashed",
+                "name": "PP-Bizon | Urban Dashed (Field-Tested)",
+                "prob": 0.1679344994101564,
+                "price": 0.76,
+                "price_usd": 0.008,
+                "price_eur": 0.008,
+                "range": [
+                    3386523,
+                    5065867
+                ]
+            },
+            {
+                "_id": "Tec-9 | Urban DDPAT",
+                "name": "Tec-9 | Urban DDPAT (Field-Tested)",
+                "prob": 0.16535407778534053,
+                "price": 0.79,
+                "price_usd": 0.009,
+                "price_eur": 0.008,
+                "range": [
+                    5065868,
+                    6719408
+                ]
+            },
+            {
+                "_id": "R8 Revolver | Bone Mask",
+                "name": "R8 Revolver | Bone Mask (Field-Tested)",
+                "prob": 0.16157571614759514,
+                "price": 0.84,
+                "price_usd": 0.009,
+                "price_eur": 0.008,
+                "range": [
+                    6719409,
+                    8335165
+                ]
+            },
+            {
+                "_id": "P250 | Sand Dune",
+                "name": "P250 | Sand Dune (Battle-Scarred)",
+                "prob": 0.15565278246333097,
+                "price": 0.94,
+                "price_usd": 0.01,
+                "price_eur": 0.009,
+                "range": [
+                    8335166,
+                    9891693
+                ]
+            },
+            {
+                "_id": "USP-S | Cyrex",
+                "name": "USP-S | Cyrex (Factory New)",
+                "prob": 0.004329637268885725,
+                "price": 311.85,
+                "price_usd": 3.41,
+                "price_eur": 3.1,
+                "range": [
+                    9891694,
+                    9934989
+                ]
+            },
+            {
+                "_id": "SG 553 | Cyrex",
+                "name": "SG 553 | Cyrex (Well-Worn)",
+                "prob": 0.003936398780768987,
+                "price": 360.38,
+                "price_usd": 3.94,
+                "price_eur": 3.58,
+                "range": [
+                    9934990,
+                    9974353
+                ]
+            },
+            {
+                "_id": "M4A1-S | Cyrex",
+                "name": "M4A1-S | Cyrex (Field-Tested)",
+                "prob": 0.0017183261912500582,
+                "price": 1401.52,
+                "price_usd": 15.32,
+                "price_eur": 13.93,
+                "range": [
+                    9974354,
+                    9991536
+                ]
+            },
+            {
+                "_id": "SCAR-20 | Cyrex",
+                "name": "SCAR-20 | Cyrex (Factory New)",
+                "prob": 0.0008463801905240163,
+                "price": 4561.66,
+                "price_usd": 49.86,
+                "price_eur": 45.35,
+                "range": [
+                    9991537,
+                    10000000
+                ]
+            }
+        ],
+        "me": 9.83055,
+        "meRanges": 9.83059,
+        "goalME": 9.88
+    }
+}
