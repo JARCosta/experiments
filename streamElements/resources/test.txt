@@ -1,0 +1,19 @@
+out: CAP REQ :twitch.tv/tags twitch.tv/commands
+out: PASS oauth:AUTH_KEY
+out: NICK el_pipow
+out: USER el_piow 8 * :el_pipow
+in: :tmi.twitch.tv CAP * ACK :twitch.tv/tags twitch.tv/commands
+out: JOIN #runah
+in: :tmi.twitch.tv 001 el_pipow :Welcome, GLHF!
+	:tmi.twitch.tv 002 el_pipow :Your host is tmi.twitch.tv
+	:tmi.twitch.tv 003 el_pipow :This server is rather new
+	:tmi.twitch.tv 004 el_pipow :-
+	:tmi.twitch.tv 375 el_pipow :-
+	:tmi.twitch.tv 372 el_pipow :You are in a maze of twisty passages, all alike.
+	:tmi.twitch.tv 376 el_pipow :>
+	@badge-info=;badges=glitchcon2020/1;color=#00FF7F;display-name=El_Pipow;emote-sets=0,301094105,302696035,302696036,302696037,302696038,302696039,302696040,472873131,488737509,498770388,564265402,610186276;user-id=462756951;user-type= :tmi.twitch.tv GLOBALUSERSTATE
+in: :el_pipow!el_pipow@el_pipow.tmi.twitch.tv JOIN #runah
+	:el_pipow.tmi.twitch.tv 353 el_pipow = #runah :el_pipow
+	:el_pipow.tmi.twitch.tv 366 el_pipow #runah :End of /NAMES list
+in: @badge-info=;badges=glitchcon2020/1;color=#00FF7F;display-name=El_Pipow;emote-sets=0,301094105,302696035,302696036,302696037,302696038,302696039,302696040,472873131,488737509,498770388,564265402,610186276;mod=0;subscriber=0;user-type= :tmi.twitch.tv USERSTATE #runah
+	@emote-only=0;followers-only=0;r9k=0;room-id=38380614;slow=0;subs-only=0 :tmi.twitch.tv ROOMSTATE #runah

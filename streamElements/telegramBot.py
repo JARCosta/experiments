@@ -63,10 +63,13 @@ def getMessages(chat_id: str):
 def sendMessage(message: str, user : str = CHAT_ID):
   params = {"chat_id": user, "text": message}
   r = requests.get(URL + "/sendMessage", params=params)
+  with open("resources/test.txt", "a") as f:
+    f.write("out: " + message.replace("\n", "\n\t")[:-1])
   if not r.ok:
     raise Exception(r.text)
   else:
     return r.json()["result"]
+
 
 
 def main():
