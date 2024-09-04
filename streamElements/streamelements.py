@@ -43,6 +43,7 @@ def increase_variable_delay(amount=0.1):
         print(telegram_message, end="\n\n")
 
 BALANCE = get_balance()
+REFERENCE_DELAY = 1
 with open('resources/variable_delay.txt', 'r') as f:
     VARIABLE_DELAY = float(f.read())
 with open('resources/test.txt', 'w') as f:
@@ -102,14 +103,18 @@ def get_bets():
                 if (end - now).total_seconds() < 5: # Time to bet
                     options = {option["command"]: int(option["totalAmount"]) for option in response_json["contest"]["options"]}
                     bet_option, bet_ammount = calculate_bet(options)
-                    if bet_ammount > 0:
-                        global BALANCE
-                        twitch_message_sender.bet(ws, bet_option, str(bet_ammount) if BALANCE > bet_ammount else "all")
+                    global BALANCE
+                    bet_ammount = BALANCE if bet_ammount > BALANCE else bet_ammount
+                    oposite_option = "lose" if bet_option == "win" else "win"
+                    return_ammount = options[oposite_option] * (bet_ammount/(options[bet_option]+bet_ammount))
+                    odd = (return_ammount + bet_ammount)/bet_ammount
+                    if bet_ammount > 0 and odd > 2.5: # and BALANCE > bet_ammount
+                        twitch_message_sender.bet(WS, bet_option, str(bet_ammount) if BALANCE > bet_ammount else "all")
 
-                    if (end - now).total_seconds() > 1.2: # betting too early
-                        decrease_variable_delay(((end - now).total_seconds() - 1.2)/4)
-                    if (end - now).total_seconds() < 1.2: # betting too late
-                        increase_variable_delay((1.2 - (end - now).total_seconds())/4)
+                    if (end - now).total_seconds() > REFERENCE_DELAY: # betting too early
+                        decrease_variable_delay(((end - now).total_seconds() - REFERENCE_DELAY)/4)
+                    if (end - now).total_seconds() < REFERENCE_DELAY: # betting too late
+                        increase_variable_delay((REFERENCE_DELAY - (end - now).total_seconds())/4)
 
                     telegram_message = "Time to place your bets\n"
                     telegram_message += "There were still {} seconds left\n".format(round((end - now).total_seconds(), 2))
@@ -118,9 +123,7 @@ def get_bets():
                         telegram_message += "Option {}: {} points\n".format(option["title"], option["totalAmount"])
                     telegram_message += "\n"
                     telegram_message += "Betting {} on {}, representing {}% of the winning pot\n".format(bet_ammount, bet_option, round(100*bet_ammount/(options[bet_option]+bet_ammount)))
-                    oposite_option = "lose" if bet_option == "win" else "win"
-                    return_ammount = options[oposite_option] * (bet_ammount/(options[bet_option]+bet_ammount))
-                    telegram_message += "The odd of this bet is {}\n".format(round((return_ammount + bet_ammount)/bet_ammount, 2))
+                    telegram_message += "The odd of this bet is {}\n".format(round(odd, 2))
                     threading.Thread(target=telegramBot.sendMessage, args=(telegram_message,)).start()
                     print(telegram_message, end="\n\n")
 
@@ -171,6 +174,14 @@ def get_bets():
 
     except KeyboardInterrupt:
         twitch_message_sender.close(WST, WS)
+    except Exception as e:
+        with open('resources/test.txt', 'a') as f:
+            f.write("aaaaaaaaaaaaa\n")
+            f.write(str(datetime.datetime.now()) + "\n")
+            f.write(str(e) + "\n")
+        telegram_message = "Error: " + str(e)
+        telegramBot.sendMessage(telegram_message)
+
 
 
 if __name__ == "__main__":
