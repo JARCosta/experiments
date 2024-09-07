@@ -2,6 +2,7 @@ import websocket
 import threading
 import telegramBot
 import streamelements
+import traceback
 
 # Event to signal that the connection is open
 connection_open_event = threading.Event()
@@ -41,16 +42,32 @@ class WebSocket:
         elif "no longer accepting bets for" in message: # Bet's closed
             pass
 
-        elif "@El_Pipow, you have bet " in message or "won the contest" in message: # I placed a bet or contest ended
-            with open("resources/bets.txt", "a") as f:
-                f.write(message.split("display-name=")[1].split(";")[0] + ": " + str(message.split("PRIVMSG #runah :")[1]))
+        elif "@El_Pipow, you have bet " in message: # Bet placed confirmation
+            user = message.split("display-name=")[1].split(";")[0]
             msg = message.split("PRIVMSG #runah :")[1]
-            print(msg)
-            msg = str(msg).replace("\x01", "") if "won the contest" in message else msg
-            
+            with open("resources/bets.txt", "a") as f:
+                f.write(user + ": " + msg)
+
             telegram_message = message.split("display-name=")[1].split(";")[0] + ": " + msg + "\n"
             telegram_message += "You have {} points\n".format(streamelements.get_balance())
             telegramBot.sendMessage(telegram_message)
+            print(telegram_message)
+        
+        elif "won the contest" in message: # Result of the bet
+            user = message.split("display-name=")[1].split(";")[0]
+            msg = message.split("PRIVMSG #runah :")[1].split('ACTION ')[1].split("!")[0] + "!\n"
+            with open("resources/bets.txt", "a") as f:
+                f.write(user + ": " + msg)
+            
+            telegram_message = user + ": " + msg + "\n"
+            telegram_message += "You have {} points\n".format(streamelements.get_balance())
+            telegramBot.sendMessage(telegram_message)
+            print(telegram_message)
+
+            bet_winner = message.split("PRIVMSG #runah :")[1]
+            bet_winner = bet_winner.split('"')[1]
+            with open("resources/pots.txt", "a") as f:
+                f.write(bet_winner + "\n")
 
         elif "@El_Pipow" in message and not ":el_pipow" in message: # I was mentioned
             with open("resources/twitch_chat.txt", "a") as f:
@@ -67,8 +84,11 @@ class WebSocket:
             f.write("in: " + message.replace("\n", "\n\t")[:-1])
 
     def on_error(ws, error):
-        print(f"Error: {error}")
-        telegramBot.sendMessage(f"Error: {error}")
+        telegram_message = "Error:\n"
+        telegram_message += f"{error}"
+        telegram_message += f"\n\n{traceback.format_exc()}"
+        telegramBot.sendMessage(telegram_message)
+        print(telegram_message)
 
     def on_close(ws, close_status_code, close_msg):
         print(f"WebSocket connection closed with status: {close_status_code}, message: {close_msg}")

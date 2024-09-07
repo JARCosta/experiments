@@ -1,6 +1,7 @@
 
 import datetime
 from math import sqrt
+import traceback
 import requests
 import time
 import threading
@@ -28,7 +29,7 @@ def decrease_variable_delay(amount=0.1):
         with open('resources/variable_delay.txt', 'w') as f:
             f.write(str(VARIABLE_DELAY) + "\n")
         telegram_message = "Variable delay decreased by {} to {}".format(amount, VARIABLE_DELAY)
-        threading.Thread(target=telegramBot.sendMessage, args=(telegram_message,)).start()
+        telegramBot.sendMessage(telegram_message)
         print(telegram_message, end="\n\n")
 
 def increase_variable_delay(amount=0.1):
@@ -39,7 +40,7 @@ def increase_variable_delay(amount=0.1):
         with open('resources/variable_delay.txt', 'w') as f:
             f.write(str(VARIABLE_DELAY) + "\n")
         telegram_message = "Variable delay increased by {} to {}".format(amount, VARIABLE_DELAY)
-        threading.Thread(target=telegramBot.sendMessage, args=(telegram_message,)).start()
+        telegramBot.sendMessage(telegram_message)
         print(telegram_message, end="\n\n")
 
 BALANCE = get_balance()
@@ -49,25 +50,67 @@ with open('resources/variable_delay.txt', 'r') as f:
 with open('resources/test.txt', 'w') as f:
     pass
 
-def calculate_bet(options):
+def calculate_bet(options, balance, notifications=True):
 
-    for i in options.keys():
+    for i in options.keys(): # Remove the edge case where one of the options is 0
         options[i] += 1
 
     bet_option = "win" if options["win"] < options["lose"] else "lose"
     oposite_option = "lose" if bet_option == "win" else "win"
 
-    current_balance_ratio_on_our_option = options[bet_option] / options[oposite_option]
+    telegram_message = "The pot is at {} points\n".format(options["win"] + options["lose"])
+    for i in options.keys():
+        telegram_message += "\tOption {}: {} points\n".format(i, options[i]-1)
+    telegram_message += "\n"
+    telegram_message += "You have {} points\n".format(balance)
+    telegram_message += "\n"
 
-    our_bet_ratio = -current_balance_ratio_on_our_option + sqrt(current_balance_ratio_on_our_option)
+    b = options[bet_option] / options[oposite_option]
 
-    bet_ammount = our_bet_ratio * options[oposite_option]
-    bet_ammount = round(bet_ammount)
+    opt_bet_ratio = -b + sqrt(b)
+    opt_bet_ammount = round(opt_bet_ratio * options[oposite_option], -1)
+    opt_bet_ammount = opt_bet_ammount if opt_bet_ammount != 0 else 1
 
-    bet_ratio = bet_ammount/(options[bet_option]+bet_ammount)
+    opt_pot_ratio = opt_bet_ammount/(options[bet_option]+opt_bet_ammount)
+    opt_bet_profit = opt_pot_ratio * options[oposite_option]
+    opt_bet_return = opt_bet_ammount + opt_bet_profit
+    opt_bet_odd = opt_bet_return / opt_bet_ammount
 
-    print("Betting {} on {}, representing {}% of the winning pot".format(bet_ammount, bet_option, round(100*bet_ratio)))
-    return bet_option, round(bet_ammount, -1)
+    telegram_message += "The optimal bet is {} points\n".format(round(opt_bet_ammount))
+    telegram_message += "Which represents {}% of the winning pot\n".format(round(100*opt_pot_ratio))
+    telegram_message += "Returns {} points\n".format(round(opt_bet_return))
+    telegram_message += "Profits {} points\n".format(round(opt_bet_profit))
+    telegram_message += "Has an odd of {}\n".format(round(opt_bet_odd, 2))
+
+    bet_ammount = opt_bet_ammount
+
+    if opt_bet_odd < 3: # The optimal odd is too low
+        reference_odd = 3
+        ref_bet_ration = (1/(reference_odd-1))-b
+        ref_bet_ammount = round(ref_bet_ration * options[oposite_option], -1)
+        ref_bet_ammount = ref_bet_ammount if ref_bet_ammount != 0 else 1
+        
+        ref_pot_ratio = ref_bet_ammount/(options[bet_option]+ref_bet_ammount)
+        ref_bet_profit = ref_pot_ratio * options[oposite_option]
+        ref_bet_return = ref_bet_ammount + ref_bet_profit
+        ref_bet_odd = ref_bet_return / ref_bet_ammount
+
+        telegram_message += "\n"
+        telegram_message += "The reference bet is {} points\n".format(round(ref_bet_ammount))
+        telegram_message += "Which represents {}% of the winning pot\n".format(round(100*ref_pot_ratio))
+        telegram_message += "Returns {} points\n".format(round(ref_bet_return))
+        telegram_message += "Profits {} points\n".format(round(ref_bet_profit))
+        telegram_message += "Has an odd of {}\n".format(round(ref_bet_odd, 2))
+
+        bet_ammount = ref_bet_ammount
+    
+    bet_ammount = 0 if bet_ammount < 0 else bet_ammount
+
+    if notifications:
+        threading.Thread(target=telegramBot.sendMessage, args=(telegram_message,)).start()
+    else:
+        print(telegram_message)
+    return bet_option, bet_ammount
 
 WST, WS = None, None
 
@@ -102,30 +145,35 @@ def get_bets():
             if start < now < end: # Bets are open
                 if (end - now).total_seconds() < 5: # Time to bet
                     options = {option["command"]: int(option["totalAmount"]) for option in response_json["contest"]["options"]}
-                    bet_option, bet_ammount = calculate_bet(options)
                     global BALANCE
-                    bet_ammount = BALANCE if bet_ammount > BALANCE else bet_ammount
-                    oposite_option = "lose" if bet_option == "win" else "win"
-                    return_ammount = options[oposite_option] * (bet_ammount/(options[bet_option]+bet_ammount))
-                    odd = (return_ammount + bet_ammount)/bet_ammount
-                    if bet_ammount > 0 and odd > 2.5: # and BALANCE > bet_ammount
-                        twitch_message_sender.bet(WS, bet_option, str(bet_ammount) if BALANCE > bet_ammount else "all")
+                    with open('resources/pots.txt', 'a') as f:
+                        f.write(str(options) + "\n")
+                    bet_option, bet_ammount = calculate_bet(options, BALANCE)
+                    if bet_ammount > 0:
+                        bet_ammount = BALANCE if bet_ammount > BALANCE else bet_ammount
+                        twitch_message_sender.bet(WS, bet_option, str(int(bet_ammount)) if BALANCE > bet_ammount else "all")
 
-                    if (end - now).total_seconds() > REFERENCE_DELAY: # betting too early
-                        decrease_variable_delay(((end - now).total_seconds() - REFERENCE_DELAY)/4)
-                    if (end - now).total_seconds() < REFERENCE_DELAY: # betting too late
-                        increase_variable_delay((REFERENCE_DELAY - (end - now).total_seconds())/4)
+                        if (end - now).total_seconds() > REFERENCE_DELAY: # betting too early
+                            decrease_variable_delay(((end - now).total_seconds() - REFERENCE_DELAY)/4)
+                        if (end - now).total_seconds() < REFERENCE_DELAY: # betting too late
+                            increase_variable_delay((REFERENCE_DELAY - (end - now).total_seconds())/4)
+                        
+                        oposite_option = "lose" if bet_option == "win" else "win"
+                        bet_profit = options[oposite_option] * (bet_ammount/(options[bet_option]+bet_ammount))
+                        bet_return = bet_ammount + bet_profit
+                        bet_odd = bet_return/bet_ammount
+                        pot_ratio = bet_ammount/(options[bet_option]+bet_ammount)
 
-                    telegram_message = "Time to place your bets\n"
-                    telegram_message += "There were still {} seconds left\n".format(round((end - now).total_seconds(), 2))
-                    telegram_message += "The pot is at {} points\n".format(response_json["contest"]["totalAmount"])
-                    for option in response_json["contest"]["options"]:
-                        telegram_message += "Option {}: {} points\n".format(option["title"], option["totalAmount"])
-                    telegram_message += "\n"
-                    telegram_message += "Betting {} on {}, representing {}% of the winning pot\n".format(bet_ammount, bet_option, round(100*bet_ammount/(options[bet_option]+bet_ammount)))
-                    telegram_message += "The odd of this bet is {}\n".format(round(odd, 2))
-                    threading.Thread(target=telegramBot.sendMessage, args=(telegram_message,)).start()
-                    print(telegram_message, end="\n\n")
+                        telegram_message = "Time to place your bets\n"
+                        telegram_message += "There were still {} seconds left\n".format(round((end - now).total_seconds(), 2))
+                        telegram_message += "\n"
+                        telegram_message += "The official bet is {} points on {}\n".format(bet_ammount, bet_option)
+                        telegram_message += "Which represents {}% of the winning pot\n".format(round(100*pot_ratio))
+                        telegram_message += "Returns {} points\n".format(round(bet_return))
+                        telegram_message += "Profits {} points\n".format(round(bet_profit))
+                        telegram_message += "Has an odd of {}\n".format(round(bet_odd, 2))
+                        telegramBot.sendMessage(telegram_message)
+                        print(telegram_message, end="\n\n")
 
                     time.sleep(10)
                     continue
@@ -166,7 +214,7 @@ def get_bets():
                 telegram_message = "Bets are not open yet\n"
                 telegram_message += "Something is off\n"
                 telegram_message += "Check out what's going on"
-                threading.Thread(target=telegramBot.sendMessage, args=(telegram_message,)).start()
+                telegramBot.sendMessage(telegram_message)
                 print(telegram_message, end="\n\n")
 
                 time.sleep(120)
@@ -179,7 +227,8 @@ def get_bets():
             f.write("aaaaaaaaaaaaa\n")
             f.write(str(datetime.datetime.now()) + "\n")
             f.write(str(e) + "\n")
-        telegram_message = "Error: " + str(e)
+        telegram_message = "Error:\n"
+        telegram_message += traceback.format_exc()
         telegramBot.sendMessage(telegram_message)
 
 

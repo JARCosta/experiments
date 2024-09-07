@@ -1,0 +1,19 @@
+{'win': 10979, 'lose': 31924}
+Lose
+{'win': 7076, 'lose': 9595}
+Lose
+{'win': 4500, 'lose': 9662}
+Lose
+{'win': 7931, 'lose': 1962}
+Lose
+{'win': 8717, 'lose': 2920}
+Lose
+{'win': 4309, 'lose': 12159}
+Lose
+{'win': 3388, 'lose': 10343}
+Win
+Lose
+{'win': 2235, 'lose': 19424}
+Win
+{'win': 2177, 'lose': 14640}
+Lose
