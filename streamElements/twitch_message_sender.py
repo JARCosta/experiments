@@ -57,17 +57,18 @@ class WebSocket:
             with open("resources/pots.txt", "a") as f:
                 f.write(bet_winner + "\n")
 
-        elif "@El_Pipow" in message and not ":el_pipow" in message: # I was mentioned
+        elif "@el_pipow" in message.lower() and not ":el_pipow" in message: # I was mentioned
             user = message.split("display-name=")[1].split(";")[0]
             msg = message.split("PRIVMSG #runah :")[1]
             with open("resources/twitch_chat.txt", "a") as f:
                 f.write(user + ": " + msg)
             telegram_message = user + ": " + msg
-            if "you have bet": # Bet placed confirmation
+            if "you have bet" in message: # Bet placed confirmation
                 with open("resources/bets.txt", "a") as f:
                     f.write(user + ": " + msg)
                 telegram_message += "You have {} points\n".format(streamelements.get_balance())
             telegramBot.sendMessage(telegram_message)
+            print(telegram_message)
             
         elif repeat_runah and (";display-name=Runah" in message or ";display-name=runah" in message): # and not message.split("PRIVMSG #runah :")[1].contains(" "): # Runah sent the word of the day message
             user = message.split("display-name=")[1].split(";")[0]
