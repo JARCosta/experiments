@@ -11,7 +11,6 @@ repeat_runah = True
 class WebSocket:
 
     def on_message(ws, message):
-        # print(f"Received message: {message}")
         global repeat_runah
         if ":tmi.twitch.tv 001 el_pipow :Welcome, GLHF!" in message:
             ws.send("JOIN #runah")
@@ -41,17 +40,6 @@ class WebSocket:
         
         elif "no longer accepting bets for" in message: # Bet's closed
             pass
-
-        elif "@El_Pipow, you have bet " in message: # Bet placed confirmation
-            user = message.split("display-name=")[1].split(";")[0]
-            msg = message.split("PRIVMSG #runah :")[1]
-            with open("resources/bets.txt", "a") as f:
-                f.write(user + ": " + msg)
-
-            telegram_message = message.split("display-name=")[1].split(";")[0] + ": " + msg + "\n"
-            telegram_message += "You have {} points\n".format(streamelements.get_balance())
-            telegramBot.sendMessage(telegram_message)
-            print(telegram_message)
         
         elif "won the contest" in message: # Result of the bet
             user = message.split("display-name=")[1].split(";")[0]
@@ -70,14 +58,23 @@ class WebSocket:
                 f.write(bet_winner + "\n")
 
         elif "@El_Pipow" in message and not ":el_pipow" in message: # I was mentioned
+            user = message.split("display-name=")[1].split(";")[0]
+            msg = message.split("PRIVMSG #runah :")[1]
             with open("resources/twitch_chat.txt", "a") as f:
-                f.write(message.split("display-name=")[1].split(";")[0] + ": " + message.split("PRIVMSG #runah :")[1])
+                f.write(user + ": " + msg)
+            telegram_message = user + ": " + msg
+            if "you have bet": # Bet placed confirmation
+                with open("resources/bets.txt", "a") as f:
+                    f.write(user + ": " + msg)
+                telegram_message += "You have {} points\n".format(streamelements.get_balance())
+            telegramBot.sendMessage(telegram_message)
             
         elif repeat_runah and (";display-name=Runah" in message or ";display-name=runah" in message): # and not message.split("PRIVMSG #runah :")[1].contains(" "): # Runah sent the word of the day message
+            user = message.split("display-name=")[1].split(";")[0]
+            msg = message.split("PRIVMSG #runah :")[1]
             with open("resources/twitch_chat.txt", "a") as f:
-                f.write(message.split("display-name=")[1].split(";")[0] + ": " + message.split("PRIVMSG #runah :")[1])
-                        
-            telegramBot.sendMessage(message.split("display-name=")[1].split(";")[0] + ": " + message.split("PRIVMSG #runah :")[1])
+                f.write(user + ": " + msg)
+            telegramBot.sendMessage(user + ": " + msg)
             # repeat_runah = False
 
         with open("resources/test.txt", "a") as f:
