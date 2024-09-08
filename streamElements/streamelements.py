@@ -104,10 +104,11 @@ def calculate_bet(options, balance, notifications=True):
 
         bet_ammount = ref_bet_ammount
     
-    bet_ammount = 0 if bet_ammount < 0 else bet_ammount
+    bet_ammount = 0 if bet_ammount < 10 else bet_ammount
 
     if notifications:
         threading.Thread(target=telegramBot.sendMessage, args=(telegram_message,)).start()
+        print(telegram_message, end="\n\n")
     else:
         print(telegram_message)
     return bet_option, bet_ammount

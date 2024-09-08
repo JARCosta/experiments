@@ -17,3 +17,14 @@ Lose
 Win
 {'win': 2177, 'lose': 14640}
 Lose
+{'win': 78, 'lose': 6569}
+Lose
+{'win': 1211, 'lose': 800}
+Win
+{'win': 10193, 'lose': 2930}
+Win
+{'win': 9003, 'lose': 4076}
+Lose
+{'win': 1494, 'lose': 1350}
+Win
+{'win': 510, 'lose': 258}
