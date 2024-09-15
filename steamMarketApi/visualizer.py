@@ -17,7 +17,7 @@ async def get_file_csv(file_name):
 
 
 async def main():
-    os.chdir("data/requests/buff/")
+    os.chdir("steamMarketApi/data/requests/buff/")
     lst = [int(i.replace(".csv", "").replace("-", "")) for i in os.listdir()]
     temp_file = str(sorted(lst)[-1])
     buff_file = temp_file[:4] + "-" + temp_file[4:6] + "-" + temp_file[6:8]
@@ -31,8 +31,8 @@ async def main():
     # print(steam_files)
 
     tasks = []
-    tasks.append(asyncio.create_task(get_file_csv("data/requests/buff/"+buff_file + ".csv")))
-    tasks.append(asyncio.create_task(get_file_csv("data/requests/steam/"+steam_file + ".csv")))
+    tasks.append(asyncio.create_task(get_file_csv("steamMarketApi/data/requests/buff/"+buff_file + ".csv")))
+    tasks.append(asyncio.create_task(get_file_csv("steamMarketApi/data/requests/steam/"+steam_file + ".csv")))
     
     [await task for task in tasks]
 
@@ -89,7 +89,7 @@ async def main():
     
     # print(list(res.keys())[0:10])
 
-    with open("data/requests/visualizer.csv", "w", encoding="utf-8") as f:
+    with open("steamMarketApi/data/requests/visualizer.csv", "w", encoding="utf-8") as f:
         f.write("item,buff_date,buff_buy_price,buff_sell_orders,buff_sell_price,buff_buy_orders,steam_date,steam_buy_price,steam_sell_orders,steam_sell_price,steam_buy_orders,buff->steam,steam->buff\n")
 
     max_buff_to_steam = ["", 0]
@@ -107,7 +107,7 @@ async def main():
         if(res[item]["steam->buff"] > max_steam_to_buff[1]):
             max_steam_to_buff = [res[item], res[item]["steam->buff"], item, "BUY ON STEAM, SELL ON BUFF"]
         
-        with open("data/requests/visualizer.csv", "a", encoding="utf-8") as f:
+        with open("steamMarketApi/data/requests/visualizer.csv", "a", encoding="utf-8") as f:
             writer = csv.writer(f, delimiter=";")
 
             lst = list(res[item].values())

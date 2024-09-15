@@ -27,7 +27,7 @@ def load_UCs():
     level = level.prettify()
     rest = level
 
-    with open(f"data/ISTmeic-t/UCs.html", "w") as outfile:
+    with open(f"istCoursesWebScraper/data/ISTmeic-t/UCs.html", "w") as outfile:
         outfile.write(rest)
 
     subjects = {}
@@ -37,9 +37,9 @@ def load_UCs():
         next_CU = len(rest.split('style="font-size: 120%">\n     ')[0])
 
         if next_subject == next_CU:
-            with open(f"data/ISTmeic-t/UCs.json", "w") as outfile:
+            with open(f"istCoursesWebScraper/data/ISTmeic-t/UCs.json", "w") as outfile:
                 outfile.write(json.dumps(subjects, indent=4, ensure_ascii=False).encode('utf8').decode())
-            with open(f"data/ISTmeic-t/UCs.txt", "w") as outfile:
+            with open(f"istCoursesWebScraper/data/ISTmeic-t/UCs.txt", "w") as outfile:
                 for i in subjects:
                     outfile.write(f"{i}:\n")
                     for j in subjects[i]:
@@ -63,7 +63,7 @@ def load_UCs():
 
 def filter_time(times: list = [], courses: list = [], UCs: list = []):
 
-    with open(f"data/ISTmeic-t/UCs.json", "r") as infile:
+    with open(f"istCoursesWebScraper/data/ISTmeic-t/UCs.json", "r") as infile:
         data = json.load(infile)
 
     filtered_data = {}
@@ -101,12 +101,12 @@ def filter_time(times: list = [], courses: list = [], UCs: list = []):
     filtered_json = json.dumps(filtered_data, indent=4, ensure_ascii=False).encode('utf8').decode()
 
     # Write the filtered_data to a file
-    with open(f"data/ISTmeic-t/UCs_filtered.json", "w") as outfile:
+    with open(f"istCoursesWebScraper/data/ISTmeic-t/UCs_filtered.json", "w") as outfile:
         
         outfile.write(filtered_json)
 
 
-    with open(f"data/ISTmeic-t/UCs_filtered.txt", "w") as outfile:
+    with open(f"istCoursesWebScraper/data/ISTmeic-t/UCs_filtered.txt", "w") as outfile:
         for i in filtered_data:
             outfile.write(f"{i}:\n")
             for j in filtered_data[i]:

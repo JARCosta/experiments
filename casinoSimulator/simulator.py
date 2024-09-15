@@ -47,16 +47,16 @@ class WebSocket:
         connection_open_event.set()  # Signal that the connection is open
 
 def save():
-    with open("resources/case_info.json", "w") as f:
+    with open("casinoSimulator/resources/case_info.json", "w") as f:
         f.write(json.dumps(CASE_INFO, indent=4))
 
-    with open("resources/items_info.json", "w") as f:
+    with open("casinoSimulator/resources/items_info.json", "w") as f:
         f.write(json.dumps(ITEMS_INFO, indent=4))
     
-    with open("resources/possible_items.json", "w") as f:
+    with open("casinoSimulator/resources/possible_items.json", "w") as f:
         f.write(json.dumps(POSSIBLE_ITEMS, indent=4))
     
-    with open("resources/successful_items.json", "w") as f:
+    with open("casinoSimulator/resources/successful_items.json", "w") as f:
         f.write(json.dumps(SUCCESSFUL_ITEMS, indent=4))
 
 def simulate(balance, case_price):
@@ -145,16 +145,16 @@ if __name__ == "__main__":
         save()
     
     else:
-        with open("resources/case_info.json", "r") as f:
+        with open("casinoSimulator/resources/case_info.json", "r") as f:
             CASE_INFO = json.load(f)
 
-        with open("resources/items_info.json", "r") as f:
+        with open("casinoSimulator/resources/items_info.json", "r") as f:
             ITEMS_INFO = json.load(f)
         
-        with open("resources/possible_items.json", "r") as f:
+        with open("casinoSimulator/resources/possible_items.json", "r") as f:
             POSSIBLE_ITEMS = json.load(f)
         
-        with open("resources/successful_items.json", "r") as f:
+        with open("casinoSimulator/resources/successful_items.json", "r") as f:
             SUCCESSFUL_ITEMS = json.load(f)
     
     print("Starting the simulation...")

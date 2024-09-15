@@ -59,7 +59,7 @@ async def get_buff_data(good_name, hidden_prints:bool=False):
             max_buy_order = ""
     volume = ""
 
-    with open("data/requests/buff/" + date + ".csv", "a", encoding="utf-8") as f:
+    with open("steamMarketApi/data/requests/buff/" + date + ".csv", "a", encoding="utf-8") as f:
         csv.writer(f, delimiter=";", lineterminator="\n").writerow([reference_time, good_name, min_sell_order, max_buy_order, volume, steam_reference_price])
         
     if not hidden_prints: print("\033[92m" + good_name, min_sell_order, max_buy_order, "\033[0m")
@@ -90,7 +90,7 @@ async def get_buff_data_bulk(hidden_prints:bool=False):
             res.append([reference_time, market_hash_name, min_sell_order, sell_orders, max_buy_order, buy_orders, steam_reference_price])
             if not hidden_prints: print("\033[92m" + market_hash_name, min_sell_order, sell_orders, max_buy_order, buy_orders, steam_reference_price, "\033[0m")
 
-        with open("data/requests/buff/" + date + ".csv", "a", encoding="utf-8") as f:
+        with open("steamMarketApi/data/requests/buff/" + date + ".csv", "a", encoding="utf-8") as f:
             for row in res:
                 print(row)
                 csv.writer(f, delimiter=";", lineterminator="\n").writerow(row)
@@ -119,7 +119,7 @@ async def get_steam_data(market_hash_name, hidden_prints:bool=False):
         volume = int(request.json()["volume"].replace(",", ""))
         max_buy_order = ""
 
-        with open("data/requests/steam/" + date + ".csv", "a", encoding="utf-8") as f:
+        with open("steamMarketApi/data/requests/steam/" + date + ".csv", "a", encoding="utf-8") as f:
             csv.writer(f, delimiter=";", lineterminator="\n").writerow([reference_time, market_hash_name, min_sell_order, max_buy_order, volume])
 
         if not hidden_prints: print("\033[94m" + market_hash_name, min_sell_order, max_buy_order, "\033[0m")
@@ -158,7 +158,7 @@ async def get_steam_data_bulk(hidden_prints:bool=False):
                     if not hidden_prints: print("\033[94m" + market_hash_name, min_sell_order, volume, max_buy_order, 0, "\033[0m")
 
 
-            with open("data/requests/steam/" + date + ".csv", "a", encoding="utf-8") as f:
+            with open("steamMarketApi/data/requests/steam/" + date + ".csv", "a", encoding="utf-8") as f:
                 for item in items:
                     csv.writer(f, delimiter=";", lineterminator="\n").writerow(item)
         else:
@@ -178,7 +178,7 @@ async def scrape(bypass:bool=False, source:str = "both", priority:bool=False, hi
 
         if(past_time == current_time-1 or bypass):
             if(priority):
-                with open("data/requests/priorities.csv", "r", encoding="utf-8") as f:
+                with open("steamMarketApi/data/requests/priorities.csv", "r", encoding="utf-8") as f:
                     csv_reader = csv.reader(f, delimiter=";")
                     if source in ["buff", "both"]:
                         for row in csv_reader:

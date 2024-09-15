@@ -10,8 +10,8 @@ import matplotlib.dates as mdates
 
 
 files = {
-    "buff": os.listdir("data/requests/buff/"),
-    "steam": os.listdir("data/requests/steam/"),
+    "buff": os.listdir("steamMarketApi/data/requests/buff/"),
+    "steam": os.listdir("steamMarketApi/data/requests/steam/"),
 }
 
 
@@ -19,7 +19,7 @@ def get_price_history(item:str):
     prices = {}
 
     for file in files["steam"]:
-        with open("data/requests/"+"steam"+"/"+file, "r") as f:
+        with open("steamMarketApi/data/requests/"+"steam"+"/"+file, "r") as f:
             for row in list(f)[1:]:
                 if(row.split(";")[1] == item or row.split(";")[1].replace('"', "") == item):
                     date = row.split(";")[0]
@@ -37,7 +37,7 @@ def get_price_history(item:str):
                         prices[date]["steam_price"] = float(row.split(",")[2])
                         prices[date]["steam_volume"] = float(row.split(",")[3])
     for file in files["buff"]:
-        with open("data/requests/"+"buff"+"/"+file, "r") as f:
+        with open("steamMarketApi/data/requests/"+"buff"+"/"+file, "r") as f:
             for row in list(f)[1:]:
                 if(row.split(";")[1] == item or row.split(";")[1].replace('"', "") == item):
                     date = row.split(";")[0]
