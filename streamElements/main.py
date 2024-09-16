@@ -16,6 +16,8 @@ CHAT_ID = "6449165312"
 
 def get_balance():
     response = requests.get(balance_url)
+    if response.status_code != 200:
+        return get_balance()
     response_json = response.json()
     global BALANCE
     BALANCE = int(response_json['points'])
@@ -76,6 +78,8 @@ def calculate_bet(options, balance, notifications=True):
     opt_bet_return = opt_bet_ammount + opt_bet_profit
     opt_bet_odd = opt_bet_return / opt_bet_ammount
 
+    telegram_message += "b = {}\n".format(round(b, 3))
+    telegram_message += "\n"
     telegram_message += "The optimal bet is {} points\n".format(round(opt_bet_ammount))
     telegram_message += "Which represents {}% of the winning pot\n".format(round(100*opt_pot_ratio))
     telegram_message += "Returns {} points\n".format(round(opt_bet_return))
@@ -127,6 +131,8 @@ def get_bets():
         global VARIABLE_DELAY
         while True:
             response = requests.get(bets_url)
+            while response.status_code != 200:
+                response = requests.get(bets_url)
             response_json = response.json()
             
             if response_json["contest"] == None:
@@ -205,7 +211,6 @@ def get_bets():
                 print("The pot is at {} points".format(response_json["contest"]["totalAmount"]))
                 for option in response_json["contest"]["options"]:
                     print("{} points were bet on {}".format(option["totalAmount"], option["title"]))
-                print("You have {} points".format(get_balance()))
                 print("\n")
 
                 time.sleep(120)
