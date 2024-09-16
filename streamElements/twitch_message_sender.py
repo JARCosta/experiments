@@ -1,7 +1,7 @@
 import websocket
 import threading
-import telegramBot
-import streamelements
+from telegramBot import main as telegramBot
+from streamElements import main
 import traceback
 
 # Event to signal that the connection is open
@@ -14,14 +14,14 @@ class WebSocket:
         global repeat_runah
         if ":tmi.twitch.tv 001 el_pipow :Welcome, GLHF!" in message:
             ws.send("JOIN #runah")
-            with open("resources/test.txt", "a") as f:
+            with open("streamElements/resources/test.txt", "a") as f:
                 f.write("out: JOIN #runah\n")
         
         elif "ROOMSTATE #runah" in message:
             connection_open_event.set()
         
         elif ":tmi.twitch.tv RECONNECT" in message:
-            streamelements.reconnect()
+            main.reconnect()
 
             telegram_message = "Received RECONNECT message from Twitch"
             telegram_message += "Reconnecting..."
@@ -31,12 +31,12 @@ class WebSocket:
         elif "PING :tmi.twitch.tv" in message: # Respond to PING messages
             ws.send("PONG")
             ws.send("PING")
-            with open("resources/test.txt", "a") as f:
+            with open("streamElements/resources/test.txt", "a") as f:
                 f.write("out: PONG\n")
                 f.write("out: PING\n")
         
         elif "@El_Pipow, there is no contest currently running." in message: # Bet placed too late
-            streamelements.increase_variable_delay()
+            main.increase_variable_delay()
         
         elif "no longer accepting bets for" in message: # Bet's closed
             pass
@@ -44,41 +44,41 @@ class WebSocket:
         elif "won the contest" in message: # Result of the bet
             user = message.split("display-name=")[1].split(";")[0]
             msg = message.split("PRIVMSG #runah :")[1].split('ACTION ')[1].split("!")[0] + "!\n"
-            with open("resources/bets.txt", "a") as f:
+            with open("streamElements/resources/bets.txt", "a") as f:
                 f.write(user + ": " + msg)
             
             telegram_message = user + ": " + msg + "\n"
-            telegram_message += "You have {} points\n".format(streamelements.get_balance())
+            telegram_message += "You have {} points\n".format(main.get_balance())
             telegramBot.sendMessage(telegram_message)
             print(telegram_message)
 
             bet_winner = message.split("PRIVMSG #runah :")[1]
             bet_winner = bet_winner.split('"')[1]
-            with open("resources/pots.txt", "a") as f:
+            with open("streamElements/resources/pots.txt", "a") as f:
                 f.write(bet_winner + "\n")
 
         elif "@el_pipow" in message.lower() and not ":el_pipow" in message: # I was mentioned
             user = message.split("display-name=")[1].split(";")[0]
             msg = message.split("PRIVMSG #runah :")[1]
-            with open("resources/twitch_chat.txt", "a") as f:
+            with open("streamElements/resources/twitch_chat.txt", "a") as f:
                 f.write(user + ": " + msg)
             telegram_message = user + ": " + msg
             if "you have bet" in message: # Bet placed confirmation
-                with open("resources/bets.txt", "a") as f:
+                with open("streamElements/resources/bets.txt", "a") as f:
                     f.write(user + ": " + msg)
-                telegram_message += "You have {} points\n".format(streamelements.get_balance())
+                telegram_message += "You have {} points\n".format(main.get_balance())
             telegramBot.sendMessage(telegram_message)
             print(telegram_message)
             
         elif repeat_runah and (";display-name=Runah" in message or ";display-name=runah" in message): # and not message.split("PRIVMSG #runah :")[1].contains(" "): # Runah sent the word of the day message
             user = message.split("display-name=")[1].split(";")[0]
             msg = message.split("PRIVMSG #runah :")[1]
-            with open("resources/twitch_chat.txt", "a") as f:
+            with open("streamElements/resources/twitch_chat.txt", "a") as f:
                 f.write(user + ": " + msg)
             telegramBot.sendMessage(user + ": " + msg)
             # repeat_runah = False
 
-        with open("resources/test.txt", "a") as f:
+        with open("streamElements/resources/test.txt", "a") as f:
             f.write("in: " + message.replace("\n", "\n\t")[:-1])
 
     def on_error(ws, error):
@@ -99,7 +99,7 @@ class WebSocket:
         ws.send("NICK el_pipow")
         ws.send("USER el_pipow 8 * :el_pipow")
 
-        with open("resources/test.txt", "a") as f:
+        with open("streamElements/resources/test.txt", "a") as f:
             f.write("out: CAP REQ :twitch.tv/tags twitch.tv/commands\n")
             f.write("out: PASS oauth:AUTH_KEY\n")
             f.write("out: NICK el_pipow\n")

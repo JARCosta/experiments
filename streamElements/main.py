@@ -6,8 +6,8 @@ import requests
 import time
 import threading
 
-import telegramBot
-import twitch_message_sender
+from streamElements import telegramBot
+from streamElements import twitch_message_sender
 
 balance_url = "https://api.streamelements.com/kappa/v2/points/5a2ae33308308f00016e684e/el_pipow?providerId=462756951"
 bets_url = "https://api.streamelements.com/kappa/v2/contests/5a2ae33308308f00016e684e/active"
@@ -26,7 +26,7 @@ def decrease_variable_delay(amount=0.1):
     if amount > 0:
         global VARIABLE_DELAY
         VARIABLE_DELAY = round(VARIABLE_DELAY - amount, 2)
-        with open('resources/variable_delay.txt', 'w') as f:
+        with open('streamElements/resources/variable_delay.txt', 'w') as f:
             f.write(str(VARIABLE_DELAY) + "\n")
         telegram_message = "Variable delay decreased by {} to {}".format(amount, VARIABLE_DELAY)
         telegramBot.sendMessage(telegram_message)
@@ -37,7 +37,7 @@ def increase_variable_delay(amount=0.1):
     if amount > 0:
         global VARIABLE_DELAY
         VARIABLE_DELAY = round(VARIABLE_DELAY + amount, 2)
-        with open('resources/variable_delay.txt', 'w') as f:
+        with open('streamElements/resources/variable_delay.txt', 'w') as f:
             f.write(str(VARIABLE_DELAY) + "\n")
         telegram_message = "Variable delay increased by {} to {}".format(amount, VARIABLE_DELAY)
         telegramBot.sendMessage(telegram_message)
@@ -45,9 +45,9 @@ def increase_variable_delay(amount=0.1):
 
 BALANCE = get_balance()
 REFERENCE_DELAY = 1
-with open('resources/variable_delay.txt', 'r') as f:
+with open('streamElements/resources/variable_delay.txt', 'r') as f:
     VARIABLE_DELAY = float(f.read())
-with open('resources/test.txt', 'w') as f:
+with open('streamElements/resources/test.txt', 'w') as f:
     pass
 
 def calculate_bet(options, balance, notifications=True):
@@ -147,7 +147,7 @@ def get_bets():
                 if (end - now).total_seconds() < 5: # Time to bet
                     options = {option["command"]: int(option["totalAmount"]) for option in response_json["contest"]["options"]}
                     global BALANCE
-                    with open('resources/pots.txt', 'a') as f:
+                    with open('streamElements/resources/pots.txt', 'a') as f:
                         f.write(str(options) + "\n")
                     bet_option, bet_ammount = calculate_bet(options, BALANCE)
                     if bet_ammount > 0:
@@ -224,7 +224,7 @@ def get_bets():
     except KeyboardInterrupt:
         twitch_message_sender.close(WST, WS)
     except Exception as e:
-        with open('resources/test.txt', 'a') as f:
+        with open('streamElements/resources/test.txt', 'a') as f:
             f.write("aaaaaaaaaaaaa\n")
             f.write(str(datetime.datetime.now()) + "\n")
             f.write(str(e) + "\n")

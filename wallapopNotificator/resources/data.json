@@ -1,0 +1,495 @@
+{
+    "data": {
+        "section": {
+            "payload": {
+                "order": "newest",
+                "title": "Find what you want",
+                "items": [
+                    {
+                        "id": "x6qmw8pgqejy",
+                        "user_id": "nz0g07n4k3jo",
+                        "title": "Smartphone Samsung Galaxy S23 8/256Gb Black ",
+                        "description": "Smartphone Samsung Galaxy S23 8/256Gb Black  (desgaste rozado). \n\n\ud83c\udfea Somos tiendas \n\ud83d\udce6 Env\u00edos nacionales (Exc. Canarias, Ceuta y Melilla) \n\u260e\ufe0f 865 806 407 \n\n Ref:1-240593",
+                        "category_id": 24200,
+                        "price": {
+                            "amount": 399.9,
+                            "currency": "EUR"
+                        },
+                        "images": [
+                            {
+                                "average_color": "13C1AC",
+                                "urls": {
+                                    "small": "https://cdn.wallapop.com/images/10420/hc/6f/__/c10420p1048380642/i5125989856.jpg?pictureSize=W320",
+                                    "medium": "https://cdn.wallapop.com/images/10420/hc/6f/__/c10420p1048380642/i5125989856.jpg?pictureSize=W640",
+                                    "big": "https://cdn.wallapop.com/images/10420/hc/6f/__/c10420p1048380642/i5125989856.jpg?pictureSize=W800"
+                                }
+                            },
+                            {
+                                "average_color": "13C1AC",
+                                "urls": {
+                                    "small": "https://cdn.wallapop.com/images/10420/hc/6f/__/c10420p1048380642/i5125989869.jpg?pictureSize=W320",
+                                    "medium": "https://cdn.wallapop.com/images/10420/hc/6f/__/c10420p1048380642/i5125989869.jpg?pictureSize=W640",
+                                    "big": "https://cdn.wallapop.com/images/10420/hc/6f/__/c10420p1048380642/i5125989869.jpg?pictureSize=W800"
+                                }
+                            },
+                            {
+                                "average_color": "13C1AC",
+                                "urls": {
+                                    "small": "https://cdn.wallapop.com/images/10420/hc/6f/__/c10420p1048380642/i5125989889.jpg?pictureSize=W320",
+                                    "medium": "https://cdn.wallapop.com/images/10420/hc/6f/__/c10420p1048380642/i5125989889.jpg?pictureSize=W640",
+                                    "big": "https://cdn.wallapop.com/images/10420/hc/6f/__/c10420p1048380642/i5125989889.jpg?pictureSize=W800"
+                                }
+                            },
+                            {
+                                "average_color": "13C1AC",
+                                "urls": {
+                                    "small": "https://cdn.wallapop.com/images/10420/hc/6f/__/c10420p1048380642/i5125989906.jpg?pictureSize=W320",
+                                    "medium": "https://cdn.wallapop.com/images/10420/hc/6f/__/c10420p1048380642/i5125989906.jpg?pictureSize=W640",
+                                    "big": "https://cdn.wallapop.com/images/10420/hc/6f/__/c10420p1048380642/i5125989906.jpg?pictureSize=W800"
+                                }
+                            }
+                        ],
+                        "reserved": {
+                            "flag": false
+                        },
+                        "location": {
+                            "latitude": 40.41351738772708,
+                            "longitude": -3.70612605662564,
+                            "postal_code": "28070",
+                            "city": "Madrid",
+                            "region": "Comunidad de Madrid",
+                            "region2": "Madrid",
+                            "country_code": "ES"
+                        },
+                        "shipping": {
+                            "item_is_shippable": true,
+                            "user_allows_shipping": true,
+                            "cost_configuration_id": "814429d6-7844-471d-97af-196cd4020f26"
+                        },
+                        "favorited": {
+                            "flag": false
+                        },
+                        "bump": {
+                            "type": "none"
+                        },
+                        "web_slug": "smartphone-samsung-galaxy-s23-8-256gb-black-1048380642",
+                        "created_at": 1726347785971,
+                        "modified_at": 1726347796253,
+                        "taxonomy": [
+                            {
+                                "id": 24200,
+                                "name": "Technology & electronics",
+                                "icon": "robot"
+                            },
+                            {
+                                "id": 24201,
+                                "name": "Phones: mobiles & smartwatches",
+                                "icon": null
+                            },
+                            {
+                                "id": 9447,
+                                "name": "Smartphones",
+                                "icon": null
+                            }
+                        ],
+                        "is_favoriteable": {
+                            "flag": true
+                        },
+                        "is_refurbished": {
+                            "flag": false
+                        }
+                    },
+                    {
+                        "id": "wzv43817ldzl",
+                        "user_id": "lqzmnw4e7ojv",
+                        "title": "Smartphone Samsung Galaxy S23 8/256Gb Black ",
+                        "description": "Smartphone Samsung Galaxy S23 8/256Gb Black  (desgaste rozado). \n\n\ud83c\udfea Somos tiendas \n\ud83d\udce6 Env\u00edos nacionales (Exc. Canarias, Ceuta y Melilla) \n\u260e\ufe0f 961 477 508 \n\n Ref:1-240593",
+                        "category_id": 24200,
+                        "price": {
+                            "amount": 399.9,
+                            "currency": "EUR"
+                        },
+                        "images": [
+                            {
+                                "average_color": "13C1AC",
+                                "urls": {
+                                    "small": "https://cdn.wallapop.com/images/10420/hc/6f/__/c10420p1048380565/i5125989601.jpg?pictureSize=W320",
+                                    "medium": "https://cdn.wallapop.com/images/10420/hc/6f/__/c10420p1048380565/i5125989601.jpg?pictureSize=W640",
+                                    "big": "https://cdn.wallapop.com/images/10420/hc/6f/__/c10420p1048380565/i5125989601.jpg?pictureSize=W800"
+                                }
+                            },
+                            {
+                                "average_color": "13C1AC",
+                                "urls": {
+                                    "small": "https://cdn.wallapop.com/images/10420/hc/6f/__/c10420p1048380565/i5125989619.jpg?pictureSize=W320",
+                                    "medium": "https://cdn.wallapop.com/images/10420/hc/6f/__/c10420p1048380565/i5125989619.jpg?pictureSize=W640",
+                                    "big": "https://cdn.wallapop.com/images/10420/hc/6f/__/c10420p1048380565/i5125989619.jpg?pictureSize=W800"
+                                }
+                            },
+                            {
+                                "average_color": "13C1AC",
+                                "urls": {
+                                    "small": "https://cdn.wallapop.com/images/10420/hc/6f/__/c10420p1048380565/i5125989642.jpg?pictureSize=W320",
+                                    "medium": "https://cdn.wallapop.com/images/10420/hc/6f/__/c10420p1048380565/i5125989642.jpg?pictureSize=W640",
+                                    "big": "https://cdn.wallapop.com/images/10420/hc/6f/__/c10420p1048380565/i5125989642.jpg?pictureSize=W800"
+                                }
+                            }
+                        ],
+                        "reserved": {
+                            "flag": false
+                        },
+                        "location": {
+                            "latitude": 40.42516994488961,
+                            "longitude": -3.6831515755843585,
+                            "postal_code": "28014",
+                            "city": "Madrid",
+                            "region": "Comunidad de Madrid",
+                            "region2": "Madrid",
+                            "country_code": "ES"
+                        },
+                        "shipping": {
+                            "item_is_shippable": true,
+                            "user_allows_shipping": true,
+                            "cost_configuration_id": "814429d6-7844-471d-97af-196cd4020f26"
+                        },
+                        "favorited": {
+                            "flag": false
+                        },
+                        "bump": {
+                            "type": "none"
+                        },
+                        "web_slug": "smartphone-samsung-galaxy-s23-8-256gb-black-1048380565",
+                        "created_at": 1726347777560,
+                        "modified_at": 1726384241861,
+                        "taxonomy": [
+                            {
+                                "id": 24200,
+                                "name": "Technology & electronics",
+                                "icon": "robot"
+                            },
+                            {
+                                "id": 24201,
+                                "name": "Phones: mobiles & smartwatches",
+                                "icon": null
+                            },
+                            {
+                                "id": 9447,
+                                "name": "Smartphones",
+                                "icon": null
+                            }
+                        ],
+                        "is_favoriteable": {
+                            "flag": true
+                        },
+                        "is_refurbished": {
+                            "flag": false
+                        }
+                    },
+                    {
+                        "id": "mzn2pqyk4yzn",
+                        "user_id": "e65y8mx9mkjo",
+                        "title": "Smartphone Samsung Galaxy S23 8/256Gb Black ",
+                        "description": "Smartphone Samsung Galaxy S23 8/256Gb Black  (desgaste rozado). \n\n\ud83c\udfea Somos tiendas \n\ud83d\udce6 Env\u00edos nacionales (Exc. Canarias, Ceuta y Melilla) \n\u260e\ufe0f 961 485 857 \n\n Ref:1-240593",
+                        "category_id": 24200,
+                        "price": {
+                            "amount": 399.9,
+                            "currency": "EUR"
+                        },
+                        "images": [
+                            {
+                                "average_color": "13C1AC",
+                                "urls": {
+                                    "small": "https://cdn.wallapop.com/images/10420/hc/6f/__/c10420p1048380501/i5125989350.jpg?pictureSize=W320",
+                                    "medium": "https://cdn.wallapop.com/images/10420/hc/6f/__/c10420p1048380501/i5125989350.jpg?pictureSize=W640",
+                                    "big": "https://cdn.wallapop.com/images/10420/hc/6f/__/c10420p1048380501/i5125989350.jpg?pictureSize=W800"
+                                }
+                            },
+                            {
+                                "average_color": "13C1AC",
+                                "urls": {
+                                    "small": "https://cdn.wallapop.com/images/10420/hc/6f/__/c10420p1048380501/i5125989370.jpg?pictureSize=W320",
+                                    "medium": "https://cdn.wallapop.com/images/10420/hc/6f/__/c10420p1048380501/i5125989370.jpg?pictureSize=W640",
+                                    "big": "https://cdn.wallapop.com/images/10420/hc/6f/__/c10420p1048380501/i5125989370.jpg?pictureSize=W800"
+                                }
+                            },
+                            {
+                                "average_color": "13C1AC",
+                                "urls": {
+                                    "small": "https://cdn.wallapop.com/images/10420/hc/6f/__/c10420p1048380501/i5125989385.jpg?pictureSize=W320",
+                                    "medium": "https://cdn.wallapop.com/images/10420/hc/6f/__/c10420p1048380501/i5125989385.jpg?pictureSize=W640",
+                                    "big": "https://cdn.wallapop.com/images/10420/hc/6f/__/c10420p1048380501/i5125989385.jpg?pictureSize=W800"
+                                }
+                            }
+                        ],
+                        "reserved": {
+                            "flag": false
+                        },
+                        "location": {
+                            "latitude": 38.96736702277253,
+                            "longitude": -0.1762680823328655,
+                            "postal_code": "46700",
+                            "city": "Gand\u00eda",
+                            "region": "Comunidad Valenciana",
+                            "region2": "Valencia",
+                            "country_code": "ES"
+                        },
+                        "shipping": {
+                            "item_is_shippable": true,
+                            "user_allows_shipping": true,
+                            "cost_configuration_id": "814429d6-7844-471d-97af-196cd4020f26"
+                        },
+                        "favorited": {
+                            "flag": false
+                        },
+                        "bump": {
+                            "type": "none"
+                        },
+                        "web_slug": "smartphone-samsung-galaxy-s23-8-256gb-black-1048380501",
+                        "created_at": 1726347769974,
+                        "modified_at": 1726347780466,
+                        "taxonomy": [
+                            {
+                                "id": 24200,
+                                "name": "Technology & electronics",
+                                "icon": "robot"
+                            },
+                            {
+                                "id": 24201,
+                                "name": "Phones: mobiles & smartwatches",
+                                "icon": null
+                            },
+                            {
+                                "id": 9447,
+                                "name": "Smartphones",
+                                "icon": null
+                            }
+                        ],
+                        "is_favoriteable": {
+                            "flag": true
+                        },
+                        "is_refurbished": {
+                            "flag": false
+                        }
+                    },
+                    {
+                        "id": "v6ggvqy8wl6e",
+                        "user_id": "nzxlkp49vpz2",
+                        "title": "Samsung S23 - 256G",
+                        "description": "Samsung S23 - 256g negro , apenas sin uso ",
+                        "category_id": 24200,
+                        "price": {
+                            "amount": 330.0,
+                            "currency": "EUR"
+                        },
+                        "images": [
+                            {
+                                "average_color": "13C1AC",
+                                "urls": {
+                                    "small": "https://cdn.wallapop.com/images/10420/hc/5x/__/c10420p1048356740/i5125894743.jpg?pictureSize=W320",
+                                    "medium": "https://cdn.wallapop.com/images/10420/hc/5x/__/c10420p1048356740/i5125894743.jpg?pictureSize=W640",
+                                    "big": "https://cdn.wallapop.com/images/10420/hc/5x/__/c10420p1048356740/i5125894743.jpg?pictureSize=W800"
+                                }
+                            },
+                            {
+                                "average_color": "13C1AC",
+                                "urls": {
+                                    "small": "https://cdn.wallapop.com/images/10420/hc/5x/__/c10420p1048356740/i5125894756.jpg?pictureSize=W320",
+                                    "medium": "https://cdn.wallapop.com/images/10420/hc/5x/__/c10420p1048356740/i5125894756.jpg?pictureSize=W640",
+                                    "big": "https://cdn.wallapop.com/images/10420/hc/5x/__/c10420p1048356740/i5125894756.jpg?pictureSize=W800"
+                                }
+                            },
+                            {
+                                "average_color": "13C1AC",
+                                "urls": {
+                                    "small": "https://cdn.wallapop.com/images/10420/hc/5x/__/c10420p1048356740/i5125894760.jpg?pictureSize=W320",
+                                    "medium": "https://cdn.wallapop.com/images/10420/hc/5x/__/c10420p1048356740/i5125894760.jpg?pictureSize=W640",
+                                    "big": "https://cdn.wallapop.com/images/10420/hc/5x/__/c10420p1048356740/i5125894760.jpg?pictureSize=W800"
+                                }
+                            },
+                            {
+                                "average_color": "13C1AC",
+                                "urls": {
+                                    "small": "https://cdn.wallapop.com/images/10420/hc/5x/__/c10420p1048356740/i5125894763.jpg?pictureSize=W320",
+                                    "medium": "https://cdn.wallapop.com/images/10420/hc/5x/__/c10420p1048356740/i5125894763.jpg?pictureSize=W640",
+                                    "big": "https://cdn.wallapop.com/images/10420/hc/5x/__/c10420p1048356740/i5125894763.jpg?pictureSize=W800"
+                                }
+                            },
+                            {
+                                "average_color": "13C1AC",
+                                "urls": {
+                                    "small": "https://cdn.wallapop.com/images/10420/hc/5x/__/c10420p1048356740/i5125894771.jpg?pictureSize=W320",
+                                    "medium": "https://cdn.wallapop.com/images/10420/hc/5x/__/c10420p1048356740/i5125894771.jpg?pictureSize=W640",
+                                    "big": "https://cdn.wallapop.com/images/10420/hc/5x/__/c10420p1048356740/i5125894771.jpg?pictureSize=W800"
+                                }
+                            },
+                            {
+                                "average_color": "13C1AC",
+                                "urls": {
+                                    "small": "https://cdn.wallapop.com/images/10420/hc/5x/__/c10420p1048356740/i5125894776.jpg?pictureSize=W320",
+                                    "medium": "https://cdn.wallapop.com/images/10420/hc/5x/__/c10420p1048356740/i5125894776.jpg?pictureSize=W640",
+                                    "big": "https://cdn.wallapop.com/images/10420/hc/5x/__/c10420p1048356740/i5125894776.jpg?pictureSize=W800"
+                                }
+                            },
+                            {
+                                "average_color": "13C1AC",
+                                "urls": {
+                                    "small": "https://cdn.wallapop.com/images/10420/hc/5x/__/c10420p1048356740/i5125894783.jpg?pictureSize=W320",
+                                    "medium": "https://cdn.wallapop.com/images/10420/hc/5x/__/c10420p1048356740/i5125894783.jpg?pictureSize=W640",
+                                    "big": "https://cdn.wallapop.com/images/10420/hc/5x/__/c10420p1048356740/i5125894783.jpg?pictureSize=W800"
+                                }
+                            }
+                        ],
+                        "reserved": {
+                            "flag": true
+                        },
+                        "location": {
+                            "latitude": 40.42431323159501,
+                            "longitude": -3.729156161213145,
+                            "postal_code": "28013",
+                            "city": "Madrid",
+                            "region": "Comunidad de Madrid",
+                            "region2": "Madrid",
+                            "country_code": "ES"
+                        },
+                        "shipping": {
+                            "item_is_shippable": true,
+                            "user_allows_shipping": true,
+                            "cost_configuration_id": "814429d6-7844-471d-97af-196cd4020f26"
+                        },
+                        "favorited": {
+                            "flag": false
+                        },
+                        "bump": {
+                            "type": "none"
+                        },
+                        "web_slug": "samsung-s23-256g-1048356740",
+                        "created_at": 1726340020016,
+                        "modified_at": 1726347102383,
+                        "taxonomy": [
+                            {
+                                "id": 24200,
+                                "name": "Technology & electronics",
+                                "icon": "robot"
+                            },
+                            {
+                                "id": 24201,
+                                "name": "Phones: mobiles & smartwatches",
+                                "icon": null
+                            },
+                            {
+                                "id": 9447,
+                                "name": "Smartphones",
+                                "icon": null
+                            }
+                        ],
+                        "is_favoriteable": {
+                            "flag": true
+                        },
+                        "is_refurbished": {
+                            "flag": false
+                        }
+                    },
+                    {
+                        "id": "wzv43877yqzl",
+                        "user_id": "npj9v0r21o6e",
+                        "title": "Smartphone Samsung Galaxy S23 8/256Gb Black ",
+                        "description": "Smartphone Samsung Galaxy S23 8/256Gb Black  (desgaste rozado). \n\n\ud83c\udfea Somos tiendas \n\ud83d\udce6 Env\u00edos nacionales (Exc. Canarias, Ceuta y Melilla) \n\u260e\ufe0f 965 710 603 \n\n Ref:1-240593",
+                        "category_id": 24200,
+                        "price": {
+                            "amount": 399.9,
+                            "currency": "EUR"
+                        },
+                        "images": [
+                            {
+                                "average_color": "13C1AC",
+                                "urls": {
+                                    "small": "https://cdn.wallapop.com/images/10420/hc/58/__/c10420p1048325241/i5125771644.jpg?pictureSize=W320",
+                                    "medium": "https://cdn.wallapop.com/images/10420/hc/58/__/c10420p1048325241/i5125771644.jpg?pictureSize=W640",
+                                    "big": "https://cdn.wallapop.com/images/10420/hc/58/__/c10420p1048325241/i5125771644.jpg?pictureSize=W800"
+                                }
+                            },
+                            {
+                                "average_color": "13C1AC",
+                                "urls": {
+                                    "small": "https://cdn.wallapop.com/images/10420/hc/58/__/c10420p1048325241/i5125771655.jpg?pictureSize=W320",
+                                    "medium": "https://cdn.wallapop.com/images/10420/hc/58/__/c10420p1048325241/i5125771655.jpg?pictureSize=W640",
+                                    "big": "https://cdn.wallapop.com/images/10420/hc/58/__/c10420p1048325241/i5125771655.jpg?pictureSize=W800"
+                                }
+                            },
+                            {
+                                "average_color": "13C1AC",
+                                "urls": {
+                                    "small": "https://cdn.wallapop.com/images/10420/hc/58/__/c10420p1048325241/i5125771665.jpg?pictureSize=W320",
+                                    "medium": "https://cdn.wallapop.com/images/10420/hc/58/__/c10420p1048325241/i5125771665.jpg?pictureSize=W640",
+                                    "big": "https://cdn.wallapop.com/images/10420/hc/58/__/c10420p1048325241/i5125771665.jpg?pictureSize=W800"
+                                }
+                            }
+                        ],
+                        "reserved": {
+                            "flag": false
+                        },
+                        "location": {
+                            "latitude": 40.417781379203916,
+                            "longitude": -3.7072405505948645,
+                            "postal_code": "28070",
+                            "city": "Madrid",
+                            "region": "Comunidad de Madrid",
+                            "region2": "Madrid",
+                            "country_code": "ES"
+                        },
+                        "shipping": {
+                            "item_is_shippable": true,
+                            "user_allows_shipping": true,
+                            "cost_configuration_id": "814429d6-7844-471d-97af-196cd4020f26"
+                        },
+                        "favorited": {
+                            "flag": false
+                        },
+                        "bump": {
+                            "type": "none"
+                        },
+                        "web_slug": "smartphone-samsung-galaxy-s23-8-256gb-black-1048325241",
+                        "created_at": 1726333395689,
+                        "modified_at": 1726333406155,
+                        "taxonomy": [
+                            {
+                                "id": 24200,
+                                "name": "Technology & electronics",
+                                "icon": "robot"
+                            },
+                            {
+                                "id": 24201,
+                                "name": "Phones: mobiles & smartwatches",
+                                "icon": null
+                            },
+                            {
+                                "id": 9447,
+                                "name": "Smartphones",
+                                "icon": null
+                            }
+                        ],
+                        "is_favoriteable": {
+                            "flag": true
+                        },
+                        "is_refurbished": {
+                            "flag": false
+                        }
+                    }
+                ]
+            },
+            "type": "organic_search_results"
+        },
+        "tracking": {
+            "variant": null,
+            "location": {
+                "latitude": 40.210831,
+                "longitude": -8.405817,
+                "country_code": "PT"
+            }
+        }
+    },
+    "meta": {
+        "next_page": "eyJhbGciOiJIUzI1NiJ9.eyJwYXJhbXMiOnsic2VhcmNoUmVxdWVzdFBhcmFtcyI6eyJrZXl3b3JkcyI6IlNhbXN1bmcgczIzIiwibGF0aXR1ZGUiOjQwLjIxMDgzMSwibG9uZ2l0dWRlIjotOC40MDU4MTcsImNhdGVnb3J5X2lkIjpudWxsLCJpc19zaGlwcGFibGUiOnRydWUsInRpbWVfZmlsdGVyIjpudWxsLCJkaXN0YW5jZV9pbl9rbSI6bnVsbCwibWluX3NhbGVfcHJpY2UiOjIwMC4wLCJtYXhfc2FsZV9wcmljZSI6NDAwLjAsIm9yZGVyX2J5IjoibmV3ZXN0IiwiY29uZGl0aW9uIjpudWxsLCJzdWJjYXRlZ29yeV9pZHMiOm51bGwsImJyYW5kX21vZGVsIjpudWxsLCJtb2RlbCI6bnVsbCwiZmFzaGlvbl9zaXplIjpudWxsLCJzb3VyY2UiOiJzdG9yZWRfZmlsdGVycyIsInNlYXJjaF9pZCI6IjRhYjdhNWQ5LTBmOTEtNDYwYy1iYzkzLWVmZGM4MTNlYzdiYiIsImlzX3JlZnVyYmlzaGVkIjpudWxsLCJjb2xvciI6bnVsbCwic3RvcmFnZV9jYXBhY2l0eSI6bnVsbCwic2hvd19tdWx0aXBsZV9zZWN0aW9ucyI6ZmFsc2V9LCJuZXh0UGFnZVBhcmFtcyI6eyJyZWxheGVkS2V5d29yZHMiOm51bGwsImN1c3RvbV9yZWxheGVkX2tleXdvcmRzX3J1bGUiOm51bGwsInN0YXJ0IjowLCJvZmZzZXQiOjAsInN0ZXAiOjEsIml0ZW1zX2NvdW50Ijo1LCJzZWN0aW9uX2l0ZW1zX2NvdW50Ijo1LCJpbnRlcm5hbF9zZWFyY2hfaWQiOiJmNjA4ZDg5ZC01NWNlLTRjMTEtOTg4Zi1kZDQ2MWFhMzY4MmIiLCJwYWdpbmF0aW9uX2RhdGUiOiIyMDI0LTA5LTE0VDE2OjU0OjE4WiIsImNvdW50cnlfY29kZSI6IlBUIiwiY2l0eSI6IkNvaW1icmEiLCJyZWdpb24iOiJDb2ltYnJhIiwicHJvdmluY2UiOiJDb2ltYnJhIiwicG9zdGFsX2NvZGUiOiIzMDAwLTIwMiIsImV4cGVyaW1lbnQiOm51bGwsInNlY3Rpb25fdHlwZSI6Im9yZ2FuaWNfc2VhcmNoX3Jlc3VsdHMiLCJkZW5zaXR5X3R5cGUiOm51bGx9fSwiZXhwIjoxNzI2NTAyMDU4fQ.jm9qKSrAIFB-xhjv8wOOZhw51vF_BZeudqSutRMb5MA",
+        "next_section_type": "organic_search_results"
+    }
+}
