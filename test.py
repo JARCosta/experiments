@@ -1,5 +1,4 @@
-from streamElements import charts, main as streamElements
-import wallapopNotificator.main as wallapopNotificator
+from streamElements import charts
 
 import threading
 
@@ -7,4 +6,3 @@ if __name__ == "__main__":
   # charts.scatter()
   # charts.odd()
   # charts.winrate()
-  threading.Thread(target=wallapopNotificator.run).start()
