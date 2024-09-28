@@ -73,3 +73,134 @@ Win
 Win
 {'win': 35504, 'lose': 11065}
 Lose
+{'win': 9445, 'lose': 4055}
+Win
+{'win': 7312, 'lose': 30600}
+Lose
+{'win': 546, 'lose': 225}
+Win
+{'win': 30, 'lose': 0}
+Win
+{'win': 5170, 'lose': 1097}
+Win
+{'win': 4030, 'lose': 5419}
+Lose
+{'win': 10446, 'lose': 9501}
+Win
+{'win': 879, 'lose': 1375}
+Lose
+{'win': 9255, 'lose': 5360}
+Lose
+{'win': 3189, 'lose': 2035}
+Lose
+{'win': 9240, 'lose': 6465}
+Lose
+{'win': 6507, 'lose': 5100}
+Win
+{'win': 5465, 'lose': 4635}
+Win
+{'win': 3900, 'lose': 665}
+Win
+{'win': 7591, 'lose': 7798}
+Lose
+{'win': 5908, 'lose': 4536}
+Lose
+{'win': 4140, 'lose': 32848}
+Lose
+{'win': 11268, 'lose': 16195}
+Lose
+{'win': 22403, 'lose': 14240}
+Win
+{'win': 52918, 'lose': 47801}
+Lose
+{'win': 7799, 'lose': 40157}
+Win
+{'win': 2762, 'lose': 2624}
+Win
+{'win': 6766, 'lose': 1628}
+Lose
+{'win': 5671, 'lose': 440}
+Win
+{'win': 4455, 'lose': 1000}
+Lose
+{'win': 6510, 'lose': 848}
+Win
+{'win': 4399, 'lose': 500}
+Win
+{'win': 4355, 'lose': 1730}
+Lose
+{'win': 12000, 'lose': 2100}
+Win
+{'win': 6720, 'lose': 2575}
+Win
+{'win': 11800, 'lose': 1310}
+Lose
+{'win': 10206, 'lose': 520}
+Lose
+{'win': 8049, 'lose': 4604}
+Win
+{'win': 1290, 'lose': 400}
+Win
+{'win': 10376, 'lose': 3145}
+Lose
+{'win': 7845, 'lose': 2594}
+Win
+{'win': 16259, 'lose': 2295}
+Win
+{'win': 9060, 'lose': 1702}
+Lose
+{'win': 8013, 'lose': 1190}
+Win
+{'win': 30892, 'lose': 4679}
+Win
+{'win': 13059, 'lose': 10646}
+Lose
+{'win': 7373, 'lose': 3257}
+Lose
+{'win': 57000, 'lose': 1565}
+{'win': 7165, 'lose': 2446}
+Win
+{'win': 8206, 'lose': 4762}
+Win
+{'win': 6910, 'lose': 3605}
+Win
+{'win': 8631, 'lose': 1887}
+Lose
+{'win': 5595, 'lose': 4184}
+Lose
+{'win': 9880, 'lose': 3975}
+Win
+{'win': 1231, 'lose': 10650}
+Lose
+{'win': 13722, 'lose': 2416}
+Lose
+{'win': 4520, 'lose': 1862}
+Lose
+{'win': 5735, 'lose': 3569}
+Lose
+{'win': 4464, 'lose': 898}
+Lose
+{'win': 9096, 'lose': 5865}
+Win
+{'win': 8948, 'lose': 2291}
+Win
+{'win': 6189, 'lose': 7525}
+Win
+{'win': 3693, 'lose': 3100}
+Win
+{'win': 7474, 'lose': 5042}
+Win
+{'win': 8867, 'lose': 3780}
+Win
+{'win': 3038, 'lose': 1116}
+Win
+{'win': 6589, 'lose': 4214}
+Lose
+{'win': 4533, 'lose': 2033}
+Lose
+{'win': 4025, 'lose': 2707}
+Win
+{'win': 4659, 'lose': 81}
+Win
+{'win': 3030, 'lose': 0}
+Lose

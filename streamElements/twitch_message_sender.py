@@ -25,7 +25,7 @@ class WebSocket:
 
             telegram_message = "Received RECONNECT message from Twitch"
             telegram_message += "Reconnecting..."
-            telegramBot.sendMessage(telegram_message)
+            # telegramBot.sendMessage(telegram_message)
             print(telegram_message)
         
         elif "PING :tmi.twitch.tv" in message: # Respond to PING messages
@@ -133,7 +133,8 @@ def bet(ws, option, amount):
         ws.send("PRIVMSG #{} :!bet {} {}".format("runah", option, amount))
 
 def close(wst, ws):
-    ws.close()
+    if ws != None:
+        ws.close()
     wst.join()
     
 

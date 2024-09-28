@@ -136,7 +136,7 @@ def get_bets():
             response_json = response.json()
             
             if response_json["contest"] == None:
-                print("No contest found")
+                print(datetime.datetime.now().strftime('%H:%M')+" - No contest found")
                 print("\n")
                 time.sleep(60)
                 continue
@@ -225,9 +225,6 @@ def get_bets():
 
                 time.sleep(120)
                 continue
-
-    except KeyboardInterrupt:
-        twitch_message_sender.close(WST, WS)
     except Exception as e:
         with open('streamElements/resources/test.txt', 'a') as f:
             f.write("aaaaaaaaaaaaa\n")

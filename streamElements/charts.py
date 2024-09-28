@@ -121,6 +121,7 @@ def scatter():
     win = []
     lose = []
     winner = []
+    bet_won = []
 
     for i in range(len(pots)):
         try:
@@ -131,11 +132,27 @@ def scatter():
                 lose.append(pots[i-1]["lose"])
                 winner.append(pots[i] == "Win")
 
-    plt.scatter(win, lose, c=winner)
+                if pots[i-1]["win"] < pots[i-1]["lose"]:
+                    if pots[i] == "Win":
+                        bet_won.append(True)
+                    elif pots[i] == "Lose":
+                        bet_won.append(False)
+                    else:
+                        bet_won.append(0.5)
+                elif pots[i-1]["lose"] < pots[i-1]["win"]:
+                    if pots[i] == "Lose":
+                        bet_won.append(True)
+                    elif pots[i] == "Win":
+                        bet_won.append(False)
+                    else:
+                        bet_won.append(0.5)
+                else:
+                    bet_won.append(0.5)
+
+    plt.scatter(win, lose, c=bet_won, s=100)
+    plt.scatter(win, lose, c=winner, s=50)
     plt.xlabel("Win")
     plt.ylabel("Lose")
     plt.colorbar(label="Win")
     plt.show()
 
-if __name__ == "__main__":
-    run()
