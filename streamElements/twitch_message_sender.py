@@ -1,3 +1,6 @@
+import datetime
+import multiprocessing
+import time
 import websocket
 import threading
 from telegramBot import main as telegramBot
@@ -6,12 +9,10 @@ import traceback
 
 # Event to signal that the connection is open
 connection_open_event = threading.Event()
-repeat_runah = True
 
 class WebSocket:
 
     def on_message(ws, message):
-        global repeat_runah
         if ":tmi.twitch.tv 001 el_pipow :Welcome, GLHF!" in message:
             ws.send("JOIN #runah")
             with open("streamElements/resources/test.txt", "a") as f:
@@ -25,8 +26,9 @@ class WebSocket:
 
             telegram_message = "Received RECONNECT message from Twitch"
             telegram_message += "Reconnecting..."
-            # telegramBot.sendMessage(telegram_message)
+            telegramBot.sendMessage(telegram_message)
             print(telegram_message)
+            print(threading.get_ident())
         
         elif "PING :tmi.twitch.tv" in message: # Respond to PING messages
             ws.send("PONG")
@@ -37,6 +39,7 @@ class WebSocket:
         
         elif "@El_Pipow, there is no contest currently running." in message: # Bet placed too late
             main.increase_variable_delay()
+            main.send_message()
         
         elif "no longer accepting bets for" in message: # Bet's closed
             pass
@@ -51,6 +54,7 @@ class WebSocket:
             telegram_message += "You have {} points\n".format(main.get_balance())
             telegramBot.sendMessage(telegram_message)
             print(telegram_message)
+            print(threading.get_ident())
 
             bet_winner = message.split("PRIVMSG #runah :")[1]
             bet_winner = bet_winner.split('"')[1]
@@ -69,23 +73,17 @@ class WebSocket:
                 telegram_message += "You have {} points\n".format(main.get_balance())
             telegramBot.sendMessage(telegram_message)
             print(telegram_message)
-            
-        elif repeat_runah and (";display-name=Runah" in message or ";display-name=runah" in message): # and not message.split("PRIVMSG #runah :")[1].contains(" "): # Runah sent the word of the day message
-            user = message.split("display-name=")[1].split(";")[0]
-            msg = message.split("PRIVMSG #runah :")[1]
-            with open("streamElements/resources/twitch_chat.txt", "a") as f:
-                f.write(user + ": " + msg)
-            telegramBot.sendMessage(user + ": " + msg)
-            # repeat_runah = False
+            print(threading.get_ident())
 
         with open("streamElements/resources/test.txt", "a") as f:
             f.write("in: " + message.replace("\n", "\n\t")[:-1])
 
     def on_error(ws, error):
         telegram_message = "Error:\n"
-        telegram_message += f"{error}"
-        telegram_message += f"\n\n{traceback.format_exc()}"
-        telegramBot.sendMessage(telegram_message)
+        telegram_message += datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "\n"
+        telegram_message += str(error) + "\n"
+        telegram_message += traceback.format_exc() + "\n"
+        # telegramBot.sendMessage(telegram_message)
         print(telegram_message)
 
     def on_close(ws, close_status_code, close_msg):
@@ -107,10 +105,9 @@ class WebSocket:
 
         print("Sent login information")
 
-        # Signal that the connection is open
-        # connection_open_event.set()
-
 def launch():
+    global READY
+    READY = False
     websocket_url = "wss://irc-ws.chat.twitch.tv/"
     ws = websocket.WebSocketApp(
         websocket_url,
@@ -129,17 +126,24 @@ def launch():
 
     return wst, ws
 
-def bet(ws, option, amount):
-        ws.send("PRIVMSG #{} :!bet {} {}".format("runah", option, amount))
+def send(ws, channel, message):
+        ws.send(f"PRIVMSG #{channel} :{message}")
+
+def ping(ws):
+    ws.send("PING")
 
 def close(wst, ws):
     if ws != None:
         ws.close()
-    wst.join()
+    else:
+        print("Couldn't close websocket")
+    if wst != None:
+        print("Closing websocket thread")
+        wst.join()
+        print("Websocket thread closed")
+    else:
+        print("Couldn't kill websocket thread")
     
-
-if __name__ == "__main__":
-    open()
     
 
 
