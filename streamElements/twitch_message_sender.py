@@ -13,12 +13,15 @@ connection_open_event = threading.Event()
 class WebSocket:
 
     def on_message(ws, message):
-        if ":tmi.twitch.tv 001 el_pipow :Welcome, GLHF!" in message:
-            ws.send("JOIN #runah")
+        # print(message)
+        global connection_open_event, CHANNEL, USERNAME, DISPLAY_NAME, OAUTH_KEY
+        if f":tmi.twitch.tv 001 {USERNAME} :Welcome, GLHF!" in message:
+            ws.send("JOIN #"+CHANNEL)
             with open("streamElements/resources/test.txt", "a") as f:
-                f.write("out: JOIN #runah\n")
+                f.write("out: JOIN #\n"+CHANNEL)
+            print(f"{DISPLAY_NAME} Joined channel\n")
         
-        elif "ROOMSTATE #runah" in message:
+        elif "ROOMSTATE #"+CHANNEL in message:
             connection_open_event.set()
         
         elif ":tmi.twitch.tv RECONNECT" in message:
@@ -37,7 +40,7 @@ class WebSocket:
                 f.write("out: PONG\n")
                 f.write("out: PING\n")
         
-        elif "@El_Pipow, there is no contest currently running." in message: # Bet placed too late
+        elif f"@{DISPLAY_NAME}, there is no contest currently running." in message: # Bet placed too late
             main.increase_variable_delay()
             main.send_message()
         
@@ -46,7 +49,7 @@ class WebSocket:
         
         elif "won the contest" in message: # Result of the bet
             user = message.split("display-name=")[1].split(";")[0]
-            msg = message.split("PRIVMSG #runah :")[1].split('ACTION ')[1].split("!")[0] + "!\n"
+            msg = message.split(f"PRIVMSG #{CHANNEL} :")[1].split('ACTION ')[1].split("!")[0] + "!\n"
             with open("streamElements/resources/bets.txt", "a") as f:
                 f.write(user + ": " + msg)
             
@@ -56,14 +59,14 @@ class WebSocket:
             print(telegram_message)
             print(threading.get_ident())
 
-            bet_winner = message.split("PRIVMSG #runah :")[1]
+            bet_winner = message.split(f"PRIVMSG #{CHANNEL} :")[1]
             bet_winner = bet_winner.split('"')[1]
             with open("streamElements/resources/pots.txt", "a") as f:
                 f.write(bet_winner + "\n")
 
-        elif "@el_pipow" in message.lower() and not ":el_pipow" in message: # I was mentioned
+        elif f"@{USERNAME}" in message.lower() and not f":{USERNAME}" in message: # I was mentioned
             user = message.split("display-name=")[1].split(";")[0]
-            msg = message.split("PRIVMSG #runah :")[1]
+            msg = message.split(f"PRIVMSG #{CHANNEL} :")[1]
             with open("streamElements/resources/twitch_chat.txt", "a") as f:
                 f.write(user + ": " + msg)
             telegram_message = user + ": " + msg
@@ -92,22 +95,26 @@ class WebSocket:
     def on_open(ws):
         print("WebSocket connection opened")
         
+        # print(CHANNEL, USERNAME, DISPLAY_NAME, OAUTH_KEY)
         ws.send("CAP REQ :twitch.tv/tags twitch.tv/commands")
-        ws.send("PASS oauth:gqboej248n02nrfeku4g5cypjdeash")
-        ws.send("NICK el_pipow")
-        ws.send("USER el_pipow 8 * :el_pipow")
+        ws.send(f"PASS oauth:{OAUTH_KEY}")
+        ws.send(f"NICK {USERNAME}")
+        ws.send(f"USER {USERNAME} 8 * :{USERNAME}")
 
         with open("streamElements/resources/test.txt", "a") as f:
             f.write("out: CAP REQ :twitch.tv/tags twitch.tv/commands\n")
-            f.write("out: PASS oauth:AUTH_KEY\n")
-            f.write("out: NICK el_pipow\n")
-            f.write("out: USER el_piow 8 * :el_pipow\n")
+            f.write(f"out: PASS oauth:{OAUTH_KEY}\n")
+            f.write(f"out: NICK {USERNAME}\n")
+            f.write(f"out: USER {USERNAME} 8 * :{USERNAME}\n")
 
         print("Sent login information")
 
-def launch():
-    global READY
-    READY = False
+def launch(channel:str="runah", username:str="El_Pipow", oauth_key:str="AUTH_KEY"):
+    global connection_open_event, READY, CHANNEL, USERNAME, OAUTH_KEY, DISPLAY_NAME
+    READY, CHANNEL, USERNAME, DISPLAY_NAME, OAUTH_KEY = False, channel, username.lower(), username, oauth_key
+    
+    connection_open_event = threading.Event()
+
     websocket_url = "wss://irc-ws.chat.twitch.tv/"
     ws = websocket.WebSocketApp(
         websocket_url,

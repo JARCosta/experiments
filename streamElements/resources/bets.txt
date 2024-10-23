@@ -527,3 +527,12 @@ StreamElements: "Win" won the contest "Aposta no resultado do próximo jogo do R
 StreamElements: @El_Pipow, you have bet 490 points on Win.
 StreamElements: "Lose" won the contest "Aposta no resultado do próximo jogo do Runah" with 46.67% of all bets and 70.02% of the total pot!
 StreamElements: "Lose" won the contest "Aposta no resultado do próximo jogo do Runah" with 43.75% of all bets and 35.30% of the total pot!
+StreamElements: "Lose" won the contest "Aposta no resultado do próximo jogo do Runah" with 50.00% of all bets and 43.87% of the total pot!
+StreamElements: "Lose" won the contest "Aposta no resultado do próximo jogo do Runah" with 30.77% of all bets and 41.82% of the total pot!
+StreamElements: "Lose" won the contest "Aposta no resultado do próximo jogo do Runah" with 36.36% of all bets and 50.50% of the total pot!
+StreamElements: @El_Pipow, you have bet 220 points on Lose.
+StreamElements: "Win" won the contest "Aposta no resultado do próximo jogo do Runah" with 56.25% of all bets and 70.49% of the total pot!
+StreamElements: "Win" won the contest "Aposta no resultado do próximo jogo do Runah" with 58.33% of all bets and 49.29% of the total pot!
+StreamElements: "Lose" won the contest "Aposta no resultado do próximo jogo do Runah" with 57.14% of all bets and 36.25% of the total pot!
+StreamElements: "Win" won the contest "Aposta no resultado do próximo jogo do Runah" with 47.06% of all bets and 61.92% of the total pot!
+StreamElements: "Lose" won the contest "Aposta no resultado do próximo jogo do Runah" with 50.00% of all bets and 64.17% of the total pot!

@@ -370,3 +370,20 @@ Win
 Lose
 {'win': 5332, 'lose': 2709}
 Lose
+{'win': 2194, 'lose': 1715}
+Lose
+{'win': 5769, 'lose': 4147}
+Lose
+{'win': 1463, 'lose': 1513}
+Lose
+{'win': 3347, 'lose': 1181}
+Win
+{'win': 3527, 'lose': 3731}
+Win
+{'win': 2708, 'lose': 1540}
+Lose
+{'win': 6078, 'lose': 3738}
+Win
+{'win': 3611, 'lose': 6466}
+Lose
+{'win': 3870, 'lose': 6139}
