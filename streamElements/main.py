@@ -150,9 +150,9 @@ def get_bets():
                 time.sleep(60)
                 continue
             
-            start = datetime.datetime.strptime(response_json["contest"]["startedAt"],"%Y-%m-%dT%H:%M:%S.%fZ") + datetime.timedelta(hours=1)
-            end = datetime.datetime.strptime(response_json["contest"]["startedAt"],"%Y-%m-%dT%H:%M:%S.%fZ") + datetime.timedelta(hours=1, minutes=response_json["contest"]["duration"])
-            now = datetime.datetime.now()
+            start = datetime.datetime.strptime(response_json["contest"]["startedAt"],"%Y-%m-%dT%H:%M:%S.%fZ") + datetime.timedelta(hours=time.localtime().tm_isdst)
+            end = datetime.datetime.strptime(response_json["contest"]["startedAt"],"%Y-%m-%dT%H:%M:%S.%fZ") + datetime.timedelta(hours=time.localtime().tm_isdst) + datetime.timedelta(seconds=response_json["contest"]["duration"])
+            now = datetime.datetime.now() + datetime.timedelta(hours=time.localtime().tm_isdst)
 
             # print(start)
             # print(end)
