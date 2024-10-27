@@ -226,7 +226,7 @@ def get_bets():
                 telegram_message += "Check out what's going on"
                 send_message()
 
-                time.sleep(1)
+                time.sleep(60)
                 continue
     except KeyboardInterrupt:
         with open('streamElements/resources/latest_error.txt', 'w') as f:
