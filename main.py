@@ -1,11 +1,11 @@
-from streamElements import main as streamElements
+import os
+from streamElements import main as streamElements, twitch_message_sender
 from wallapopNotificator import main as wallapopNotificator
-from streamElements.twitch_message_sender import launch
 import traceback
 
 import threading
 
 if __name__ == "__main__":
-  launch("runah", "JRCosta", "AUTH_KEY")
-  threading.Thread(target=streamElements.get_bets).start()
-  # threading.Thread(target=wallapopNotificator.run).start()
+  twitch_message_sender.launch_viewer("Runah", "JRCosta", os.getenv("JRCOSTA_OAUTH"))
+  twitch_message_sender.launch_controller("El_Pipow", "JRCosta", os.getenv("JRCOSTA_OAUTH"))
+  threading.Thread(target=streamElements.bettor_agent, args=("El_pipow", os.getenv("EL_PIPOW_OAUTH"))).start()
