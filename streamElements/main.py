@@ -93,7 +93,7 @@ def calculate_bet(options:dict, balance:int) -> tuple[str, int]:
     telegram_message += "You have {} points\n".format(balance)
     telegram_message += "\n"
 
-    bet_option, opt_bet_ammount = opt_bet(options, balance)
+    bet_option, opt_bet_ammount = opt_bet(options)
     oposite_option = "lose" if bet_option == "win" else "win"
 
     b = options[bet_option] / options[oposite_option]
@@ -172,10 +172,13 @@ def bettor_agent(username:str, oauth_key:str):
                     bet_ammount = BALANCE if bet_ammount > BALANCE else bet_ammount
 
                     for checkpoint in balance_checkpoints:
-                        temp_bet = bet_ammount - checkpoint
+                        temp_bet:int = bet_ammount - checkpoint
                         if temp_bet > 0:
-                            temp_bet = "all" if temp_bet >= BALANCE else str(temp_bet)
-                            twitch_message_sender.send(WS, "runah", f"!bet {bet_option} {temp_bet}")
+                            temp_bet = "all" if temp_bet >= BALANCE else str(int(temp_bet))
+                            if ".0" in temp_bet:
+                                temp_bet = temp_bet.replace(".0", "")
+                                telegramBot.sendMessage(f"temp_bet is not well formatted: {temp_bet}")
+                            twitch_message_sender.send(WS, "runah", f"!bet {bet_option} {temp_bet.replace('.0', '')}")
                             break
 
                     if (end - now).total_seconds() > REFERENCE_DELAY: # betting too early

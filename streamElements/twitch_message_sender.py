@@ -14,7 +14,7 @@ connection_open_event = threading.Event()
 
 class WebSocket:
 
-    def connect(ws:websocket.WebSocketApp, message:str, username:str, channel:str, connection_open_event:threading.Event):
+    def connect(ws:websocket.WebSocketApp, message:str, username:str, channel:str, connection_open_event:threading.Event, creator_function:callable):
         if f":Welcome, GLHF!" in message:
             ws.send(f"JOIN #{channel}")
         
@@ -23,8 +23,9 @@ class WebSocket:
             connection_open_event.set()
         
         elif ":tmi.twitch.tv RECONNECT" in message:
-            telegram_message = f"Received RECONNECT message for client {username} at {channel}\n"
-            telegram_message += "TODO: Reconnect\n"
+            telegram_message = f"Received RECONNECT message from Twitch on a {creator_function.__name__} WebSocket\n"
+            telegram_message += f"Reconnecting viewer {username} to {channel}\n"
+            threading.Thread(target=creator_function, args=(channel, username, os.getenv(username.upper() + "_OAUTH"))).start()
             telegramBot.sendMessage(telegram_message)
             print(telegram_message)
         
@@ -54,15 +55,7 @@ class Bettor:
 
     def on_message(ws:websocket.WebSocketApp, message:str, username:str, channel:str, connection_open_event:threading.Event):
         
-        if ":tmi.twitch.tv RECONNECT" in message:
-            main.reconnect()
-
-            telegram_message = "Received RECONNECT message from Twitch"
-            telegram_message += "Reconnecting..."
-            telegramBot.sendMessage(telegram_message)
-            print(telegram_message)
-
-        WebSocket.connect(ws, message, username, channel, connection_open_event)
+        WebSocket.connect(ws, message, username, channel, connection_open_event, launch_bettor)
 
         if f"@{username}, there is no contest currently running." in message: # Bet placed too late
             print(message)
@@ -94,7 +87,7 @@ class Bettor:
 class Controller:
 
     def on_message(ws:websocket.WebSocketApp, message:str, username:str, channel:str, connection_open_event:threading.Event):
-        WebSocket.connect(ws, message, username, channel, connection_open_event)
+        WebSocket.connect(ws, message, username, channel, connection_open_event, launch_controller)
 
         allowed_users = ["el_pipow", "jrcosta"]
 
@@ -104,12 +97,20 @@ class Controller:
                 msg = message.split(f"PRIVMSG #{channel.lower()} :")[1]
 
                 telegram_message = user + ": " + msg
+                
+                command_idx = msg.find(" ")
+                command = msg[command_idx+1:].replace("\n", "").replace("\r", "")
+                print("Detected command: " + command)
+                if command == "reboot":
+                    telegram_message += "Rebooting..."
+                    os.system('systemctl reboot -i')
+                elif command == "reconnect":
+                    WebSocket.connect(ws, ":tmi.twitch.tv RECONNECT", username, channel, connection_open_event, launch_controller)
+                elif command == "shutdown":
+                    telegram_message += "Shutting down..."
+                    os.system('systemctl poweroff -i')
                 telegramBot.sendMessage(telegram_message)
                 print(telegram_message)
-
-                if msg == "reboot":
-                    os.system('systemctl reboot -i')
-
 
 def launch_viewer(channel:str, username:str, oauth_key:str) -> tuple[threading.Thread, websocket.WebSocketApp]:
     connection_open_event = threading.Event()
@@ -118,7 +119,7 @@ def launch_viewer(channel:str, username:str, oauth_key:str) -> tuple[threading.T
     ws = websocket.WebSocketApp(
         websocket_url,
         # on_message=partial(Viewer.on_message, username=username, channel=channel),
-        on_message=partial(WebSocket.connect, username=username, channel=channel, connection_open_event=connection_open_event),
+        on_message=partial(WebSocket.connect, username=username, channel=channel, connection_open_event=connection_open_event, creator_function=launch_viewer),
         on_error=WebSocket.on_error,
         on_open=partial(WebSocket.on_open, oauth_key=oauth_key, username=username)
         )
