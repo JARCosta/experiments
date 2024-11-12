@@ -1,8 +1,12 @@
+import math
+
+import numpy as np
+from sklearn.decomposition import PCA
 from streamElements import main
 import random
 import matplotlib.pyplot as plt
 
-runs = 20
+runs = 1
 
 # figure, axis = plt.subplots(runs,1)
 
@@ -14,7 +18,9 @@ def odd():
         BALANCE = 1000
         BALANCE_HISTORY = []
 
-        while len(BALANCE_HISTORY) < 1000:
+        run_length = 1000
+
+        while len(BALANCE_HISTORY) < 1000 or run_length > 0:
             BALANCE_HISTORY.append(BALANCE)
 
             options = {
@@ -24,7 +30,7 @@ def odd():
 
             print("Options: {}".format(options))
 
-            bet_option, bet_ammount = main.calculate_bet(options, BALANCE, False)
+            bet_option, bet_ammount = main.calculate_bet(options, BALANCE)
 
             print_message = ""
 
@@ -44,7 +50,7 @@ def odd():
                 print_message += "The profit for this bet is {}\n".format(bet_profit)
                 print_message += "The return for this bet is {}\n".format(bet_return)
                 
-                win = random.random() < 0.2
+                win = random.random() < 0.1
                 print_message += "You {}!\n".format("won" if win else "lost")
 
                 if win:
@@ -62,6 +68,7 @@ def odd():
 
             print(print_message)
             BALANCE += 100
+            run_length -= 1
 
         # axis[i].plot(BALANCE_HISTORY)
 
@@ -115,44 +122,132 @@ def winrate():
     plt.show()
 
 def scatter():
-    with open("streamElements/resources/pots.txt") as f:
+    # with open("streamElements/resources/pots.txt") as f:
+    #     pots = f.read().splitlines()
+
+    # win = []
+    # lose = []
+    # winner = []
+    # bet_won = []
+
+    # for i in range(len(pots)):
+    #     try:
+    #         pots[i] = json.loads(pots[i].replace("'", "\""))
+    #     except json.decoder.JSONDecodeError:
+    #         if type(pots[i-1]) == dict:
+    #             win.append(pots[i-1]["win"])
+    #             lose.append(pots[i-1]["lose"])
+    #             winner.append(pots[i] == "Win")
+
+    #             if pots[i-1]["win"] < pots[i-1]["lose"]:
+    #                 if pots[i] == "Win":
+    #                     bet_won.append(True)
+    #                 elif pots[i] == "Lose":
+    #                     bet_won.append(False)
+    #                 else:
+    #                     bet_won.append(0.5)
+    #             elif pots[i-1]["lose"] < pots[i-1]["win"]:
+    #                 if pots[i] == "Lose":
+    #                     bet_won.append(True)
+    #                 elif pots[i] == "Win":
+    #                     bet_won.append(False)
+    #                 else:
+    #                     bet_won.append(0.5)
+    #             else:
+    #                 bet_won.append(0.5)
+
+    # plt.scatter(win, lose, c=bet_won, s=100)
+    # plt.scatter(win, lose, c=winner, s=50)
+    # plt.xlabel("Win")
+    # plt.ylabel("Lose")
+    # plt.colorbar(label="Win")
+    # plt.show()
+
+    pots = import_pots()
+    # for i in range(len(pots)):
+    #     pots[i]["win"] = math.log10(pots[i]["win"]+1)
+    #     pots[i]["lose"] = math.log10(pots[i]["lose"]+1)
+    
+    win_amount = [i["win"] for i in pots]
+    lose_amount = [i["lose"] for i in pots]
+    result = [i["result"]=="Win" for i in pots] # 0 for lose, 1 for win
+    # # theoretical_bet = [main.calculate_bet(i, 1000) for i in pots]
+
+    def regerssion_line(x_axis, y_axis):
+        pca = PCA(n_components=1)
+        pca.fit(np.array([x_axis, y_axis]).T)
+        line = pca.components_
+        center = [np.mean(x_axis), np.mean(y_axis)]
+        incline = line[0][1]/line[0][0]
+        r = max([max(i["win"], i["lose"]) for i in pots]) - center[0]
+        x_win = [0, center[0]+r]
+        y_win = [center[1]-(center[0])*incline,center[1]+r*incline]
+        
+        return x_win, y_win
+
+    win_amount_on_win = [i["win"] for i in pots if i["result"]=="Win"]
+    lose_amount_on_win = [i["lose"] for i in pots if i["result"]=="Win"]
+    x, y = regerssion_line(win_amount_on_win, lose_amount_on_win)
+    # plt.plot(x, y, c="green")
+
+    win_amount_on_lose = [i["win"] for i in pots if i["result"]=="Lose"]
+    lose_amount_on_lose = [i["lose"] for i in pots if i["result"]=="Lose"]
+    x, y = regerssion_line(win_amount_on_lose, lose_amount_on_lose)
+    # plt.plot(x, y, c="red")
+
+    x, y = regerssion_line([-2, 2], [-1, 1])
+    plt.plot(x, y, c="black")
+    x, y = regerssion_line([-1, 1], [-2, 2])
+    plt.plot(x, y, c="black")
+
+
+    plt.scatter(win_amount_on_win, lose_amount_on_win, c="green", s=50)
+    plt.scatter(win_amount_on_lose, lose_amount_on_lose, c="red", s=50)
+    
+    winning_bet_win = [i["win"] for i in pots if (i["win"] < 0.5*i["lose"] and i["result"]=="Win") or (i["lose"] < 0.5*i["win"] and i["result"]=="Lose")]
+    winning_bet_lose = [i["lose"] for i in pots if (i["win"] < 0.5*i["lose"] and i["result"]=="Win") or (i["lose"] < 0.5*i["win"] and i["result"]=="Lose")]
+    plt.scatter(winning_bet_win, winning_bet_lose, c="yellow", s=25)
+    losing_bet_win = [i["win"] for i in pots if (i["win"] < 0.5*i["lose"] and i["result"]=="Lose") or (i["lose"] < 0.5*i["win"] and i["result"]=="Win")]
+    losing_bet_lose = [i["lose"] for i in pots if (i["win"] < 0.5*i["lose"] and i["result"]=="Lose") or (i["lose"] < 0.5*i["win"] and i["result"]=="Win")]
+    plt.scatter(losing_bet_win, losing_bet_lose, c="black", s=25)
+
+    betting_percentage = (len(winning_bet_win)+len(losing_bet_win))/len(pots)
+    print(f"Betting on {round(betting_percentage*100, 2)}% of the time")
+
+    winning_bet_percentage = len(winning_bet_win)/(len(winning_bet_win)+len(losing_bet_win))
+    print(f"Winning on {round(winning_bet_percentage*100, 2)}% of the bets")
+    print(f"Odd needed for the break-even: {round(1/winning_bet_percentage, 2)}")
+
+    plt.xlabel("Amount bet on Win")
+    plt.ylabel("Amount bet on Lose")
+    plt.show()
+
+
+
+def import_pots():
+    with open("streamElements/resources/pots.txt", "r") as f:
         pots = f.read().splitlines()
-
-    win = []
-    lose = []
-    winner = []
-    bet_won = []
-
+        
+    # look for pairs "{'Win': x, 'Lose': y}" followed by "Win" or "Lose"
+    pot = {
+        "win": None,
+        "lose": None,
+        "result": ""
+    }
+    pot_list = []
     for i in range(len(pots)):
         try:
             pots[i] = json.loads(pots[i].replace("'", "\""))
+            pot = pots[i]
         except json.decoder.JSONDecodeError:
             if type(pots[i-1]) == dict:
-                win.append(pots[i-1]["win"])
-                lose.append(pots[i-1]["lose"])
-                winner.append(pots[i] == "Win")
-
-                if pots[i-1]["win"] < pots[i-1]["lose"]:
-                    if pots[i] == "Win":
-                        bet_won.append(True)
-                    elif pots[i] == "Lose":
-                        bet_won.append(False)
-                    else:
-                        bet_won.append(0.5)
-                elif pots[i-1]["lose"] < pots[i-1]["win"]:
-                    if pots[i] == "Lose":
-                        bet_won.append(True)
-                    elif pots[i] == "Win":
-                        bet_won.append(False)
-                    else:
-                        bet_won.append(0.5)
-                else:
-                    bet_won.append(0.5)
-
-    plt.scatter(win, lose, c=bet_won, s=100)
-    plt.scatter(win, lose, c=winner, s=50)
-    plt.xlabel("Win")
-    plt.ylabel("Lose")
-    plt.colorbar(label="Win")
-    plt.show()
+                pot["result"] = pots[i]
+                if pot["win"] != None:
+                    pot_list.append(pot)
+    return pot_list
+        
+        
+def simulator(distribution=None):
+    if distribution == None:
+        Exception("TODO: No distribution provided")
 

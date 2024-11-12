@@ -12,14 +12,11 @@ import websocket
 from streamElements import telegramBot
 from streamElements import twitch_message_sender
 
-balance_url = "https://api.streamelements.com/kappa/v2/points/5a2ae33308308f00016e684e/el_pipow?providerId=462756951"
-bets_url = "https://api.streamelements.com/kappa/v2/contests/5a2ae33308308f00016e684e/active"
-
 CHAT_ID = "6449165312"
 telegram_message = ""
 
-def get_balance() -> int:
-    response = requests.get(balance_url)
+def get_balance(username:str) -> int:
+    response = requests.get(f"https://api.streamelements.com/kappa/v2/points/5a2ae33308308f00016e684e/{username.lower()}")
     if response.status_code != 200:
         return get_balance()
     response_json = response.json()
@@ -39,6 +36,15 @@ def send_message(message:str=None) -> None:
         print(telegram_message, end="\n\n")
         telegram_message = ""
 
+def sleep_until(end:datetime.datetime) -> None:
+    now = datetime.datetime.now()
+    if now < end:
+        sleep_time = (end - now).total_seconds()
+        print(f"Sleeping for {sleep_time} seconds")
+        time.sleep(sleep_time)
+    else:
+        print("Time has already passed")
+
 def decrease_variable_delay(amount:float=0.1) -> None:
     amount = round(amount, 2)
     if amount > 0:
@@ -46,7 +52,7 @@ def decrease_variable_delay(amount:float=0.1) -> None:
         VARIABLE_DELAY = round(VARIABLE_DELAY - amount, 2)
         with open('streamElements/resources/variable_delay.txt', 'w') as f:
             f.write(str(VARIABLE_DELAY) + "\n")
-        telegram_message += "Variable delay decreased by {} to {}\n".format(amount, VARIABLE_DELAY)
+        telegram_message += f"Variable delay decreased by {amount} to {VARIABLE_DELAY}\n"
 
 def increase_variable_delay(amount:float=0.1) -> None:
     amount = round(amount, 2)
@@ -55,9 +61,9 @@ def increase_variable_delay(amount:float=0.1) -> None:
         VARIABLE_DELAY = round(VARIABLE_DELAY + amount, 2)
         with open('streamElements/resources/variable_delay.txt', 'w') as f:
             f.write(str(VARIABLE_DELAY) + "\n")
-        telegram_message += "Variable delay increased by {} to {}\n".format(amount, VARIABLE_DELAY)
+        telegram_message += f"Variable delay increased by {amount} to {VARIABLE_DELAY}\n"
 
-BALANCE = get_balance()
+BALANCE = None
 REFERENCE_DELAY = 1
 with open('streamElements/resources/variable_delay.txt', 'r') as f:
     VARIABLE_DELAY = float(f.read())
@@ -86,29 +92,29 @@ def opt_bet(options:dict) -> tuple[str, int]:
 def calculate_bet(options:dict, balance:int) -> tuple[str, int]:
 
     global telegram_message
-    telegram_message += "The pot is at {} points\n".format(options["win"] + options["lose"])
+    telegram_message += f"The pot is at {options['win']+options['lose']} points\n"
     for i in options.keys():
-        telegram_message += "\tOption {}: {} points\n".format(i, options[i])
+        telegram_message += f"\tOption {i}: {options[i]} points\n"
     telegram_message += "\n"
-    telegram_message += "You have {} points\n".format(balance)
+    telegram_message += f"You have {balance} points\n"
     telegram_message += "\n"
 
     bet_option, opt_bet_ammount = opt_bet(options)
     oposite_option = "lose" if bet_option == "win" else "win"
 
     b = options[bet_option] / options[oposite_option]
-    telegram_message += "b = {}\n\n".format(round(b, 3))
+    telegram_message += f"b = {round(b, 3)}\n\n"
     
     if opt_bet_ammount > 0:
-        telegram_message += "The optimal bet is {} points\n".format(round(opt_bet_ammount))
+        telegram_message += f"The optimal bet is {round(opt_bet_ammount)} points\n"
         opt_pot_ratio = opt_bet_ammount/(options[bet_option]+opt_bet_ammount)
-        telegram_message += "Which represents {}% of the winning pot\n".format(round(100*opt_pot_ratio))
+        telegram_message += f"Which represents {round(100*opt_pot_ratio)}% of the winning pot\n"
         opt_bet_profit = opt_pot_ratio * options[oposite_option]
-        telegram_message += "Profits {} points\n".format(round(opt_bet_profit))
+        telegram_message += f"Profits {round(opt_bet_profit)} points\n"
         opt_bet_return = opt_bet_ammount + opt_bet_profit
-        telegram_message += "Returns {} points\n".format(round(opt_bet_return))
+        telegram_message += f"Returns {round(opt_bet_return)} points\n"
         opt_bet_odd = opt_bet_return / opt_bet_ammount
-        telegram_message += "Has an odd of {}\n".format(round(opt_bet_odd, 2))
+        telegram_message += f"Has an odd of {round(opt_bet_odd, 2)}\n"
 
     bet_ammount = opt_bet_ammount
 
@@ -138,9 +144,9 @@ def bettor_agent(username:str, oauth_key:str):
     try:
         global VARIABLE_DELAY, telegram_message
         while True:
-            response = requests.get(bets_url)
+            response = requests.get("https://api.streamelements.com/kappa/v2/contests/5a2ae33308308f00016e684e/active")
             while response.status_code != 200:
-                response = requests.get(bets_url)
+                response = requests.get("https://api.streamelements.com/kappa/v2/contests/5a2ae33308308f00016e684e/active")
             response_json = response.json()
             
             if response_json["contest"] == None:
@@ -163,8 +169,9 @@ def bettor_agent(username:str, oauth_key:str):
                     
                     global BALANCE, telegram_message
                     telegram_message += "Time to place your bets\n"
-                    telegram_message += "There were still {} seconds left\n\n".format(round((end - now).total_seconds(), 2))
+                    telegram_message += f"There were still {round((end - now).total_seconds(), 2)} seconds left\n\n"
                     
+                    BALANCE = get_balance(username) if BALANCE == None else BALANCE
                     options = {option["command"]: int(option["totalAmount"]) for option in response_json["contest"]["options"]}
                     bet_option, bet_ammount = calculate_bet(options, BALANCE)
 
@@ -175,9 +182,6 @@ def bettor_agent(username:str, oauth_key:str):
                         temp_bet:int = bet_ammount - checkpoint
                         if temp_bet > 0:
                             temp_bet = "all" if temp_bet >= BALANCE else str(int(temp_bet))
-                            if ".0" in temp_bet:
-                                temp_bet = temp_bet.replace(".0", "")
-                                telegramBot.sendMessage(f"temp_bet is not well formatted: {temp_bet}")
                             twitch_message_sender.send(WS, "runah", f"!bet {bet_option} {temp_bet.replace('.0', '')}")
                             break
 
@@ -196,23 +200,13 @@ def bettor_agent(username:str, oauth_key:str):
                 
                 else: # Not time to bet yet
                     telegram_message += "Contest found\n"
-                    # telegram_message += "Time left: {} seconds\n".format(round((end - now).total_seconds()))
-                    telegram_message += "Follow it through: {}\n".format("https://streamelements.com/runah/contest/" + response_json["contest"]["_id"])
-                    telegram_message += "You have {} points\n".format(get_balance())
-                    # time.sleep(10)
-                    # players = faceit.get_latest_match_players_list("DaddyRunah")
-                    # for team in players:
-                    #     telegram_message += "Team: {}\n".format(players.index(team)+1)
-                    #     for player in team:
-                    #         telegram_message += "{}\n".format(player)
+                    telegram_message += f"Follow it through: https://streamelements.com/runah/contest/{response_json['contest']['_id']}\n"
+                    telegram_message += f"You have {get_balance()} points\n"
+
                     WST, WS = check_websocket(WST, WS, username, oauth_key)
                     send_message()
 
-                    if (end - now).total_seconds() - VARIABLE_DELAY > 0:
-                        time.sleep((end - now).total_seconds() - VARIABLE_DELAY)
-                    else:
-                        print( end , "-", now, "-", VARIABLE_DELAY)
-                        decrease_variable_delay((VARIABLE_DELAY - (end - now).total_seconds())/4)
+                    sleep_until(end - datetime.timedelta(seconds=VARIABLE_DELAY))
                     continue
             
             elif start < end < now: # Bets are closed
@@ -221,10 +215,10 @@ def bettor_agent(username:str, oauth_key:str):
                     telegram_message += f"Bets closed {round((now - end).total_seconds(), 2)} s ago\n"
                     send_message()
 
-                print("Bets closed {}:{}:{} ago ({} s)".format( int((now - end).total_seconds()//3600),int((now - end).total_seconds()//60), int((now - end).total_seconds()%60), round((now - end).total_seconds(), 2)))
-                print("The pot is at {} points".format(response_json["contest"]["totalAmount"]))
+                print(f"Bets closed {int((now - end).total_seconds()//3600)}:{int((now - end).total_seconds()//60)}:{int((now - end).total_seconds()%60)} ago ({round((now - end).total_seconds(), 2)} s)")
+                print(f"The pot is at {response_json['contest']['totalAmount']} points")
                 for option in response_json["contest"]["options"]:
-                    print("{} points were bet on {}".format(option["totalAmount"], option["title"]))
+                    print(f"{option['totalAmount']} points were bet on {option['title']}")
                 print("\n")
 
                 time.sleep(120)

@@ -2,6 +2,7 @@ import datetime
 from functools import partial
 import multiprocessing
 import os
+import re
 import time
 import websocket
 import threading
@@ -11,6 +12,16 @@ import traceback
 
 # Event to signal that the connection is open
 connection_open_event = threading.Event()
+
+def store_log(func:callable):
+    print("Storing log")
+    def inner_function():
+        with open("streamElements/resources/logs.txt", "a") as f:
+            f.write(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} - {func.__name__}() started ")
+            print("Before calling func")
+            func()
+            f.write("and ended\n")
+    return inner_function
 
 class WebSocket:
 
@@ -61,7 +72,9 @@ class Bettor:
             print(message)
         
         elif "no longer accepting bets for" in message: # Bet's closed
-            print(message)
+            timestamp = datetime.datetime.now()
+            with open("streamElements/resources/player_bet.csv", "a") as f:
+                f.write(f"{timestamp},Bets closed\n")
         
         elif "won the contest" in message: # Result of the bet
             user = message.split("display-name=")[1].split(";")[0]
@@ -74,6 +87,22 @@ class Bettor:
             bet_winner = message.split(f"PRIVMSG #{channel.lower()} :")[1].split('"')[1]
             with open("streamElements/resources/pots.txt", "a") as f:
                 f.write(bet_winner + "\n")
+
+        elif ", you have bet" in message:
+            user = message.split("display-name=")[1].split(";")[0]
+            msg = message.split(f"PRIVMSG #{channel.lower()} :")[1]
+            result = re.search('@(.*), you have bet (.*) points on (.*).\r\n', msg)
+            timestamp = datetime.datetime.now()
+            mentioned_user = result.group(1)
+            amount_bet = result.group(2)
+            option_bet = result.group(3).split(".")[0]
+            with open("streamElements/resources/player_bet.csv", "a") as f:
+                f.write(f"{timestamp},{mentioned_user},{amount_bet},{option_bet}\n")
+            if mentioned_user.lower() == username.lower():
+                telegram_message = user + ": " + msg
+                telegram_message += "You have {} points\n".format(main.get_balance())
+                telegramBot.sendMessage(telegram_message)
+                print(telegram_message)
 
         elif f"@{username.lower()}" in message.lower() and not f":{username.lower()}" in message: # I was mentioned
             user = message.split("display-name=")[1].split(";")[0]
