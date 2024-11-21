@@ -1,0 +1,113 @@
+{
+    "id": "1-43578987-10fe-4e1f-90a9-cdc25cb48e7a",
+    "game": "cs2",
+    "region": "EU",
+    "gameModeType": "2Factions",
+    "gameModeLabel": {
+        "en": "5v5"
+    },
+    "entity": {
+        "type": "matchmaking",
+        "id": "f4148ddd-bce8-41b8-9131-ee83afcdd6dd",
+        "name": "Europe 5v5"
+    },
+    "entityCustom": {
+        "queueId": "66140674f2200d1bec86ffd8",
+        "parties": {
+            "10a2f57d-d95b-4ea2-ba2b-0596324e8c7e": [
+                "18455db6-ead0-4518-9a47-11786995008e",
+                "9264b8d3-0221-4a38-bd92-e7a8453ffd88",
+                "d5f312f6-cec3-4f0e-a0ad-d0253f133af0",
+                "e855837b-d648-4dd9-8d0c-cb625f91f3e2",
+                "59d9cd43-8606-44c2-8221-6e2294e43fb6"
+            ],
+            "854394da-c4b6-4f1a-b344-f81962561b91": [
+                "77dce6df-0823-4703-aa62-5b1270c6c8ec",
+                "421f9721-3e60-4a2d-916f-8af28a7d5b12",
+                "cef13c3f-c351-42ef-84ff-b6058ed323c2",
+                "74f745a0-54b4-47bd-887d-b4502e73e4e9",
+                "66628d9f-b615-4785-bdf6-06790f60af05"
+            ]
+        },
+        "matcherMatchId": "5684441d-73ef-42ad-8ecb-bdd1ceda64ac",
+        "partyQueueDurations": {
+            "10a2f57d-d95b-4ea2-ba2b-0596324e8c7e": 60.016,
+            "854394da-c4b6-4f1a-b344-f81962561b91": 42.727
+        },
+        "effectiveRanking": 2436.8
+    },
+    "teams": {
+        "faction1": {
+            "id": "854394da-c4b6-4f1a-b344-f81962561b91",
+            "type": "lobby",
+            "avatar": "https://assets.faceit-cdn.net/avatars/77dce6df-0823-4703-aa62-5b1270c6c8ec_1595460657845.jpg",
+            "name": "lobby_SuperRunah",
+            "leader": "77dce6df-0823-4703-aa62-5b1270c6c8ec",
+            "roster": [
+                {
+                    "id": "77dce6df-0823-4703-aa62-5b1270c6c8ec",
+                    "avatar": "https://assets.faceit-cdn.net/avatars/77dce6df-0823-4703-aa62-5b1270c6c8ec_1595460657845.jpg",
+                    "nickname": "SuperRunah"
+                },
+                {
+                    "id": "421f9721-3e60-4a2d-916f-8af28a7d5b12",
+                    "avatar": "https://distribution.faceit-cdn.net/images/d90be37c-f4b7-442e-9f34-9cc5072aa0a7.jpeg",
+                    "nickname": "kamenzinS2"
+                },
+                {
+                    "id": "cef13c3f-c351-42ef-84ff-b6058ed323c2",
+                    "avatar": "https://distribution.faceit-cdn.net/images/7d0ce9b4-3fb4-4235-aedd-0807643319ae.jpeg",
+                    "nickname": "DanyGRANDOUM"
+                },
+                {
+                    "id": "74f745a0-54b4-47bd-887d-b4502e73e4e9",
+                    "avatar": "https://distribution.faceit-cdn.net/images/4e9312f1-e4a9-4462-ac9d-7b29740d6953.jpeg",
+                    "nickname": "ValeK37"
+                },
+                {
+                    "id": "66628d9f-b615-4785-bdf6-06790f60af05",
+                    "avatar": "https://distribution.faceit-cdn.net/images/d65b8698-6169-4aa5-ae55-bf1c95429ab6.jpeg",
+                    "nickname": "GracioZzZ"
+                }
+            ]
+        },
+        "faction2": {
+            "id": "10a2f57d-d95b-4ea2-ba2b-0596324e8c7e",
+            "type": "mix",
+            "avatar": "https://distribution.faceit-cdn.net/images/62a1b084-10dc-476f-8122-35548ebe755c.jpeg",
+            "name": "team_willy-_",
+            "leader": "18455db6-ead0-4518-9a47-11786995008e",
+            "roster": [
+                {
+                    "id": "18455db6-ead0-4518-9a47-11786995008e",
+                    "avatar": "https://distribution.faceit-cdn.net/images/62a1b084-10dc-476f-8122-35548ebe755c.jpeg",
+                    "nickname": "willy-_"
+                },
+                {
+                    "id": "9264b8d3-0221-4a38-bd92-e7a8453ffd88",
+                    "avatar": "https://distribution.faceit-cdn.net/images/e54800c3-4d16-4754-87c5-cb82478ca722.jpeg",
+                    "nickname": "-Albert0-"
+                },
+                {
+                    "id": "d5f312f6-cec3-4f0e-a0ad-d0253f133af0",
+                    "avatar": "https://assets.faceit-cdn.net/avatars/d5f312f6-cec3-4f0e-a0ad-d0253f133af0_1550678316714.jpg",
+                    "nickname": "--PiNE"
+                },
+                {
+                    "id": "e855837b-d648-4dd9-8d0c-cb625f91f3e2",
+                    "avatar": "https://distribution.faceit-cdn.net/images/6083575b-055e-4d8b-bf94-27c385596894.jpeg",
+                    "nickname": "semikarsee"
+                },
+                {
+                    "id": "59d9cd43-8606-44c2-8221-6e2294e43fb6",
+                    "avatar": "https://distribution.faceit-cdn.net/images/55d964d9-c2ab-49ee-ba49-9c563799f577.jpeg",
+                    "nickname": "Mise_"
+                }
+            ]
+        }
+    },
+    "state": "ONGOING",
+    "status": "LIVE",
+    "playing": true,
+    "createdAt": "2024-11-12T17:58:02Z"
+}

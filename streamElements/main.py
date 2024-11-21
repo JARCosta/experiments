@@ -1,5 +1,6 @@
 
 import datetime
+import json
 from math import sqrt
 import random
 import traceback
@@ -15,7 +16,7 @@ from streamElements import twitch_message_sender
 CHAT_ID = "6449165312"
 telegram_message = ""
 
-def get_balance(username:str) -> int:
+def get_balance(username:str="El_Pipow") -> int:
     response = requests.get(f"https://api.streamelements.com/kappa/v2/points/5a2ae33308308f00016e684e/{username.lower()}")
     if response.status_code != 200:
         return get_balance()
@@ -30,7 +31,7 @@ def send_message(message:str=None) -> None:
         print(message, end="\n\n")
     else:
         global telegram_message
-        if telegram_message in [None, ""]:
+        if telegram_message == "":
             print("No message to send")
         threading.Thread(target=telegramBot.sendMessage, args=(telegram_message,)).start()
         print(telegram_message, end="\n\n")
@@ -64,7 +65,7 @@ def increase_variable_delay(amount:float=0.1) -> None:
         telegram_message += f"Variable delay increased by {amount} to {VARIABLE_DELAY}\n"
 
 BALANCE = None
-REFERENCE_DELAY = 1
+REFERENCE_DELAY = 1.5
 with open('streamElements/resources/variable_delay.txt', 'r') as f:
     VARIABLE_DELAY = float(f.read())
 with open('streamElements/resources/test.txt', 'w') as f:

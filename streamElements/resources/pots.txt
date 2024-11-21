@@ -526,3 +526,115 @@ Win
 {'win': 5023, 'lose': 475}
 Win
 {'win': 2812, 'lose': 3174}
+{'win': 12710, 'lose': 6399}
+Lose
+{'win': 6478, 'lose': 6068}
+Win
+{'win': 16710, 'lose': 2274}
+Win
+{'win': 8294, 'lose': 4850}
+Lose
+{'win': 8106, 'lose': 6200}
+Win
+{'win': 16739, 'lose': 9154}
+{'win': 7128, 'lose': 3464}
+Win
+{'win': 3214, 'lose': 9635}
+Win
+{'win': 4761, 'lose': 7786}
+Win
+{'win': 11043, 'lose': 14919}
+Lose
+{'win': 12876, 'lose': 5941}
+Lose
+{'win': 32128, 'lose': 14020}
+Lose
+{'win': 7848, 'lose': 6165}
+Win
+{'win': 7727, 'lose': 10191}
+Lose
+{'win': 11261, 'lose': 4567}
+Win
+{'win': 13864, 'lose': 4122}
+Win
+{'win': 7370, 'lose': 3626}
+Lose
+Lose
+{'win': 10615, 'lose': 1020}
+{'win': 10615, 'lose': 1020}
+Win
+{'win': 7211, 'lose': 3879}
+Win
+{'win': 5886, 'lose': 4847}
+Win
+{'win': 7401, 'lose': 4838}
+Lose
+{'win': 2000, 'lose': 2132}
+{'win': 2000, 'lose': 2132}
+Lose
+Lose
+{'win': 5861, 'lose': 3475}
+{'win': 5861, 'lose': 3475}
+Lose
+Lose
+{'win': 7218, 'lose': 1160}
+{'win': 7218, 'lose': 1160}
+Lose
+Lose
+{'win': 2910, 'lose': 2340}
+{'win': 2910, 'lose': 2340}
+Win
+Win
+{'win': 6075, 'lose': 6895}
+{'win': 6075, 'lose': 6895}
+Lose
+Lose
+{'win': 11459, 'lose': 8873}
+{'win': 11459, 'lose': 8873}
+Win
+Win
+{'win': 8095, 'lose': 2581}
+{'win': 8095, 'lose': 2581}
+Win
+Lose
+{'win': 11096, 'lose': 8044}
+Lose
+{'win': 10834, 'lose': 7313}
+Lose
+{'win': 12605, 'lose': 7104}
+Win
+{'win': 5389, 'lose': 3400}
+Win
+{'win': 10073, 'lose': 3097}
+Lose
+{'win': 6197, 'lose': 846}
+Lose
+{'win': 11153, 'lose': 4330}
+Win
+{'win': 21645, 'lose': 3415}
+Win
+{'win': 8112, 'lose': 8652}
+Lose
+{'win': 9411, 'lose': 10899}
+Win
+{'win': 10511, 'lose': 5262}
+Win
+{'win': 5161, 'lose': 3916}
+{'win': 6227, 'lose': 9730}
+Lose
+Lose
+{'win': 3750, 'lose': 16175}
+Lose
+Lose
+Win
+{'win': 15411, 'lose': 4840}
+Lose
+{'win': 8902, 'lose': 7506}
+Win
+{'win': 13738, 'lose': 3191}
+Lose
+{'win': 1555, 'lose': 871}
+Win
+{'win': 1147, 'lose': 510}
+Win
+{'win': 2486, 'lose': 778}

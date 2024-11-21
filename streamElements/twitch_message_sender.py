@@ -70,6 +70,13 @@ class Bettor:
 
         if f"@{username}, there is no contest currently running." in message: # Bet placed too late
             print(message)
+            main.increase_variable_delay()
+            main.send_message()
+        
+        elif "a new contest has started" in message: # New bet
+            timestamp = datetime.datetime.now()
+            with open("streamElements/resources/player_bet.csv", "a") as f:
+                f.write(f"{timestamp},New bet\n")
         
         elif "no longer accepting bets for" in message: # Bet's closed
             timestamp = datetime.datetime.now()
@@ -87,6 +94,18 @@ class Bettor:
             bet_winner = message.split(f"PRIVMSG #{channel.lower()} :")[1].split('"')[1]
             with open("streamElements/resources/pots.txt", "a") as f:
                 f.write(bet_winner + "\n")
+            print("Bet winner: " + bet_winner)
+            print("aaaaaa")
+            print()
+            
+            timestamp = datetime.datetime.now()
+            with open("streamElements/resources/player_bet.csv", "a") as f:
+                # print(msg)
+                # f.write(f"{timestamp},{msg}\n")
+                result = re.search('"(.*)" won the contest "Aposta no resultado do próximo jogo do Runah" with (.*)% of all bets and (.*)% of the total pot!', msg)
+                print(repr(result.group(1)), repr(result.group(2)), repr(result.group(3)))
+                f.write(f"{timestamp},{result.group(1)},{result.group(2)},{result.group(3)}\n")
+
 
         elif ", you have bet" in message:
             user = message.split("display-name=")[1].split(";")[0]
