@@ -28,15 +28,16 @@ def set_oauth_token(username):
 def check_oauth_token(username):
     if not os.getenv(username.upper() + "_OAUTH"):
 
-        with open(f"{username.upper() + '_OAUTH'}", "r") as f:
-            oauth = f.read()
-            if not oauth:
-                return set_oauth_token(username)
-            else:
-                return oauth
-
-        # print(f"Set {username.upper()+'_OAUTH'}:")
-        # set_oauth_token(username)
+        try:
+            with open(f"{username.upper() + '_OAUTH'}", "r") as f:
+                oauth = f.read()
+                if not oauth:
+                    return set_oauth_token(username)
+                else:
+                    return oauth
+        except FileNotFoundError:
+            print(f"Set {username.upper()+'_OAUTH'}:")
+            set_oauth_token(username)
 
 if __name__ == "__main__":
 
