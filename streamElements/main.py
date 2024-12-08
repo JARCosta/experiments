@@ -38,40 +38,42 @@ def send_message(message:str=None) -> None:
         telegram_message = ""
 
 def sleep_until(end:datetime.datetime) -> None:
-    now = datetime.datetime.now()
+    now = datetime.datetime.now() + datetime.timedelta(hours=time.localtime().tm_isdst)
     if now < end:
         sleep_time = (end - now).total_seconds()
         print(f"Sleeping for {sleep_time} seconds")
         time.sleep(sleep_time)
     else:
         print("Time has already passed")
+        print("Now: ", now)
+        print("End: ", end)
+
+def get_variable_delay() -> float:
+    with open('streamElements/resources/variable_delay.txt', 'r') as f:
+        return float(f.read())
 
 def decrease_variable_delay(amount:float=0.1) -> None:
     amount = round(amount, 2)
     if amount > 0:
-        global VARIABLE_DELAY, telegram_message
-        VARIABLE_DELAY = round(VARIABLE_DELAY - amount, 2)
+        global telegram_message
+        variable_delay = round(get_variable_delay() - amount, 2)
         with open('streamElements/resources/variable_delay.txt', 'w') as f:
-            f.write(str(VARIABLE_DELAY) + "\n")
-        telegram_message += f"Variable delay decreased by {amount} to {VARIABLE_DELAY}\n"
+            f.write(str(variable_delay) + "\n")
+        telegram_message += f"Variable delay decreased by {amount} to {variable_delay}\n"
 
 def increase_variable_delay(amount:float=0.1) -> None:
     amount = round(amount, 2)
     if amount > 0:
-        global VARIABLE_DELAY, telegram_message
-        VARIABLE_DELAY = round(VARIABLE_DELAY + amount, 2)
+        global telegram_message
+        variable_delay = round(get_variable_delay() + amount, 2)
         with open('streamElements/resources/variable_delay.txt', 'w') as f:
-            f.write(str(VARIABLE_DELAY) + "\n")
-        telegram_message += f"Variable delay increased by {amount} to {VARIABLE_DELAY}\n"
+            f.write(str(variable_delay) + "\n")
+        telegram_message += f"Variable delay increased by {amount} to {variable_delay}\n"
 
 BALANCE = None
-REFERENCE_DELAY = 1.5
-with open('streamElements/resources/variable_delay.txt', 'r') as f:
-    VARIABLE_DELAY = float(f.read())
-with open('streamElements/resources/test.txt', 'w') as f:
-    pass
+REFERENCE_DELAY = 1.75
 
-def opt_bet(options:dict) -> tuple[str, int]:
+def optimal_bet(options:dict) -> tuple[str, int]:
     little_option = "win" if options["win"] < options["lose"] else "lose"
     little_option_ammount = options[little_option]
     if little_option_ammount == 0:
@@ -100,7 +102,7 @@ def calculate_bet(options:dict, balance:int) -> tuple[str, int]:
     telegram_message += f"You have {balance} points\n"
     telegram_message += "\n"
 
-    bet_option, opt_bet_ammount = opt_bet(options)
+    bet_option, opt_bet_ammount = optimal_bet(options)
     oposite_option = "lose" if bet_option == "win" else "win"
 
     b = options[bet_option] / options[oposite_option]
@@ -126,7 +128,7 @@ WST, WS = None, None
 def reconnect(wst:threading.Thread, ws:websocket.WebSocketApp, username:str, oauth_key:str):
     global telegram_message
     twitch_message_sender.close(wst, ws)
-    wst, ws = twitch_message_sender.launch_bettor("runah", username, oauth_key)
+    wst, ws = twitch_message_sender.launch_bettor("Runah", username, oauth_key)
     telegram_message += "Reconnected to Twitch\n"
     return wst, ws
 
@@ -138,28 +140,28 @@ def check_websocket(wst:threading.Thread, ws:websocket.WebSocketApp, username:st
         return reconnect(wst, ws, username, oauth_key)
     return wst, ws
 
-def bettor_agent(username:str, oauth_key:str):
+def bettor_agent(channel:str, username:str, oauth_key:str, counters):
     global WST, WS
-    WST, WS = twitch_message_sender.launch_bettor("runah", username, oauth_key)
+    WST, WS = twitch_message_sender.launch_bettor(channel, username, oauth_key, counters)
+    time.sleep(1)
 
     try:
-        global VARIABLE_DELAY, telegram_message
+        global telegram_message
         while True:
             response = requests.get("https://api.streamelements.com/kappa/v2/contests/5a2ae33308308f00016e684e/active")
             while response.status_code != 200:
                 response = requests.get("https://api.streamelements.com/kappa/v2/contests/5a2ae33308308f00016e684e/active")
             response_json = response.json()
             
+            now = datetime.datetime.now() + datetime.timedelta(hours=time.localtime().tm_isdst)
+            
             if response_json["contest"] == None:
-                print(datetime.datetime.now().strftime('%H:%M')+" - No contest found")
-                print("\n")
-
+                print(now.strftime('%H:%M')+" - No contest found\n")
                 time.sleep(60)
                 continue
-            
+
             start = datetime.datetime.strptime(response_json["contest"]["startedAt"],"%Y-%m-%dT%H:%M:%S.%fZ") + datetime.timedelta(hours=time.localtime().tm_isdst)
             end = datetime.datetime.strptime(response_json["contest"]["startedAt"],"%Y-%m-%dT%H:%M:%S.%fZ") + datetime.timedelta(hours=time.localtime().tm_isdst) + datetime.timedelta(minutes=response_json["contest"]["duration"])
-            now = datetime.datetime.now() + datetime.timedelta(hours=time.localtime().tm_isdst)
 
             # print(start)
             # print(end)
@@ -183,7 +185,7 @@ def bettor_agent(username:str, oauth_key:str):
                         temp_bet:int = bet_ammount - checkpoint
                         if temp_bet > 0:
                             temp_bet = "all" if temp_bet >= BALANCE else str(int(temp_bet))
-                            twitch_message_sender.send(WS, "runah", f"!bet {bet_option} {temp_bet.replace('.0', '')}")
+                            twitch_message_sender.send(WS, channel.lower(), f"!bet {bet_option} {temp_bet.replace('.0', '')}")
                             break
 
                     if (end - now).total_seconds() > REFERENCE_DELAY: # betting too early
@@ -207,7 +209,7 @@ def bettor_agent(username:str, oauth_key:str):
                     WST, WS = check_websocket(WST, WS, username, oauth_key)
                     send_message()
 
-                    sleep_until(end - datetime.timedelta(seconds=VARIABLE_DELAY))
+                    sleep_until(end - datetime.timedelta(seconds=get_variable_delay()))
                     continue
             
             elif start < end < now: # Bets are closed
@@ -229,6 +231,9 @@ def bettor_agent(username:str, oauth_key:str):
                 telegram_message += "Bets are not open yet\n"
                 telegram_message += "Something is off\n"
                 telegram_message += "Check out what's going on"
+                telegram_message += "Start: " + start.strftime('%H:%M') + "\n"
+                telegram_message += "End: " + end.strftime('%H:%M') + "\n"
+                telegram_message += "Now: " + now.strftime('%H:%M') + "\n"
                 send_message()
 
                 time.sleep(60)

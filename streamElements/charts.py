@@ -84,19 +84,43 @@ import json
 import matplotlib
 
 def winrate():
-    with open('streamElements/resources/bets.txt') as f:
-        bets = f.readlines()
+    # with open('streamElements/resources/bets.txt') as f:
+    #     bets = f.readlines()
 
-    bets_n = []
-    for i in bets:
-        if "won the contest" in i:
-            bets_n.append(i)
-    bets = bets_n
+    # bets_n = []
+    # for i in bets:
+    #     if "won the contest" in i:
+    #         bets_n.append(i)
+    # bets = bets_n
 
-    bets = [float(i.split("of all bets and ")[1].split("% of the total pot!")[0]) for i in bets]
-    winrate = [1 if i < 50 else 0 for i in bets]
+    # bets = [float(i.split("of all bets and ")[1].split("% of the total pot!")[0]) for i in bets]
+    # chat_winrate = [1 if i < 50 else 0 for i in bets]
+    
+    pots = import_pots()
+    win_amount = [i["win"] for i in pots]
+    lose_amount = [i["lose"] for i in pots]
+    result = [i["result"]=="Win" for i in pots] # 0 for lose, 1 for win
+    winner_option_ratio = [i["win"]/(i["win"]+i["lose"]) if i["result"]=="Win" else i["lose"]/(i["win"]+i["lose"]) for i in pots]
+    import matplotlib.pyplot as plt
+    plt.hist(winner_option_ratio, bins=20)
+    plt.show()
+
+    bet_won = [1 if i < 1/3 else 0 for i in winner_option_ratio]
+    rolling_average = [sum(bet_won[:i])/i for i in range(1, len(bet_won))]
+    print(f"Winning on {rolling_average[-1]*100}% of the bets, on bets where the minority has less than 1/3 of the pot")
+    plt.plot(rolling_average)
+    bet_half = [1 if i < 0.5 else 0 for i in winner_option_ratio]
+    rolling_average = [sum(bet_half[:i])/i for i in range(1, len(bet_half))]
+    print(f"Winning on {rolling_average[-1]*100}% of the bets, on bets where the minority has less than 1/2 of the pot")
+    plt.plot(rolling_average)
+    plt.show()
+
+    return
+
+    
+
     rolling_average = [sum(bets[:i])/i for i in range(1, len(bets))] 
-    winrate_rolling_average = [sum(winrate[:i])/i for i in range(1, len(winrate))]
+    winrate_rolling_average = [sum(chat_winrate[:i])/i for i in range(1, len(chat_winrate))]
 
     win = [1 if i < 50 else 0 for i in bets]
 
@@ -108,14 +132,14 @@ def winrate():
 
     # plt.plot(bets)
     # plt.plot(rolling_average)
-    # plt.plot(winrate)
+    # plt.plot(chat_winrate)
     plt.plot(winrate_rolling_average)
 
     # bar chart with average in batches of 5
 
     x = np.arange(0, len(bets), 5)
-    print([sum(winrate[i:i+5])/5 for i in x])
-    y = [(sum(winrate[i:i+5])/5) for i in x]
+    print([sum(chat_winrate[i:i+5])/5 for i in x])
+    y = [(sum(chat_winrate[i:i+5])/5) for i in x]
 
     plt.bar(x, y, width=4.5)
 
@@ -188,12 +212,12 @@ def scatter():
     win_amount_on_win = [i["win"] for i in pots if i["result"]=="Win"]
     lose_amount_on_win = [i["lose"] for i in pots if i["result"]=="Win"]
     x, y = regerssion_line(win_amount_on_win, lose_amount_on_win)
-    # plt.plot(x, y, c="green")
+    plt.plot(x, y, c="green")
 
     win_amount_on_lose = [i["win"] for i in pots if i["result"]=="Lose"]
     lose_amount_on_lose = [i["lose"] for i in pots if i["result"]=="Lose"]
     x, y = regerssion_line(win_amount_on_lose, lose_amount_on_lose)
-    # plt.plot(x, y, c="red")
+    plt.plot(x, y, c="red")
 
     x, y = regerssion_line([-2, 2], [-1, 1])
     plt.plot(x, y, c="black")
@@ -201,8 +225,8 @@ def scatter():
     plt.plot(x, y, c="black")
 
 
-    plt.scatter(win_amount_on_win, lose_amount_on_win, c="green", s=50)
-    plt.scatter(win_amount_on_lose, lose_amount_on_lose, c="red", s=50)
+    plt.scatter(win_amount_on_win, lose_amount_on_win, c="green", s=50) # amount bet when result=win
+    plt.scatter(win_amount_on_lose, lose_amount_on_lose, c="red", s=50) # amount bet when result=lose
     
     winning_bet_win = [i["win"] for i in pots if (i["win"] < 0.5*i["lose"] and i["result"]=="Win") or (i["lose"] < 0.5*i["win"] and i["result"]=="Lose")]
     winning_bet_lose = [i["lose"] for i in pots if (i["win"] < 0.5*i["lose"] and i["result"]=="Win") or (i["lose"] < 0.5*i["win"] and i["result"]=="Lose")]

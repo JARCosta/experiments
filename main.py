@@ -27,7 +27,6 @@ def set_oauth_token(username):
 
 def check_oauth_token(username):
     if not os.getenv(username.upper() + "_OAUTH"):
-
         try:
             with open(f"{username.upper() + '_OAUTH'}", "r") as f:
                 oauth = f.read()
@@ -38,12 +37,25 @@ def check_oauth_token(username):
         except FileNotFoundError:
             print(f"Set {username.upper()+'_OAUTH'}:")
             set_oauth_token(username)
+    else:
+        return os.getenv(username.upper() + "_OAUTH")
 
 if __name__ == "__main__":
 
     EL_PIPOW_OAUTH = check_oauth_token("El_Pipow")
     JRCOSTA_OAUTH = check_oauth_token("JRCosta")
+    counters = [0, 0]
+    threading.Thread(target=twitch_message_sender.launch_data_collector, args=("Runah", "El_pipow", EL_PIPOW_OAUTH, counters)).start()
+    threading.Thread(target=twitch_message_sender.launch_viewer, args=("Runah", "JRCosta", JRCOSTA_OAUTH, counters)).start()
+    threading.Thread(target=twitch_message_sender.launch_controller, args=("El_Pipow", "JRCosta", JRCOSTA_OAUTH, counters)).start()
+    threading.Thread(target=streamElements.bettor_agent, args=("Runah", "El_pipow", EL_PIPOW_OAUTH, counters)).start()
+    # threading.Thread(target=streamElements.bettor_agent, args=("El_pipow", "El_pipow", EL_PIPOW_OAUTH, counters)).start()
 
-    threading.Thread(target=twitch_message_sender.launch_viewer, args=("Runah", "JRCosta", JRCOSTA_OAUTH)).start()
-    threading.Thread(target=twitch_message_sender.launch_controller, args=("El_Pipow", "JRCosta", JRCOSTA_OAUTH)).start()
-    threading.Thread(target=streamElements.bettor_agent, args=("El_pipow", EL_PIPOW_OAUTH)).start()
+    while True:
+        if counters[0] == 4:
+            print()
+            break
+    while True:
+        if counters[1] == 4:
+            print()
+            break

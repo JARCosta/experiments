@@ -7,6 +7,8 @@ headers = {
     'Authorization': f'Bearer {API_KEY}'
 }
 
+"https://www.faceit.com/api/stats/v1/stats/users/lifetime?match_id=1-affde9fe-e35b-40ff-bb96-132c64050fbc&game=cs2&player_ids=3234c7d4-9103-4596-9277-eb28de6af0de&player_ids=9d65cd1b-199a-46a5-ac6c-653c8b541b13&player_ids=757315ae-43c3-4fe8-8229-e1b5f65cc7dd&player_ids=1866a510-b0e9-47eb-b8f6-2001551cf14b&player_ids=469427d6-9cf4-418d-bf12-2c021ea5e52e&player_ids=77dce6df-0823-4703-aa62-5b1270c6c8ec&player_ids=94e0bb7a-c2ce-4d26-bd77-4b49ca112e54&player_ids=b77bb087-99f3-45ad-9dbc-94c514dd1b4f&player_ids=c30a6261-44f9-4a32-ab13-ec87e040f004&player_ids=7b9c494d-6463-45c4-8952-1fb9f1216e8c"
+
 # Step 1: Get your friend's FACEIT ID
 def get_player_id(nickname):
     url = f'https://open.faceit.com/data/v4/players?nickname={nickname}'
