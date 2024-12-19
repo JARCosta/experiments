@@ -3,5 +3,5 @@ run.sh
 test
 test.py
 buffxSteamComparison/
-buffxSteamComparison\best_agents.txt
+buffxSteamComparison\best_items.txt
 *_OAUTH

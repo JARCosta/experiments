@@ -63,7 +63,11 @@ def getMessages(chat_id: str):
 
 def sendMessage(message: str, user : str = CHAT_ID):
   params = {"chat_id": user, "text": message}
-  r = requests.get(URL + "/sendMessage", params=params)
+  try:
+    r = requests.get(URL + "/sendMessage", params=params)
+  except requests.exceptions.ConnectionError:
+    print("telegramBot.sendMessage Error")
+    return requests.Response()
   if not r.ok:
     raise Exception(r.text)
   else:

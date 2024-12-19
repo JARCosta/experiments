@@ -3,7 +3,7 @@ import subprocess
 import time
 
 import requests
-from streamElements import main as streamElements, twitch_message_sender
+from streamElements import main as streamElements, twitch_message_sender, telegramBot
 from wallapopNotificator import main as wallapopNotificator
 import traceback
 
@@ -41,21 +41,36 @@ def check_oauth_token(username):
         return os.getenv(username.upper() + "_OAUTH")
 
 if __name__ == "__main__":
+    try:
+        requests.get("http://google.com")
+    except requests.exceptions.ConnectionError:
+        input("No wi-fi connection\n")
+    
+    try:
+        os.chdir(os.path.dirname(os.path.realpath(__file__)))
+        telegramBot.sendMessage("Twitch bettor launched")
 
-    EL_PIPOW_OAUTH = check_oauth_token("El_Pipow")
-    JRCOSTA_OAUTH = check_oauth_token("JRCosta")
-    counters = [0, 0]
-    threading.Thread(target=twitch_message_sender.launch_data_collector, args=("Runah", "El_pipow", EL_PIPOW_OAUTH, counters)).start()
-    threading.Thread(target=twitch_message_sender.launch_viewer, args=("Runah", "JRCosta", JRCOSTA_OAUTH, counters)).start()
-    threading.Thread(target=twitch_message_sender.launch_controller, args=("El_Pipow", "JRCosta", JRCOSTA_OAUTH, counters)).start()
-    threading.Thread(target=streamElements.bettor_agent, args=("Runah", "El_pipow", EL_PIPOW_OAUTH, counters)).start()
-    # threading.Thread(target=streamElements.bettor_agent, args=("El_pipow", "El_pipow", EL_PIPOW_OAUTH, counters)).start()
+        EL_PIPOW_OAUTH = check_oauth_token("El_Pipow")
+        JRCOSTA_OAUTH = check_oauth_token("JRCosta")
+        counters = [0, 0]
 
-    while True:
-        if counters[0] == 4:
-            print()
-            break
-    while True:
-        if counters[1] == 4:
-            print()
-            break
+        first_detector = threading.Event()
+        first_detector.set()
+        threading.Thread(target=twitch_message_sender.launch_data_collector, args=("Runah", "El_pipow", EL_PIPOW_OAUTH, counters, first_detector)).start()
+        threading.Thread(target=twitch_message_sender.launch_viewer, args=("Runah", "JRCosta", JRCOSTA_OAUTH, counters, first_detector)).start()
+        threading.Thread(target=twitch_message_sender.launch_controller, args=("El_Pipow", "JRCosta", JRCOSTA_OAUTH, counters, first_detector)).start()
+        threading.Thread(target=streamElements.bettor_agent, args=("Runah", "El_pipow", EL_PIPOW_OAUTH, counters, first_detector)).start()
+        # threading.Thread(target=streamElements.bettor_agent, args=("El_pipow", "El_pipow", EL_PIPOW_OAUTH, counters)).start()
+
+        while True:
+            if counters[0] == 4 and counters[1] == 0:
+                print()
+                break
+        while True:
+            if counters[1] == 4:
+                print()
+                break
+    except:
+        telegramBot.sendMessage(traceback.format_exc())
+        with open("streamElements/resources/latest_error.txt", "w") as f:
+            f.write(traceback.format_exc())

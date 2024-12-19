@@ -13,19 +13,9 @@ import traceback
 # Event to signal that the connection is open
 connection_open_event = threading.Event()
 
-def store_log(func:callable):
-    print("Storing log")
-    def inner_function():
-        with open("streamElements/resources/logs.txt", "a") as f:
-            f.write(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} - {func.__name__}() started ")
-            print("Before calling func")
-            func()
-            f.write("and ended\n")
-    return inner_function
-
 class WebSocket:
 
-    def connect(ws:websocket.WebSocketApp, message:str, username:str, channel:str, connection_open_event:threading.Event, creator_function:callable):
+    def connect(ws:websocket.WebSocketApp, message:str, username:str, channel:str, counters:list, connection_open_event:threading.Event, creator_function:callable):
         if f":Welcome, GLHF!" in message:
             ws.send(f"JOIN #{channel}")
         
@@ -36,7 +26,7 @@ class WebSocket:
         elif ":tmi.twitch.tv RECONNECT" in message:
             telegram_message = f"Received RECONNECT message from Twitch on a {creator_function.__name__} WebSocket\n"
             telegram_message += f"Reconnecting viewer {username} to {channel}\n"
-            threading.Thread(target=creator_function, args=(channel, username, os.getenv(username.upper() + "_OAUTH"))).start()
+            threading.Thread(target=creator_function, args=(channel, username, os.getenv(username.upper() + "_OAUTH"), counters)).start()
             telegramBot.sendMessage(telegram_message)
             print(telegram_message)
         
@@ -44,12 +34,17 @@ class WebSocket:
             ws.send("PONG")
             ws.send("PING")
 
-    def on_error(ws:websocket.WebSocketApp, error:Exception):
-        telegram_message = "Error:\n"
-        telegram_message += datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "\n"
-        telegram_message += str(error) + "\n"
-        telegram_message += traceback.format_exc() + "\n"
-        print(telegram_message)
+    def on_error(ws:websocket.WebSocketApp, error:Exception, first_thread_lock:threading.Event):
+        if first_thread_lock.is_set():
+            telegram_message = "Websocket error:\n"
+            # telegram_message += datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "\n"
+            telegram_message += str(error) + "\n"
+            # telegram_message += traceback.format_exc() + "\n"
+            # import ctypes  # An included library with Python install.   
+            # ctypes.windll.user32.MessageBoxW(0, "No Internet", "No Internet", 1)
+            print(telegram_message)
+        else:
+            print("Websocket error")
 
     def on_close(ws:websocket.WebSocketApp, close_status_code:int, close_msg:str):
         print(f"WebSocket connection closed with status: {close_status_code}, message: {close_msg}")
@@ -65,8 +60,8 @@ class WebSocket:
 
 class DataCollector:
 
-    def on_message(ws:websocket.WebSocketApp, message:str, username:str, channel:str, connection_open_event:threading.Event):
-        WebSocket.connect(ws, message, username, channel, connection_open_event, launch_data_collector)
+    def on_message(ws:websocket.WebSocketApp, message:str, username:str, channel:str, counters:list, connection_open_event:threading.Event):
+        WebSocket.connect(ws, message, username, channel, counters, connection_open_event, launch_data_collector)
 
         if "a new contest has started" in message: # New bet
             timestamp = datetime.datetime.now()
@@ -108,8 +103,8 @@ class DataCollector:
 
 class Bettor:
 
-    def on_message(ws:websocket.WebSocketApp, message:str, username:str, channel:str, connection_open_event:threading.Event):
-        WebSocket.connect(ws, message, username, channel, connection_open_event, launch_bettor)
+    def on_message(ws:websocket.WebSocketApp, message:str, username:str, channel:str, counters:list, connection_open_event:threading.Event):
+        WebSocket.connect(ws, message, username, channel, counters, connection_open_event, launch_bettor)
         try:
             user = message.split("display-name=")[1].split(";")[0]
             msg = message.split(f"PRIVMSG #{channel.lower()} :")[1]
@@ -147,8 +142,8 @@ class Bettor:
 
 class Controller:
 
-    def on_message(ws:websocket.WebSocketApp, message:str, username:str, channel:str, connection_open_event:threading.Event):
-        WebSocket.connect(ws, message, username, channel, connection_open_event, launch_controller)
+    def on_message(ws:websocket.WebSocketApp, message:str, username:str, channel:str, counters:list, connection_open_event:threading.Event):
+        WebSocket.connect(ws, message, username, channel, counters, connection_open_event, launch_controller)
 
         allowed_users = ["el_pipow", "jrcosta"]
 
@@ -173,17 +168,68 @@ class Controller:
                 telegramBot.sendMessage(telegram_message)
                 print(telegram_message)
 
-def launch_viewer(channel:str, username:str, oauth_key:str, counters:list) -> tuple[threading.Thread, websocket.WebSocketApp]:
+def launch_viewer(channel:str, username:str, oauth_key:str, counters:list, first_thread_lock:threading.Event) -> tuple[threading.Thread, websocket.WebSocketApp]:
     connection_open_event = threading.Event()
 
     websocket_url = "wss://irc-ws.chat.twitch.tv/"
-    ws = websocket.WebSocketApp(
-        websocket_url,
-        # on_message=partial(Viewer.on_message, username=username, channel=channel),
-        on_message=partial(WebSocket.connect, username=username, channel=channel, connection_open_event=connection_open_event, creator_function=launch_viewer),
-        on_error=WebSocket.on_error,
-        on_open=partial(WebSocket.on_open, oauth_key=oauth_key, username=username, counters=counters)
-        )
+    try:
+        ws = websocket.WebSocketApp(
+            websocket_url,
+            # on_message=partial(Viewer.on_message, username=username, channel=channel),
+            on_message=partial(WebSocket.connect, username=username, channel=channel, counters=counters, connection_open_event=connection_open_event, creator_function=launch_viewer),
+            on_error=WebSocket.on_error,
+            on_open=partial(WebSocket.on_open, oauth_key=oauth_key, username=username, counters=counters)
+            )
+    except Exception as e:
+        print(e)
+    # Run the WebSocket connection in a separate thread to avoid blocking
+    wst = threading.Thread(target=ws.run_forever)
+    wst.daemon = True
+    wst.start()
+    
+    # Wait for the connection to be open before sending the message
+    connection_open_event.wait()
+    counters[1] += 1
+
+    return wst, ws
+
+def launch_controller(channel:str, username:str, oauth_key:str, counters:list, first_thread_lock:threading.Event) -> tuple[threading.Thread, websocket.WebSocketApp]:
+    connection_open_event = threading.Event()
+
+    websocket_url = "wss://irc-ws.chat.twitch.tv/"
+    try:
+        ws = websocket.WebSocketApp(
+            websocket_url,
+            on_message=partial(Controller.on_message, username=username, channel=channel, counters=counters, connection_open_event=connection_open_event),
+            on_error=WebSocket.on_error,
+            on_open=partial(WebSocket.on_open, oauth_key=oauth_key, username=username, counters=counters)
+            )
+    except Exception as e:
+        print(e)
+    # Run the WebSocket connection in a separate thread to avoid blocking
+    wst = threading.Thread(target=ws.run_forever)
+    wst.daemon = True
+    wst.start()
+    
+    # Wait for the connection to be open before sending the message
+    connection_open_event.wait()
+    counters[1] += 1
+
+    return wst, ws
+
+def launch_data_collector(channel:str, username:str, oauth_key:str, counters:list, first_thread_lock:threading.Event) -> tuple[threading.Thread, websocket.WebSocketApp]:
+    connection_open_event = threading.Event()
+
+    websocket_url = "wss://irc-ws.chat.twitch.tv/"
+    try:
+        ws = websocket.WebSocketApp(
+            websocket_url,
+            on_message=partial(DataCollector.on_message, username=username, channel=channel, counters=counters, connection_open_event=connection_open_event),
+            on_error=WebSocket.on_error,
+            on_open=partial(WebSocket.on_open, oauth_key=oauth_key, username=username, counters=counters)
+            )
+    except Exception as e:
+        print(e)
     
     # Run the WebSocket connection in a separate thread to avoid blocking
     wst = threading.Thread(target=ws.run_forever)
@@ -196,61 +242,19 @@ def launch_viewer(channel:str, username:str, oauth_key:str, counters:list) -> tu
 
     return wst, ws
 
-def launch_controller(channel:str, username:str, oauth_key:str, counters:list) -> tuple[threading.Thread, websocket.WebSocketApp]:
+def launch_bettor(channel:str, username:str, oauth_key:str, counters:list, first_thread_lock:threading.Event) -> tuple[threading.Thread, websocket.WebSocketApp]:
     connection_open_event = threading.Event()
 
     websocket_url = "wss://irc-ws.chat.twitch.tv/"
-    ws = websocket.WebSocketApp(
-        websocket_url,
-        on_message=partial(Controller.on_message, username=username, channel=channel, connection_open_event=connection_open_event),
-        on_error=WebSocket.on_error,
-        on_open=partial(WebSocket.on_open, oauth_key=oauth_key, username=username, counters=counters)
-        )
-    
-    # Run the WebSocket connection in a separate thread to avoid blocking
-    wst = threading.Thread(target=ws.run_forever)
-    wst.daemon = True
-    wst.start()
-    
-    # Wait for the connection to be open before sending the message
-    connection_open_event.wait()
-    counters[1] += 1
-
-    return wst, ws
-
-def launch_data_collector(channel:str, username:str, oauth_key:str, counters:list) -> tuple[threading.Thread, websocket.WebSocketApp]:
-    connection_open_event = threading.Event()
-
-    websocket_url = "wss://irc-ws.chat.twitch.tv/"
-    ws = websocket.WebSocketApp(
-        websocket_url,
-        on_message=partial(DataCollector.on_message, username=username, channel=channel, connection_open_event=connection_open_event),
-        on_error=WebSocket.on_error,
-        on_open=partial(WebSocket.on_open, oauth_key=oauth_key, username=username, counters=counters)
-        )
-    
-    # Run the WebSocket connection in a separate thread to avoid blocking
-    wst = threading.Thread(target=ws.run_forever)
-    wst.daemon = True
-    wst.start()
-    
-    # Wait for the connection to be open before sending the message
-    connection_open_event.wait()
-    counters[1] += 1
-
-    return wst, ws
-
-def launch_bettor(channel:str, username:str, oauth_key:str, counters:list) -> tuple[threading.Thread, websocket.WebSocketApp]:
-    connection_open_event = threading.Event()
-
-    websocket_url = "wss://irc-ws.chat.twitch.tv/"
-    ws = websocket.WebSocketApp(
-        websocket_url,
-        on_message=partial(Bettor.on_message, username=username, channel=channel, connection_open_event=connection_open_event),
-        on_error=WebSocket.on_error,
-        on_open=partial(WebSocket.on_open, oauth_key=oauth_key, username=username, counters=counters)
-        )
-    
+    try:
+        ws = websocket.WebSocketApp(
+            websocket_url,
+            on_message=partial(Bettor.on_message, username=username, channel=channel, counters=counters, connection_open_event=connection_open_event),
+            on_error=partial(WebSocket.on_error, first_thread_lock=first_thread_lock),
+            on_open=partial(WebSocket.on_open, oauth_key=oauth_key, username=username, counters=counters)
+            )
+    except Exception as e:
+        print(e)
     # Run the WebSocket connection in a separate thread to avoid blocking
     wst = threading.Thread(target=ws.run_forever)
     wst.daemon = True

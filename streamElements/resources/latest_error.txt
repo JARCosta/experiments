@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "\\wsl.localhost\Ubuntu\home\jar\experiments\main.py", line 66, in <module>
+    if counters[0] == 4 and counters[1] == 0:
+KeyboardInterrupt

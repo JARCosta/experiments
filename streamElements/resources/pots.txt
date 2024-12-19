@@ -767,3 +767,53 @@ Win
 Win
 {'win': 3533, 'lose': 2542}
 Lose
+Lose
+{'win': 7980, 'lose': 5235}
+Lose
+{'win': 9930, 'lose': 9534}
+Lose
+Lose
+{'win': 28186, 'lose': 11107}
+Win
+{'win': 14415, 'lose': 5745}
+Lose
+{'win': 17622, 'lose': 9124}
+Lose
+{'win': 15096, 'lose': 9452}
+Win
+{'win': 10521, 'lose': 15528}
+Win
+{'win': 17531, 'lose': 6269}
+Lose
+{'win': 7273, 'lose': 380}
+Lose
+{'win': 12715, 'lose': 4998}
+Win
+{'win': 10544, 'lose': 3934}
+Lose
+{'win': 10245, 'lose': 6039}
+Lose
+{'win': 7450, 'lose': 4595}
+Win
+{'win': 8835, 'lose': 6823}
+Win
+{'win': 7325, 'lose': 12553}
+Win
+{'win': 718, 'lose': 2750}
+Lose
+{'win': 1000, 'lose': 315}
+Lose
+{'win': 2673, 'lose': 1340}
+Win
+{'win': 5788, 'lose': 3401}
+Lose
+{'win': 7070, 'lose': 3456}
+Lose
+{'win': 12414, 'lose': 5040}
+Win
+{'win': 10775, 'lose': 7635}
+{'win': 18742, 'lose': 7676}
+{'win': 9023, 'lose': 1710}
+{'win': 7313, 'lose': 2869}
+Lose
+Lose

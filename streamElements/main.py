@@ -125,32 +125,34 @@ def calculate_bet(options:dict, balance:int) -> tuple[str, int]:
 
 WST, WS = None, None
 
-def reconnect(wst:threading.Thread, ws:websocket.WebSocketApp, username:str, oauth_key:str):
+def reconnect(wst:threading.Thread, ws:websocket.WebSocketApp, username:str, oauth_key:str, counters:list, first_thread_lock:threading.Event):
     global telegram_message
     twitch_message_sender.close(wst, ws)
-    wst, ws = twitch_message_sender.launch_bettor("Runah", username, oauth_key)
+    wst, ws = twitch_message_sender.launch_bettor("Runah", username, oauth_key, counters, first_thread_lock)
     telegram_message += "Reconnected to Twitch\n"
     return wst, ws
 
-def check_websocket(wst:threading.Thread, ws:websocket.WebSocketApp, username:str, oauth_key:str):
+def check_websocket(wst:threading.Thread, ws:websocket.WebSocketApp, username:str, oauth_key:str, counters:list, first_thread_lock:threading.Event):
     try:
         twitch_message_sender.ping(ws)
     except (websocket._exceptions.WebSocketConnectionClosedException, ):
         print("Handled exception:\n", traceback.format_exc())
-        return reconnect(wst, ws, username, oauth_key)
+        return reconnect(wst, ws, username, oauth_key, counters, first_thread_lock)
     return wst, ws
 
-def bettor_agent(channel:str, username:str, oauth_key:str, counters):
+def bettor_agent(channel:str, username:str, oauth_key:str, counters:list, first_thread_lock:threading.Event):
     global WST, WS
-    WST, WS = twitch_message_sender.launch_bettor(channel, username, oauth_key, counters)
+    WST, WS = twitch_message_sender.launch_bettor(channel, username, oauth_key, counters, first_thread_lock)
     time.sleep(1)
 
     try:
         global telegram_message
         while True:
-            response = requests.get("https://api.streamelements.com/kappa/v2/contests/5a2ae33308308f00016e684e/active")
-            while response.status_code != 200:
-                response = requests.get("https://api.streamelements.com/kappa/v2/contests/5a2ae33308308f00016e684e/active")
+            try:
+                response = requests.get("https://api.streamelements.com/kappa/v2/contests/5a2ae33308308f00016e684e/active", timeout=10)
+            except requests.exceptions.ConnectionError:
+                time.sleep(10)
+                continue
             response_json = response.json()
             
             now = datetime.datetime.now() + datetime.timedelta(hours=time.localtime().tm_isdst)
@@ -206,7 +208,7 @@ def bettor_agent(channel:str, username:str, oauth_key:str, counters):
                     telegram_message += f"Follow it through: https://streamelements.com/runah/contest/{response_json['contest']['_id']}\n"
                     telegram_message += f"You have {get_balance()} points\n"
 
-                    WST, WS = check_websocket(WST, WS, username, oauth_key)
+                    WST, WS = check_websocket(WST, WS, username, oauth_key, counters, first_thread_lock)
                     send_message()
 
                     sleep_until(end - datetime.timedelta(seconds=get_variable_delay()))
@@ -242,7 +244,7 @@ def bettor_agent(channel:str, username:str, oauth_key:str, counters):
         with open('streamElements/resources/latest_error.txt', 'w') as f:
             pass
     except Exception as e:
-        telegram_message += "Error:\n"
+        telegram_message += "Main Error:\n"
         telegram_message += datetime.datetime.now().strftime('%H:%M') + "\n"
         telegram_message += traceback.format_exc()
         send_message()
