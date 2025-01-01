@@ -36,7 +36,7 @@ def check_oauth_token(username):
                     return oauth
         except FileNotFoundError:
             print(f"Set {username.upper()+'_OAUTH'}:")
-            set_oauth_token(username)
+            return set_oauth_token(username)
     else:
         return os.getenv(username.upper() + "_OAUTH")
 
