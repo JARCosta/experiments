@@ -817,6 +817,7 @@ Win
 {'win': 7313, 'lose': 2869}
 Lose
 Lose
+<<<<<<< Updated upstream
 {'win': 630, 'lose': 169}
 Lose
 {'win': 6826, 'lose': 4909}
@@ -856,3 +857,64 @@ Lose
 {'win': 1400, 'lose': 4917}
 Lose
 {'win': 255, 'lose': 100}
+=======
+{'win': 255, 'lose': 110}
+Lose
+{'win': 944, 'lose': 640}
+Win
+{'win': 2222, 'lose': 2360}
+Win
+{'win': 4077, 'lose': 3202}
+Lose
+{'win': 1395, 'lose': 1805}
+Lose
+{'win': 1181, 'lose': 1400}
+Win
+{'win': 1811, 'lose': 400}
+Win
+{'win': 1417, 'lose': 200}
+Win
+{'win': 2606, 'lose': 825}
+Lose
+{'win': 632, 'lose': 1297}
+Win
+{'win': 0, 'lose': 2304}
+Win
+{'win': 3425, 'lose': 1254}
+Lose
+{'win': 580, 'lose': 280}
+Lose
+{'win': 17892, 'lose': 6776}
+Lose
+{'win': 600, 'lose': 1111}
+Lose
+{'win': 240, 'lose': 886}
+Lose
+{'win': 2852, 'lose': 2461}
+Lose
+{'win': 1262, 'lose': 1135}
+Win
+{'win': 1150, 'lose': 2875}
+Win
+{'win': 2829, 'lose': 2635}
+Lose
+{'win': 1000, 'lose': 600}
+Lose
+{'win': 1961, 'lose': 3620}
+Win
+{'win': 250, 'lose': 0}
+Lose
+{'win': 1005, 'lose': 500}
+Win
+{'win': 610, 'lose': 0}
+Lose
+{'win': 1605, 'lose': 1440}
+Lose
+{'win': 3525, 'lose': 895}
+Win
+{'win': 12779, 'lose': 8676}
+Lose
+{'win': 1730, 'lose': 2269}
+Win
+{'win': 7640, 'lose': 6274}
+>>>>>>> Stashed changes
