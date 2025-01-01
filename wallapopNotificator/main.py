@@ -1,5 +1,5 @@
 import traceback
-from telegramBot import main as telegramBot
+import telegramBot
 
 import requests
 import json

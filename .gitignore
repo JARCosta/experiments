@@ -2,6 +2,5 @@ __pycache__
 run.sh
 test
 test.py
-buffxSteamComparison/
-buffxSteamComparison\best_items.txt
+buffxSteamComparison/best_items.txt
 *_OAUTH

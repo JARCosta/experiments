@@ -5,12 +5,32 @@ import csv
 import datetime
 import json
 import math
+import operator
 import random
+from statistics import mean
+import statistics
 import time
+import traceback
+from urllib import parse
+import numpy as np
 import requests
 
+import sys
+sys.path.append('..')
+import telegramBot
+import credentials
+
+BUFF_COOKIES = {
+    'session': '1-Zb-zpIjcp09zRRJsM1lg5YsNhDtXyOTAfI18aCx_LVQA2045446835', # needs to be updated
+}.__str__().replace(": ", "=").replace(", ", ";").replace("{", "").replace("}", "").replace("'", "")
+
+STEAM_COOKIES = { # https://steamcommunity.com/market/pricehistory/?appid=730
+    'steamLoginSecure': '76561198285623099%7C%7CeyAidHlwIjogIkpXVCIsICJhbGciOiAiRWREU0EiIH0.eyAiaXNzIjogInI6MEZBNF8yNEJBMDBDNF9DOUREOSIsICJzdWIiOiAiNzY1NjExOTgyODU2MjMwOTkiLCAiYXVkIjogWyAid2ViOmNvbW11bml0eSIgXSwgImV4cCI6IDE3MzQ5MTc1MDUsICJuYmYiOiAxNzI2MTkwNjM4LCAiaWF0IjogMTczNDgzMDYzOCwgImp0aSI6ICIwMDE2XzI1OEUxMkIyXzM4ODA1IiwgIm9hdCI6IDE3MjA4MTY3MzEsICJydF9leHAiOiAxNzM4NzA4ODY1LCAicGVyIjogMCwgImlwX3N1YmplY3QiOiAiOTUuOTMuMjQyLjE0NCIsICJpcF9jb25maXJtZXIiOiAiOTUuOTMuMjQyLjE0NCIgfQ.jLlnODLI7hN9KA8OMWJk1NYpXYNaLgp2PCPWQKp_pdn0MCIrcUDleOLH68nOaooCNGvVtIqcxtzrBSg0FQNVDg'
+    }.__str__().replace(": ", "=").replace(", ", ";").replace("{", "").replace("}", "").replace("'", "")
+
+
 class Item:
-    def __init__(self, date:datetime, id:int, market_hash_name:str, buff_price:float, steam_price:float, buff_url:str, steam_url:str, type:str):
+    def __init__(self, date:datetime, id:int, market_hash_name:str, buff_price:float, steam_price:float, buff_url:str, steam_url:str, type:str, buff_last_update:datetime=None, steam_last_update:datetime=None):
         self.date = date
         self.id = id
         self.market_hash_name = market_hash_name
@@ -19,12 +39,14 @@ class Item:
         self.buff_url = buff_url
         self.steam_url = steam_url
         self.type = type
+        self.buff_last_update = buff_last_update
+        self.steam_last_update = steam_last_update
 
     def __str__(self):
-        return f"{self.date} {self.id} {self.market_hash_name} {self.buff_price} {self.steam_price} {self.buff_url} {self.steam_url} {self.type}"
+        return f"{self.date} {self.id} {self.market_hash_name} {self.buff_price} {self.steam_price} {self.buff_url} {self.steam_url} {self.type} {self.buff_last_update} {self.steam_last_update}"
     
     def csv_line(self):
-        return f"{self.date};{self.id};{self.market_hash_name};{self.buff_price};{self.steam_price};{self.buff_url};{self.steam_url};{self.type}\n"
+        return f"{self.date};{self.id};{self.market_hash_name};{self.buff_price};{self.steam_price};{self.buff_url};{self.steam_url};{self.type};{self.buff_last_update if self.buff_last_update != None else ''};{self.steam_last_update if self.steam_last_update != None else ''}\n"
 
 def store_item(item:Item) -> None:
     with open("History.csv", "a", encoding='utf-8') as file:
@@ -48,110 +70,64 @@ def load_items() -> list[Item]:
             str(i[5]), # buff_url,
             str(i[6]), # steam_url,
             str(i[7]), # type
+            datetime.datetime.strptime(i[8], "%Y-%m-%d %H:%M:%S") if i[8] != "" else None, # buff_last_update,
+            datetime.datetime.strptime(i[9], "%Y-%m-%d %H:%M:%S") if i[9] != "" else None # steam_last_update
         ) for i in items
     ]
 
+def load_latest_items_dict() -> list[Item]:
+    """
+    Load latest items, order of insertion in file
+    """
+    # print(load_items()[0].date)
+    item_history = load_items()[::-1]
+    latest_item_history = {i.id: i for i in item_history}
+    return latest_item_history
+
 def load_latest_items() -> list[Item]:
     """
-    Load latest items, no particular order
+    Load latest items, order of insertion in file
     """
-    print(load_items()[0].date)
+    # print(load_items()[0].date)
     item_history = load_items()[::-1]
     latest_item_history = list({i.id: i for i in item_history}.values())
     return latest_item_history
 
-def get_latest_item(id:int) -> Item:
-    return {i.id: i for i in load_items()}[id]
-
-def update_bookmarked_prices():
-
-    url = 'https://api.buff.market/account/api/bookmark/goods?game=csgo&page_num=1&page_size=15'
-    headers = {
-        'accept': 'application/json, text/plain, */*',
-        'accept-language': 'en-US,en;q=0.9,pt;q=0.8,fr;q=0.7,es;q=0.6',
-        'cookie': 'Locale-Supported=en; _uetvid=67f774801c1c11ef8d8e99c46aa0b808; fblo_881005522527906=y; Device-Id=cJDGYsSGk9yuvsIUw2HH; session=1-zDOYlj7g0oLtB2g_4h9IYyXO7P9-BdJGYvIznqcYj9Cn2045446835; forterToken=94905526192b40f6aa1b5cfb50e845e5_1730211347307_78_UDF9_13ck; csrf_token=Ijk4ZmZkZjA2YTFkNjI0NzQxYmJjZTFiNTk3YmZmNjIwZDk2N2VmNWYi.ZyDuFA.jOt7g-zvgW8HDYaTy8n4sC2T_lo',
-        'origin': 'https://buff.market',
-        'priority': 'u=1, i',
-        'referer': 'https://buff.market/',
-        'sec-ch-ua': '"Chromium";v="130", "Google Chrome";v="130", "Not?A_Brand";v="99"',
-        'sec-ch-ua-mobile': '?0',
-        'sec-ch-ua-platform': '"Windows"',
-        'sec-fetch-dest': 'empty',
-        'sec-fetch-mode': 'cors',
-        'sec-fetch-site': 'same-site',
-        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36',
-        'x-csrftoken': 'Ijk4ZmZkZjA2YTFkNjI0NzQxYmJjZTFiNTk3YmZmNjIwZDk2N2VmNWYi.ZyDuFA.jOt7g-zvgW8HDYaTy8n4sC2T_lo'
-    }
-
-    response = requests.get(url, headers=headers).json()
-    with open("bookmarked_agents.json", "w", encoding='utf-8') as file:
-        json.dump(response, file, indent=4)
-    for i in response["data"]["items"]:
-        i = i["goods"]
-        item = Item(
-            datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), # date,
-            i["id"], # id,
-            i["market_hash_name"], # market_hash_name,
-            float(i["sell_min_price"]), # buff_price,
-            float(i["goods_info"]["steam_price"]), # steam_price,
-            'https://buff.market/market/goods/' + str(i["id"]), # buff_url,
-            i["steam_market_url"], # steam_url,
-            i["goods_info"]["info"]["tags"]["type"]["localized_name"], # type 
-        )
-
-        print(item)
-        store_item(item)
-
 def update_steam_price(item:Item):
-    url = f'https://steamcommunity.com/market/priceoverview/?appid=730&market_hash_name={item.market_hash_name}&format=json'
-    response = requests.get(url).json()
+
+    url = f"https://steamcommunity.com/market/pricehistory/?appid=730&market_hash_name={parse.quote(item.market_hash_name, safe='')}"
+
+    response = requests.get(url, headers={"cookie": STEAM_COOKIES}).json()
+
+    window_size = 20
     try:
-        new_steam_price = float(response['lowest_price'][1:])
-        new_steam_price = float(response['median_price'][1:])
-    except KeyError:
-        print(item)
+        dates = [i[0].split(":")[0] for i in response["prices"][-window_size:]]
+    except TypeError:
         print(response)
-        # raise Exception("Steam price not found")
-        new_steam_price = -1
+        print(url)
+    dates = [datetime.datetime.strptime(i, "%b %d %Y %H") for i in dates][::-1]
+    date_diff = (datetime.datetime.now() - dates[-1]).total_seconds()/3600
 
-    old_price_ratio = round(item.buff_price/item.steam_price,3)
-    new_price_ratio = round(item.buff_price/new_steam_price,3)
+    mean_prices = mean([i[1] for i in response["prices"][-window_size:]])
+    mean_prices = round(mean_prices, 2)
+    
+    update = True
+    new_steam_price = mean_prices
+    print(round(date_diff, 1))
+    if date_diff < 720:
+        successfull = True
+    else:
+        successfull = False
 
-    if item.steam_price != new_steam_price:
-        print(item.id, item.market_hash_name, item.type)
-        print(f"\tbuff_price:\t{item.buff_price}$\t-> {item.buff_price}$")
-        print(f"\tsteam_price:\t{item.steam_price}$\t-> {new_steam_price}$")
-        print(f"\tprice_ratio:\t{round(old_price_ratio*100,1)}%\t-> {round(new_price_ratio*100,1)}%")
-
-        store_item(Item(
-            datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), # date,
-            item.id, # id,
-            item.market_hash_name, # market_hash_name,
-            item.buff_price, # buff_price,
-            new_steam_price, # steam_price,
-            item.buff_url, # buff_url,
-            item.steam_url, # steam_url,
-            item.type, # type
-            ))
-
-def update_prices(types=[]):
-    for item in load_latest_items():
-        if types != [] and item.type not in types:
-            continue
-
-        url = f"https://steamcommunity.com/market/priceoverview/?appid=730&market_hash_name={item.market_hash_name}&format=json"
-        response = requests.get(url).json()
-        try:
-            new_steam_price = float(response['lowest_price'][1:])
-            new_steam_price = float(response['median_price'][1:])
-        except KeyError:
-            print(response)
-            raise Exception("Steam price not found")
-
+    if update:
+        if item.steam_price == new_steam_price:
+            # print(item.id, item.market_hash_name, item.type)
+            print("No change in price")
+            return successfull
+        
         old_price_ratio = round(item.buff_price/item.steam_price,3)
         new_price_ratio = round(item.buff_price/new_steam_price,3)
-
-        # if new_price_ratio != price_ratio:
+        
         print(item.id, item.market_hash_name, item.type)
         print(f"\tbuff_price:\t{item.buff_price}$\t-> {item.buff_price}$")
         print(f"\tsteam_price:\t{item.steam_price}$\t-> {new_steam_price}$")
@@ -166,9 +142,11 @@ def update_prices(types=[]):
             item.buff_url, # buff_url,
             item.steam_url, # steam_url,
             item.type, # type
+            item.buff_last_update, # buff_last_update,
+            datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") # steam_last_update
             ))
 
-        time.sleep(random.normalvariate(5, 1))
+    return successfull
 
 def after_steam_tax(price:float):
     return math.floor(100*price/1.15-1)/100
@@ -186,130 +164,244 @@ def get_price_ratio(item:Item, steam_to_buff=False):
         price_ratio = round(100*steam_price_after_tax/item.buff_price,1)
     return price_ratio
 
-def get_best_items(types=[], steam_to_buff=False, highlights=[], verbose=False):
-    items = load_latest_items()[::-1]
+def get_best_items(value_filters:list=[], type_filters:list=[], steam_to_buff:bool=False, highlights:list=[], verbose:bool=False, graph:bool=False):
+    items = load_latest_items()
 
-    items = filter(lambda x: get_price_ratio(x, steam_to_buff) != False, items)
-    items = sorted(items, key=lambda x: get_price_ratio(x, steam_to_buff))
-    
-    open("best_agents.txt", "w").close()
-    rank = 1
-    plot_data = []
+    items = sorted(items, key=lambda x: get_price_ratio(x, steam_to_buff), reverse=True)
+
+    open("best_items.txt", "w").close()
+    rank, plot_data, item_info_storage = 1, [], ""
     for item in items:
 
-        if types != [] and item.type not in types:
+        if type_filters != [] and item.type not in type_filters:
             continue
 
-        if "★" in item.market_hash_name or ("StatTrak™" in item.market_hash_name and not "Music Kit" in item.market_hash_name):
+        continuer = False
+        for variable,operator,value in value_filters:
+            if not operator(getattr(item, variable), value):
+                continuer = True
+                break
+        if continuer:
             continue
     
         price_ratio = get_price_ratio(item, steam_to_buff)
         steam_price_after_tax = after_steam_tax(item.steam_price)
 
         item_info = f"{rank}\n"
-        rank += 1
-        item_info += f"{price_ratio} {item.date.strftime('%Y-%m-%d %H:%M:%S')}, {item.market_hash_name}\n"
+        item_info += f"{price_ratio} {item.date.strftime('%Y-%m-%d %H:%M:%S')}, {item.market_hash_name}, {item.type}\n"
         item_info += f"\t {item.buff_price}, {item.buff_url}\n"
         item_info += f"\t {item.steam_price}, {steam_price_after_tax}, {item.steam_url}\n"
 
-        if item.market_hash_name in highlights or item.type in highlights:
-            plot_data.append((rank, price_ratio, 1))
-        else:
-            plot_data.append((rank, price_ratio, 0))
+        plot_data.append((rank, price_ratio, item.market_hash_name, item.type))
 
-        print(item_info)
+        if verbose:
+            print(item_info)
 
-        with open("best_agents.txt", "a", encoding='utf-8') as file:
-            file.write(item_info)
+        item_info_storage += item_info
+        
+        rank += 1
+    with open("best_items.txt", "a", encoding='utf-8') as file:
+        file.write(item_info_storage)
     
-    if verbose:
+    if graph:
+
+        ratios = [i[1] for i in plot_data]
+        quantile = np.quantile(ratios, 0.5)
+        # print(quantile)
+        plot_data = [i for i in plot_data if i[1] > quantile]
+        
         import matplotlib.pyplot as plt
+
+        fig, ax = plt.subplots()
 
         x = [i[0] for i in plot_data]
         y = [i[1] for i in plot_data]
-        c = [i[2] for i in plot_data]
+        plt.bar(x, y, width=1, color="lightgray")
 
-        plt.scatter(x, y, c=c, cmap='coolwarm')
+        highlighted_data = []
+        for i in range(len(highlights)):
+            for j in plot_data:
+                if j[2] == highlights[i]:
+                    highlighted_data.append((j[0], j[1], (i)/(len(highlights)-1), j[2]))
+                elif j[3] == highlights[i]:
+                    highlighted_data.append((j[0], j[1], (i)/(len(highlights)-1), j[2]))
+        x = [i[0] for i in highlighted_data]
+        y = [i[1] for i in highlighted_data]
+        c = [i[2] for i in highlighted_data]
+        hash_names = [i[3] for i in highlighted_data]
+
+        plt.bar(x, y, width=1, color=plt.cm.turbo(c))
+        scatter = plt.scatter(x, y, c=c, cmap="turbo", s = 15)
+
+
+        annotation = ax.annotate(
+            text='',
+            xy=(0, 0),
+            xytext=(15, 15), # distance from x, y
+            textcoords='offset points',
+            bbox={'boxstyle': 'round', 'fc': 'w'},
+            arrowprops={'arrowstyle': '->'}
+        )
+        annotation.set_visible(False)
+
+
+        # Step 3. Implement the hover event to display annotations
+        def motion_hover(event):
+            annotation_visbility = annotation.get_visible()
+            if event.inaxes == ax:
+                is_contained, annotation_index = scatter.contains(event)
+                if is_contained:
+                    data_point_hash_name = hash_names[annotation_index['ind'][0]]
+                    data_point_location = scatter.get_offsets()[annotation_index['ind'][0]]
+                    annotation.xy = data_point_location
+
+                    # text_label = '({0:.2f}, {0:.2f})'.format(data_point_location[0], data_point_location[1])
+                    text_label = f"{data_point_hash_name}"
+                    annotation.set_text(text_label)
+
+                    annotation.get_bbox_patch().set_facecolor(plt.cm.turbo(c[annotation_index['ind'][0]]))
+                    annotation.get_bbox_patch().set_alpha(0.4)
+                    annotation.set_alpha(0.4)
+
+                    annotation.set_visible(True)
+                    fig.canvas.draw_idle()
+                else:
+                    if annotation_visbility:
+                        annotation.set_visible(False)
+                        fig.canvas.draw_idle()
+
+        fig.canvas.mpl_connect('motion_notify_event', motion_hover)
+
+
+        ticks = [(i)/(len(highlights)-1) for i in range(len(highlights))]
+        # print(ticks)
+        # print(highlights)
+        plt.colorbar().set_ticks(ticks=ticks, labels=highlights)
         plt.show()
-
 
     return items
 
+def get_items(key_word:str, filter:str=None):
 
+    latest_items_dict = load_latest_items_dict()
 
-def get_items(filter:str):
     page = 1
     while True:
-        url = f"https://api.buff.market/api/market/goods?{filter}game=csgo&page_num={page}&page_size=80"
+        if key_word == "Bookmarked":
+            url = f"https://api.buff.market/account/api/bookmark/goods?game=csgo&page_num={page}&page_size=80"
+        elif key_word == "Inventory":
+            url = f"https://api.buff.market/api/market/steam_inventory?game=csgo&page_num={page}&page_size=40"
+        else:
+            url = f"https://api.buff.market/api/market/goods?{filter}game=csgo&page_num={page}&page_size=80"
         headers = {
-            "accept": "application/json, text/plain, */*",
-            "accept-language": "en-US,en;q=0.9,pt;q=0.8,fr;q=0.7,es;q=0.6",
-            "priority": "u=1, i",
-            "sec-ch-ua": "\"Chromium\";v=\"130\", \"Google Chrome\";v=\"130\", \"Not?A_Brand\";v=\"99\"",
-            "sec-ch-ua-mobile": "?0",
-            "sec-ch-ua-platform": "\"Windows\"",
-            "sec-fetch-dest": "empty",
-            "sec-fetch-mode": "cors",
-            "sec-fetch-site": "same-site",
-            "x-csrftoken": "Ijk4ZmZkZjA2YTFkNjI0NzQxYmJjZTFiNTk3YmZmNjIwZDk2N2VmNWYi.Zx1fvQ.mYuvD3iJyafQYruJWoNddUVo-_c",
-            "cookie": "Locale-Supported=en; _uetvid=67f774801c1c11ef8d8e99c46aa0b808; fblo_881005522527906=y; Device-Id=cJDGYsSGk9yuvsIUw2HH; session=1-zDOYlj7g0oLtB2g_4h9IYyXO7P9-BdJGYvIznqcYj9Cn2045446835; forterToken=94905526192b40f6aa1b5cfb50e845e5_1729978299755_35_UDF9_13ck; csrf_token=Ijk4ZmZkZjA2YTFkNjI0NzQxYmJjZTFiNTk3YmZmNjIwZDk2N2VmNWYi.Zx1fvQ.mYuvD3iJyafQYruJWoNddUVo-_c",
-            "Referer": "https://buff.market/",
-            "Referrer-Policy": "strict-origin-when-cross-origin"
+            "cookie": BUFF_COOKIES,
         }
         response = requests.get(url, headers=headers).json()
-        try:
-            _ = response["data"]
-        except KeyError:
-            print(response)
-        
-        for i in response["data"]["items"]:
-            item = Item(
-                datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), # date,
-                i["id"], # id,
-                i["market_hash_name"], # market_hash_name,
-                float(i["sell_min_price"]), # buff_price,
-                float(i["goods_info"]["steam_price"]), # steam_price,
-                'https://buff.market/market/goods/' + str(i["id"]), # buff_url,
-                i["steam_market_url"], # steam_url,
-                i["goods_info"]["info"]["tags"]["type"]["localized_name"], # type 
-            )
 
-            print(item)
-            store_item(item)
+        if key_word == "Bookmarked":
+            for i in response["data"]["items"]:
+                i = i["goods"]
+                item = Item(
+                    datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), # date,
+                    i["id"], # id,
+                    i["market_hash_name"], # market_hash_name,
+                    float(i["sell_min_price"]), # buff_price,
+                    latest_items_dict[i["id"]].steam_price if i["id"] in latest_items_dict.keys() else float(i["goods_info"]["steam_price"]), # steam_price,
+                    'https://buff.market/market/goods/' + str(i["id"]), # buff_url,
+                    i["steam_market_url"], # steam_url,
+                    # i["goods_info"]["info"]["tags"]["type"]["localized_name"], # type
+                    key_word, # type
+                    datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), # buff_last_update,
+                    latest_items_dict[i["id"]].steam_last_update if i["id"] in latest_items_dict.keys() else None # steam_last_update
+                )
+                print(item)
+                store_item(item)
+
+        elif key_word == "Inventory":
+            for key, value in response["data"]["goods_infos"].items():
+                item = Item(
+                    datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), # date,
+                    value["goods_id"], # id,
+                    value["market_hash_name"], # market_hash_name,
+                    value["sell_min_price"], # buff_price,
+                    latest_items_dict[value["goods_id"]].steam_price if value["goods_id"] in latest_items_dict.keys() else value["steam_price"], # steam_price,
+                    'https://buff.market/market/goods/' + str(value["goods_id"]), # buff_url,
+                    "https://steamcommunity.com/market/listings/730/" + parse.quote(value["market_hash_name"], safe=''), # steam_url,
+                    # value["tags"]["type"]["localized_name"], # type
+                    "Inventory", # type
+                    datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), # buff_last_update,
+                    latest_items_dict[value["goods_id"]].steam_last_update if value["goods_id"] in latest_items_dict.keys() else None # steam_last_update
+                )
+                print(item)
+                store_item(item)
+        else:
+            for i in response["data"]["items"]:
+                item = Item(
+                    datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), # date,
+                    i["id"], # id,
+                    i["market_hash_name"], # market_hash_name,
+                    float(i["sell_min_price"]), # buff_price,
+                    latest_items_dict[i["id"]].steam_price if i["id"] in latest_items_dict.keys() else float(i["goods_info"]["steam_price"]), # steam_price,
+                    'https://buff.market/market/goods/' + str(i["id"]), # buff_url,
+                    i["steam_market_url"], # steam_url,
+                    # i["goods_info"]["info"]["tags"]["type"]["localized_name"], # type
+                    key_word, # type
+                    datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), # buff_last_update,
+                    latest_items_dict[i["id"]].steam_last_update if i["id"] in latest_items_dict.keys() else None # steam_last_update
+                )
+                print(item)
+                store_item(item)
+
         print(page, response["data"]["total_page"], response["data"]["page_num"])
         page += 1
+        time.sleep(random.normalvariate(5, 1))
         if response["data"]["total_page"] == response["data"]["page_num"]:
             break
-        time.sleep(random.normalvariate(5, 1))
+
+
+def search(UPDATE_BUFF, UPDATE_STEAM, filters):
+
+    if UPDATE_BUFF:
+        get_items("Bookmarked")
+        get_items("Inventory")
+        get_items("Agent", "category_group=type_customplayer&")
+        get_items("Patch", "category=csgo_tool_patch&")
+        get_items("Gallery", "quality=normal&itemset=set_community_34,set_realism_camo,set_graphic_design,set_overpass_2024&")
+        get_items("Charm", "category=csgo_tool_keychain&")
+        get_items("Riptide", "quality=normal&itemset=set_community_29,set_vertigo_2021,set_mirage_2021,set_dust_2_2021,set_train_2021&")
+        get_items("Broken Fang", "quality=normal&itemset=set_community_27,set_op10_ancient,set_op10_ct,set_op10_t&")
+        get_items("Shattered Web", "quality=normal&itemset=set_community_23,set_norse,set_stmarc,set_canals&")
+
+    if UPDATE_STEAM:
+        to_update, has_median_counter, counter = get_best_items(value_filters), 0, 0
+        while has_median_counter < 30:
+            print(to_update[counter])
+            if update_steam_price(to_update[counter]):
+                has_median_counter += 1
+            counter += 1
+            print(counter, has_median_counter)
+            try:
+                time.sleep(random.normalvariate(3, 1))
+            except ValueError:
+                pass
+    top10 = get_best_items(filters)[:10]
+    telegram_message = ""
+    for i in top10:
+        telegram_message += f"{i.market_hash_name} {get_price_ratio(i)} {i.buff_price} {after_steam_tax(i.steam_price)}\n"
+    telegramBot.sendMessage(credentials.telegramBot_Notifications_token, telegram_message, credentials.telegramBot_User_id)
+    print(telegram_message)
+
+
+
+
 
 if __name__ == "__main__":
-   
-    # update_prices("Agent")
-    # time.sleep(random.normalvariate(5, 1))
+    value_filters = [["buff_price", operator.le, 100], ["buff_price",operator.ge, 0.1]]
+    type_filters = [["type", operator.eq, "Gallery"], ["type", operator.eq, "Agent"], ["type", operator.eq, "Charm"], ["type", operator.eq, "Patch"]]
+    filters = value_filters + type_filters
+    # search(True,True, filters)
     
-    # for i in load_latest_items():
-    #     print(i)
-    # print(get_latest_item(17))
-
-
-    # update_bookmarked_prices()
-    # time.sleep(random.normalvariate(5, 1))
-    # get_items("category_group=type_customplayer&") # Agents
-    # time.sleep(random.normalvariate(5, 1))
-    # get_items("category=csgo_tool_patch&") # Patches
-
-    # update_steam_prices("category_730_Type%5B%5D=tag_Type_CustomPlayer&") # Agents
-    # update_steam_prices("category_730_Type%5B%5D=tag_CSGO_Tool_Patch&") # Patches
-    # update_steam_price("")
-
-    to_update = get_best_items([], steam_to_buff=False, highlights=["Lieutenant Rex Krikey | SEAL Frogman", "Lt. Commander Ricksaw | NSWC SEAL", "Agent"])
-    print(len(to_update))
-    print(to_update[:5])
-    print(to_update[-5:])
-    
-    temp_list = to_update[:5]
-    temp_list.extend(to_update[-5:])
-    for i in temp_list:
-        update_steam_price(i)
-    
-    get_best_items([], steam_to_buff=False, highlights=["Lieutenant Rex Krikey | SEAL Frogman", "Lt. Commander Ricksaw | NSWC SEAL", "Agent"], verbose=True)
+    highlights =["Gallery", "Agent", "Charm"]
+    individuals = ["Lieutenant Rex Krikey | SEAL Frogman", "Lt. Commander Ricksaw | NSWC SEAL", "'Medium Rare' Crasswater | Guerrilla Warfare"]
+    highlights = highlights + individuals
+    ranking = get_best_items(highlights=highlights, graph=True)
