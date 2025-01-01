@@ -3,7 +3,9 @@ import subprocess
 import time
 
 import requests
-from streamElements import main as streamElements, twitch_message_sender, telegramBot
+from streamElements import main as streamElements, twitch_message_sender
+import credentials
+import telegramBot
 from wallapopNotificator import main as wallapopNotificator
 import traceback
 
@@ -48,7 +50,7 @@ if __name__ == "__main__":
     
     try:
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
-        telegramBot.sendMessage("Twitch bettor launched")
+        telegramBot.sendMessage(credentials.telegramBot_Notifications_token, "Twitch bettor launched", credentials.telegramBot_User_id)
 
         EL_PIPOW_OAUTH = check_oauth_token("El_Pipow")
         JRCOSTA_OAUTH = check_oauth_token("JRCosta")
@@ -71,6 +73,6 @@ if __name__ == "__main__":
                 print()
                 break
     except:
-        telegramBot.sendMessage(traceback.format_exc())
+        telegramBot.sendMessage(credentials.telegramBot_Notifications_token,traceback.format_exc(), credentials.telegramBot_User_id)
         with open("streamElements/resources/latest_error.txt", "w") as f:
             f.write(traceback.format_exc())
