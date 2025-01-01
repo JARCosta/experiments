@@ -6,6 +6,7 @@ import re
 import time
 import websocket
 import threading
+import credentials
 import telegramBot
 from streamElements import main
 import traceback
@@ -27,7 +28,7 @@ class WebSocket:
             telegram_message = f"Received RECONNECT message from Twitch on a {creator_function.__name__} WebSocket\n"
             telegram_message += f"Reconnecting viewer {username} to {channel}\n"
             threading.Thread(target=creator_function, args=(channel, username, os.getenv(username.upper() + "_OAUTH"), counters)).start()
-            telegramBot.sendMessage(telegram_message)
+            telegramBot.sendMessage(credentials.telegramBot_Notifications_token, telegram_message, credentials.telegramBot_User_id)
             print(telegram_message)
         
         elif "PING :tmi.twitch.tv" in message:
@@ -78,13 +79,9 @@ class DataCollector:
             msg = message.split(f"PRIVMSG #{channel.lower()} :")[1].split('ACTION ')[1].split("!")[0] + "!\n"
             telegram_message = user + ": " + msg + "\n"
             telegram_message += "You have {} points\n".format(main.get_balance())
-            telegramBot.sendMessage(telegram_message)
+            telegramBot.sendMessage(credentials.telegramBot_Notifications_token, telegram_message, credentials.telegramBot_User_id)
             print(telegram_message)
 
-            bet_winner = message.split(f"PRIVMSG #{channel.lower()} :")[1].split('"')[1]
-            with open("streamElements/resources/pots.txt", "a") as f:
-                f.write(bet_winner + "\n")
-            
             timestamp = datetime.datetime.now()
             with open("streamElements/resources/player_bet.csv", "a") as f:
                 result = re.search('"(.*)" won the contest "Aposta no resultado do próximo jogo do Runah" with (.*)% of all bets and (.*)% of the total pot!', msg)
@@ -137,7 +134,7 @@ class Bettor:
             user = message.split("display-name=")[1].split(";")[0]
             msg = message.split(f"PRIVMSG #{channel.lower()} :")[1]
             telegram_message = user + ": " + msg
-            telegramBot.sendMessage(telegram_message)
+            telegramBot.sendMessage(credentials.telegramBot_Notifications_token, telegram_message, credentials.telegramBot_User_id)
             print(telegram_message)
 
 class Controller:
@@ -167,7 +164,7 @@ class Controller:
                     os.system('systemctl poweroff -i')
                 elif command == "help":
                     send(ws=ws, channel=channel, message="Command List:\nreboot\nreconnect\nshutdown\nhelp")
-                telegramBot.sendMessage(telegram_message)
+                telegramBot.sendMessage(credentials.telegramBot_Notifications_token, telegram_message, credentials.telegramBot_User_id)
                 print(telegram_message)
 
 def launch_viewer(channel:str, username:str, oauth_key:str, counters:list, first_thread_lock:threading.Event) -> tuple[threading.Thread, websocket.WebSocketApp]:

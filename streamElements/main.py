@@ -211,9 +211,6 @@ def bettor_agent(channel:str, username:str, oauth_key:str, counters:list, first_
 
                     send_message()
 
-                    with open('streamElements/resources/pots.txt', 'a') as f:
-                        f.write(str(options) + "\n")
-
                     time.sleep(10)
                     continue
                 
