@@ -817,3 +817,42 @@ Win
 {'win': 7313, 'lose': 2869}
 Lose
 Lose
+{'win': 630, 'lose': 169}
+Lose
+{'win': 6826, 'lose': 4909}
+Lose
+{'win': 8200, 'lose': 2105}
+Lose
+{'win': 9450, 'lose': 2172}
+Lose
+{'win': 847, 'lose': 4495}
+Lose
+{'win': 350, 'lose': 565}
+Win
+{'win': 4020, 'lose': 1055}
+Lose
+{'win': 8001, 'lose': 600}
+Lose
+{'win': 12652, 'lose': 5325}
+Lose
+{'win': 4826, 'lose': 15057}
+Lose
+{'win': 6134, 'lose': 1575}
+Win
+{'win': 6292, 'lose': 1498}
+Lose
+{'win': 300, 'lose': 1000}
+Lose
+{'win': 1475, 'lose': 5423}
+Win
+{'win': 501, 'lose': 929}
+Lose
+{'win': 5724, 'lose': 2394}
+{'win': 2756, 'lose': 620}
+{'win': 5332, 'lose': 6677}
+Win
+{'win': 3921, 'lose': 10393}
+Lose
+{'win': 1400, 'lose': 4917}
+Lose
+{'win': 255, 'lose': 100}

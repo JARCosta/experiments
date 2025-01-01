@@ -6,7 +6,7 @@ import re
 import time
 import websocket
 import threading
-from telegramBot import main as telegramBot
+import telegramBot
 from streamElements import main
 import traceback
 
@@ -165,6 +165,8 @@ class Controller:
                 elif command == "shutdown":
                     telegram_message += "Shutting down..."
                     os.system('systemctl poweroff -i')
+                elif command == "help":
+                    send(ws=ws, channel=channel, message="Command List:\nreboot\nreconnect\nshutdown\nhelp")
                 telegramBot.sendMessage(telegram_message)
                 print(telegram_message)
 

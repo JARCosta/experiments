@@ -10,10 +10,10 @@ import threading
 
 import websocket
 
-from streamElements import telegramBot
+import telegramBot
+import credentials
 from streamElements import twitch_message_sender
 
-CHAT_ID = "6449165312"
 telegram_message = ""
 
 def get_balance(username:str="El_Pipow") -> int:
@@ -25,17 +25,31 @@ def get_balance(username:str="El_Pipow") -> int:
     BALANCE = int(response_json['points'])
     return response_json['points']
 
-def send_message(message:str=None) -> None:
-    if message != None:
-        threading.Thread(target=telegramBot.sendMessage, args=(message,)).start()
-        print(message, end="\n\n")
-    else:
-        global telegram_message
-        if telegram_message == "":
-            print("No message to send")
-        threading.Thread(target=telegramBot.sendMessage, args=(telegram_message,)).start()
-        print(telegram_message, end="\n\n")
+
+def sendMessage(message, notification=True):
+    try:
+        threading.Thread(target=telegramBot.sendMessage, args=(credentials.telegramBot_Logs_token, message, credentials.telegramBot_User_id)).start()
+        if notification:
+            threading.Thread(target=telegramBot.sendMessage, args=(credentials.telegramBot_Notifications_token, message, credentials.telegramBot_User_id)).start()
+    except requests.exceptions.ConnectionError:
+        print("No Internet")
+
+def send_message(message:str=None, notification:bool=True) -> None:
+
+    global telegram_message
+    if not message:
+        message = telegram_message
         telegram_message = ""
+    if message == "":
+        print("No message to send")
+
+    try:
+        threading.Thread(target=telegramBot.sendMessage, args=(credentials.telegramBot_Logs_token, message, credentials.telegramBot_User_id)).start()
+        if notification:
+            threading.Thread(target=telegramBot.sendMessage, args=(credentials.telegramBot_Notifications_token, message, credentials.telegramBot_User_id)).start()
+    except requests.exceptions.ConnectionError:
+        print("No Internet")
+    print(message, end="\n\n")
 
 def sleep_until(end:datetime.datetime) -> None:
     now = datetime.datetime.now() + datetime.timedelta(hours=time.localtime().tm_isdst)
