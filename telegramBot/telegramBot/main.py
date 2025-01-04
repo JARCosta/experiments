@@ -1,5 +1,5 @@
 import requests
-import credentials
+import threading
 
 ############################################################
 ####################  GETTER FUNCTIONS  ####################
@@ -66,3 +66,7 @@ def sendMessage(token: str, message: str, user : str):
     raise Exception(r.text)
   else:
     return r.json()["result"]
+  
+def sendMessage_threaded(token: str, message: str, user : str):
+  threading.Thread(target=sendMessage, args=(token, message, user)).start()
+

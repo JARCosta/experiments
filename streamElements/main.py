@@ -42,9 +42,9 @@ def send_message(message:str=None, notification:bool=True) -> None:
         print("No message to send")
 
     try:
-        telegramBot.sendMessage_Threaded(credentials.telegramBot_Logs_token, message, credentials.telegramBot_User_id)
+        telegramBot.sendMessage_threaded(credentials.telegramBot_Logs_token, message, credentials.telegramBot_User_id)
         if notification:
-            telegramBot.sendMessage_Threaded(credentials.telegramBot_Notifications_token, message, credentials.telegramBot_User_id)
+            telegramBot.sendMessage_threaded(credentials.telegramBot_Notifications_token, message, credentials.telegramBot_User_id)
     except requests.exceptions.ConnectionError:
         print("No Internet")
     print(message, end="\n\n")
