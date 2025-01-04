@@ -13,6 +13,7 @@ import websocket
 import telegramBot
 import credentials
 from streamElements import twitch_message_sender
+from streamElements.Agents import Bettor
 
 telegram_message = ""
 
@@ -25,15 +26,6 @@ def get_balance(username:str="El_Pipow") -> int:
     BALANCE = int(response_json['points'])
     return response_json['points']
 
-
-def sendMessage(message, notification=True):
-    try:
-        threading.Thread(target=telegramBot.sendMessage, args=(credentials.telegramBot_Logs_token, message, credentials.telegramBot_User_id)).start()
-        if notification:
-            threading.Thread(target=telegramBot.sendMessage, args=(credentials.telegramBot_Notifications_token, message, credentials.telegramBot_User_id)).start()
-    except requests.exceptions.ConnectionError:
-        print("No Internet")
-
 def send_message(message:str=None, notification:bool=True) -> None:
 
     global telegram_message
@@ -44,9 +36,9 @@ def send_message(message:str=None, notification:bool=True) -> None:
         print("No message to send")
 
     try:
-        threading.Thread(target=telegramBot.sendMessage, args=(credentials.telegramBot_Logs_token, message, credentials.telegramBot_User_id)).start()
+        telegramBot.sendMessage_Threaded(credentials.telegramBot_Logs_token, message, credentials.telegramBot_User_id)
         if notification:
-            threading.Thread(target=telegramBot.sendMessage, args=(credentials.telegramBot_Notifications_token, message, credentials.telegramBot_User_id)).start()
+            telegramBot.sendMessage_Threaded(credentials.telegramBot_Notifications_token, message, credentials.telegramBot_User_id)
     except requests.exceptions.ConnectionError:
         print("No Internet")
     print(message, end="\n\n")
@@ -61,6 +53,10 @@ def sleep_until(end:datetime.datetime) -> None:
         print("Time has already passed")
         print("Now: ", now)
         print("End: ", end)
+
+############################################################
+# VARIABLE DELAY 
+############################################################
 
 def get_variable_delay() -> float:
     with open('streamElements/resources/variable_delay.txt', 'r') as f:
@@ -83,6 +79,10 @@ def increase_variable_delay(amount:float=0.1) -> None:
         with open('streamElements/resources/variable_delay.txt', 'w') as f:
             f.write(str(variable_delay) + "\n")
         telegram_message += f"Variable delay increased by {amount} to {variable_delay}\n"
+
+############################################################
+# BETTING
+############################################################
 
 BALANCE = None
 REFERENCE_DELAY = 1.75
@@ -137,35 +137,44 @@ def calculate_bet(options:dict, balance:int) -> tuple[str, int]:
 
     return bet_option, bet_ammount
 
+############################################################
+# NETWORK CONNECTION
+############################################################
+
 WST, WS = None, None
 
-def reconnect(wst:threading.Thread, ws:websocket.WebSocketApp, username:str, oauth_key:str, counters:list, first_thread_lock:threading.Event):
+def reconnect(wst:threading.Thread, ws:websocket.WebSocketApp, username:str, oauth_key:str, counters:list, kill_thread_event:threading.Event):
     global telegram_message
     twitch_message_sender.close(wst, ws)
-    wst, ws = twitch_message_sender.launch_bettor("Runah", username, oauth_key, counters, first_thread_lock)
+    wst, ws = Bettor.launch_bettor("Runah", username, oauth_key, counters, kill_thread_event)
     telegram_message += "Reconnected to Twitch\n"
     return wst, ws
 
-def check_websocket(wst:threading.Thread, ws:websocket.WebSocketApp, username:str, oauth_key:str, counters:list, first_thread_lock:threading.Event):
+def check_websocket(wst:threading.Thread, ws:websocket.WebSocketApp, username:str, oauth_key:str, counters:list, kill_thread_event:threading.Event):
     try:
         twitch_message_sender.ping(ws)
     except (websocket._exceptions.WebSocketConnectionClosedException, ):
         print("Handled exception:\n", traceback.format_exc())
-        return reconnect(wst, ws, username, oauth_key, counters, first_thread_lock)
+        return reconnect(wst, ws, username, oauth_key, counters, kill_thread_event)
     return wst, ws
 
-def bettor_agent(channel:str, username:str, oauth_key:str, counters:list, first_thread_lock:threading.Event):
-    global WST, WS
-    WST, WS = twitch_message_sender.launch_bettor(channel, username, oauth_key, counters, first_thread_lock)
-    time.sleep(1)
+############################################################
+# RUNNER FUNCTION
+############################################################
 
-    try:
+def bettor_agent(channel:str, username:str, oauth_key:str, counters:list, kill_thread_event:threading.Event):
+        global WST, WS
+        WST, WS = Bettor.launch_bettor(channel, username, oauth_key, counters, kill_thread_event)
+        time.sleep(1)
+
+    # try:
         global telegram_message
         while True:
             try:
                 response = requests.get("https://api.streamelements.com/kappa/v2/contests/5a2ae33308308f00016e684e/active", timeout=10)
-            except requests.exceptions.ConnectionError:
+            except requests.exceptions.ConnectionError as e:
                 time.sleep(10)
+                print(e)
                 continue
             response_json = response.json()
             
@@ -219,7 +228,7 @@ def bettor_agent(channel:str, username:str, oauth_key:str, counters:list, first_
                     telegram_message += f"Follow it through: https://streamelements.com/runah/contest/{response_json['contest']['_id']}\n"
                     telegram_message += f"You have {get_balance()} points\n"
 
-                    WST, WS = check_websocket(WST, WS, username, oauth_key, counters, first_thread_lock)
+                    WST, WS = check_websocket(WST, WS, username, oauth_key, counters, kill_thread_event)
                     send_message()
 
                     sleep_until(end - datetime.timedelta(seconds=get_variable_delay()))
@@ -251,18 +260,15 @@ def bettor_agent(channel:str, username:str, oauth_key:str, counters:list, first_
 
                 time.sleep(60)
                 continue
-    except KeyboardInterrupt:
-        with open('streamElements/resources/latest_error.txt', 'w') as f:
-            pass
-    except Exception as e:
-        telegram_message += "Main Error:\n"
-        telegram_message += datetime.datetime.now().strftime('%H:%M') + "\n"
-        telegram_message += traceback.format_exc()
-        send_message()
-        with open('streamElements/resources/latest_error.txt', 'w') as f:
-            f.write(telegram_message)
+    # except KeyboardInterrupt:
+    #     print("yoooo")
+    #     with open('streamElements/resources/latest_error.txt', 'w') as f:
+    #         pass
+    # except Exception as e:
+    #     telegram_message += "Main Error:\n"
+    #     telegram_message += datetime.datetime.now().strftime('%H:%M') + "\n"
+    #     telegram_message += traceback.format_exc()
+    #     send_message()
+    #     with open('streamElements/resources/latest_error.txt', 'w') as f:
+    #         f.write(telegram_message)
 
-
-
-if __name__ == "__main__":
-    pass

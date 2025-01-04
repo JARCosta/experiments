@@ -6,6 +6,7 @@ import requests
 from streamElements import main as streamElements, twitch_message_sender
 import credentials
 import telegramBot
+from streamElements.Agents import Collector, Controller, Viewer
 from wallapopNotificator import main as wallapopNotificator
 import traceback
 
@@ -55,13 +56,13 @@ if __name__ == "__main__":
         EL_PIPOW_OAUTH = check_oauth_token("El_Pipow")
         JRCOSTA_OAUTH = check_oauth_token("JRCosta")
         counters = [0, 0]
+        threads = []
 
-        first_detector = threading.Event()
-        first_detector.set()
-        threading.Thread(target=twitch_message_sender.launch_data_collector, args=("Runah", "El_pipow", EL_PIPOW_OAUTH, counters, first_detector)).start()
-        threading.Thread(target=twitch_message_sender.launch_viewer, args=("Runah", "JRCosta", JRCOSTA_OAUTH, counters, first_detector)).start()
-        threading.Thread(target=twitch_message_sender.launch_controller, args=("El_Pipow", "JRCosta", JRCOSTA_OAUTH, counters, first_detector)).start()
-        threading.Thread(target=streamElements.bettor_agent, args=("Runah", "El_pipow", EL_PIPOW_OAUTH, counters, first_detector)).start()
+        kill_threads = threading.Event()
+        threading.Thread(target=Collector.launch_data_collector, args=("Runah", "El_pipow", EL_PIPOW_OAUTH, counters, kill_threads)).start()
+        threading.Thread(target=Viewer.launch_viewer, args=("Runah", "JRCosta", JRCOSTA_OAUTH, counters, kill_threads)).start()
+        threading.Thread(target=Controller.launch_controller, args=("El_Pipow", "JRCosta", JRCOSTA_OAUTH, counters, kill_threads)).start()
+        threading.Thread(target=streamElements.bettor_agent, args=("Runah", "El_pipow", EL_PIPOW_OAUTH, counters, kill_threads)).start() # this guy is not allowing to keyInterrupt
         # threading.Thread(target=streamElements.bettor_agent, args=("El_pipow", "El_pipow", EL_PIPOW_OAUTH, counters)).start()
 
         while True:
@@ -73,6 +74,9 @@ if __name__ == "__main__":
                 print()
                 break
     except:
+        print(traceback.format_exc())
         telegramBot.sendMessage(credentials.telegramBot_Notifications_token,traceback.format_exc(), credentials.telegramBot_User_id)
         with open("streamElements/resources/latest_error.txt", "w") as f:
             f.write(traceback.format_exc())
+        kill_threads.set()
+
