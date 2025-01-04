@@ -47,36 +47,36 @@ if __name__ == "__main__":
     try:
         requests.get("http://google.com")
     except requests.exceptions.ConnectionError:
-        input("No wi-fi connection\n")
+        input("No wi-fi connection, continue?")
+
+    os.chdir(os.path.dirname(os.path.realpath(__file__)))
     
+    telegramBot.sendMessage(credentials.telegramBot_Notifications_token, "Twitch bettor launched", credentials.telegramBot_User_id)
+
+    EL_PIPOW_OAUTH = check_oauth_token("El_Pipow")
+    JRCOSTA_OAUTH = check_oauth_token("JRCosta")
+    counters = [0, 0]
+    threads = []
+
+    kill_threads = threading.Event()
+    threads.append(threading.Thread(target=Collector.launch_data_collector, args=("Runah", "El_pipow", EL_PIPOW_OAUTH, counters, kill_threads)))
+    threads.append(threading.Thread(target=Viewer.launch_viewer, args=("Runah", "JRCosta", JRCOSTA_OAUTH, counters, kill_threads)))
+    threads.append(threading.Thread(target=Controller.launch_controller, args=("El_Pipow", "JRCosta", JRCOSTA_OAUTH, counters, kill_threads)))
+    threads.append(threading.Thread(target=streamElements.bettor_agent, args=("Runah", "El_pipow", EL_PIPOW_OAUTH, counters, kill_threads))) # this guy is not allowing to keyInterrupt
+    # threading.Thread(target=streamElements.bettor_agent, args=("El_pipow", "El_pipow", EL_PIPOW_OAUTH, counters)).start()
+
+    [i.start() for i in threads]
+
+    while not counters[0] == len(threads) and counters[1] == 0:
+        pass
+    print()
+    while not counters[1] == len(threads):
+        pass
+    print()
+
     try:
-        os.chdir(os.path.dirname(os.path.realpath(__file__)))
-        telegramBot.sendMessage(credentials.telegramBot_Notifications_token, "Twitch bettor launched", credentials.telegramBot_User_id)
-
-        EL_PIPOW_OAUTH = check_oauth_token("El_Pipow")
-        JRCOSTA_OAUTH = check_oauth_token("JRCosta")
-        counters = [0, 0]
-        threads = []
-
-        kill_threads = threading.Event()
-        threading.Thread(target=Collector.launch_data_collector, args=("Runah", "El_pipow", EL_PIPOW_OAUTH, counters, kill_threads)).start()
-        threading.Thread(target=Viewer.launch_viewer, args=("Runah", "JRCosta", JRCOSTA_OAUTH, counters, kill_threads)).start()
-        threading.Thread(target=Controller.launch_controller, args=("El_Pipow", "JRCosta", JRCOSTA_OAUTH, counters, kill_threads)).start()
-        threading.Thread(target=streamElements.bettor_agent, args=("Runah", "El_pipow", EL_PIPOW_OAUTH, counters, kill_threads)).start() # this guy is not allowing to keyInterrupt
-        # threading.Thread(target=streamElements.bettor_agent, args=("El_pipow", "El_pipow", EL_PIPOW_OAUTH, counters)).start()
-
         while True:
-            if counters[0] == 4 and counters[1] == 0:
-                print()
-                break
-        while True:
-            if counters[1] == 4:
-                print()
-                break
-    except:
-        print(traceback.format_exc())
-        telegramBot.sendMessage(credentials.telegramBot_Notifications_token,traceback.format_exc(), credentials.telegramBot_User_id)
-        with open("streamElements/resources/latest_error.txt", "w") as f:
-            f.write(traceback.format_exc())
+            time.sleep(1)
+    except KeyboardInterrupt:
+        print("quitting")
         kill_threads.set()
-

@@ -11,9 +11,6 @@ import telegramBot
 from streamElements import main
 import traceback
 
-# Event to signal that the connection is open
-connection_open_event = threading.Event()
-
 class WebSocket:
     def connect(ws:websocket.WebSocketApp, message:str, username:str, channel:str, counters:list, connection_open_event:threading.Event, creator_function:callable):
         if f":Welcome, GLHF!" in message:

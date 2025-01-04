@@ -68,8 +68,8 @@ def launch_bettor(channel:str, username:str, oauth_key:str, counters:list, kill_
     connection_open_event.wait()
     counters[1] += 1
 
-    kill_thread_event.wait()
-    ws.close()
-    wst.join()
+    # kill_thread_event.wait()
+    # ws.close()
+    # wst.join()
 
     return wst, ws

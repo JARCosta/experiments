@@ -1,4 +1,3 @@
-
 import datetime
 from functools import partial
 import re
