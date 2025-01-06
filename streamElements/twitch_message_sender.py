@@ -23,7 +23,7 @@ class WebSocket:
         elif ":tmi.twitch.tv RECONNECT" in message:
             telegram_message = f"Received RECONNECT message from Twitch on a {creator_function.__name__} WebSocket\n"
             telegram_message += f"Reconnecting viewer {username} to {channel}\n"
-            threading.Thread(target=creator_function, args=(channel, username, os.getenv(username.upper() + "_OAUTH"), counters)).start()
+            threading.Thread(target=creator_function, args=(channel, username, os.getenv(username.upper() + "_OAUTH"), counters, connection_open_event)).start()
             telegramBot.sendMessage(credentials.telegramBot_Notifications_token, telegram_message, credentials.telegramBot_User_id)
             print(telegram_message)
         
