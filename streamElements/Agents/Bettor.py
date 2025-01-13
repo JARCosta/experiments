@@ -116,13 +116,15 @@ def bet_stats(options:dict, bet_amount:int, bet_option:str):
     
     b = options[bet_option] / options[oposite_option] if options[oposite_option] > 0 else False
 
-    pot_ratio = bet_amount / (options[bet_option] + bet_amount)
-    bet_profit = pot_ratio * options[oposite_option]
-    bet_return = bet_amount + bet_profit
-    bet_odd = bet_return / bet_amount
-    global LAST_BET
-    LAST_BET = [bet_option, bet_amount, options, [b, pot_ratio, bet_profit, bet_return, bet_odd]]
-    return b, pot_ratio, bet_profit, bet_return, bet_odd
+    if bet_amount > 0:
+        pot_ratio = bet_amount / (options[bet_option] + bet_amount)
+        bet_profit = pot_ratio * options[oposite_option]
+        bet_return = bet_amount + bet_profit
+        bet_odd = bet_return / bet_amount
+        global LAST_BET
+        LAST_BET = [bet_option, bet_amount, options, [b, pot_ratio, bet_profit, bet_return, bet_odd]]
+        return b, pot_ratio, bet_profit, bet_return, bet_odd
+    return b, None, None, None, None
 
 def calculate_bet(options:dict, balance:int) -> tuple[str, int]:
 
@@ -158,8 +160,8 @@ def bet(ws, username, channel):
     TELEGRAM_MESSAGE += "Time to place your bets\n"
     now = datetime.datetime.now()
     
-    runah_contests, el_pipow_contests = "6784581a9363b94b22c8bd2d", "5e46e43e8d514cea9ae5bfb4"
-    contest_json = requests.get(f"https://api.streamelements.com/kappa/v2/contests/{el_pipow_contests}/active", timeout=10).json()
+    runah_contests, el_pipow_contests = "5a2ae33308308f00016e684e", "5e46e43e8d514cea9ae5bfb4"
+    contest_json = requests.get(f"https://api.streamelements.com/kappa/v2/contests/{runah_contests}/active", timeout=10).json()
     end = datetime.datetime.strptime(contest_json["contest"]["startedAt"],"%Y-%m-%dT%H:%M:%S.%fZ") + datetime.timedelta(hours=time.localtime().tm_isdst) + datetime.timedelta(minutes=contest_json["contest"]["duration"])
     TELEGRAM_MESSAGE += f"There is still {round((end - now).total_seconds(), 2)} seconds left\n\n"
 
@@ -211,10 +213,10 @@ def bet(ws, username, channel):
 #     return wst, ws
 
 def contest_found(bettor_username:str, kill_thread:threading.Event):
-    runah_contests= "6784581a9363b94b22c8bd2d"
-    el_pipow_contests= "5e46e43e8d514cea9ae5bfb4"
-    
-    response_json = requests.get(f"https://api.streamelements.com/kappa/v2/contests/{el_pipow_contests}/active", timeout=10).json()
+    runah_contests, el_pipow_contests = "5a2ae33308308f00016e684e", "5e46e43e8d514cea9ae5bfb4"
+
+    response_json = requests.get(f"https://api.streamelements.com/kappa/v2/contests/{runah_contests}/active", timeout=10).json()
+    # print(response_json)
     end = datetime.datetime.strptime(response_json["contest"]["startedAt"],"%Y-%m-%dT%H:%M:%S.%fZ") + datetime.timedelta(hours=time.localtime().tm_isdst) + datetime.timedelta(minutes=response_json["contest"]["duration"])
 
     telegram_message = "Contest found\n"
@@ -223,14 +225,11 @@ def contest_found(bettor_username:str, kill_thread:threading.Event):
     telegramBot.sendMessage(telegram_message, notification=True)
 
     return sleep_until(end - datetime.timedelta(seconds=get_variable_delay()), kill_thread=kill_thread), response_json, end
-    
 
 class Bettor:
 
-    def on_open(ws:websocket.WebSocketApp, oauth_key:str, username:str, counters:list, kill_thread:threading.Event):
+    def on_open(ws:websocket.WebSocketApp, oauth_key:str, username:str, counters:list, kill_thread:threading.Event, channel:str):
         WebSocket.on_open(ws, oauth_key, username, counters)
-        # print("aaa")
-        # contest_found(username, kill_thread=kill_thread)
 
     def on_message(ws:websocket.WebSocketApp, message:str, username:str, channel:str, counters:list, connection_open_event:threading.Event, kill_thread:threading.Event):
         WebSocket.connect(ws, message, username, channel, counters, connection_open_event, launch_bettor)
@@ -305,7 +304,7 @@ def launch_bettor(channel:str, username:str, oauth_key:str, counters:list, kill_
             websocket_url,
             on_message=partial(Bettor.on_message, username=username, channel=channel, counters=counters, connection_open_event=connection_open_event, kill_thread=kill_thread_event),
             on_error=WebSocket.on_error,
-            on_open=partial(Bettor.on_open, oauth_key=oauth_key, username=username, counters=counters, kill_thread=kill_thread_event)
+            on_open=partial(Bettor.on_open, oauth_key=oauth_key, username=username, counters=counters, kill_thread=kill_thread_event, channel=channel)
             )
     except Exception as e:
         print(e)
@@ -317,6 +316,14 @@ def launch_bettor(channel:str, username:str, oauth_key:str, counters:list, kill_
     # Wait for the connection to be open before sending the message
     connection_open_event.wait()
     counters[1] += 1
+
+    print("checking contest open")
+    succ, contest_json, end = contest_found(username, kill_thread=kill_thread_event)
+    # print(succ, contest_json, end)
+    if succ:
+        bet(ws=ws, username=username, channel=channel)
+        print(datetime.datetime.now())
+
 
     kill_thread_event.wait()
     print("massive quitting 1")

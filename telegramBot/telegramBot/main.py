@@ -1,3 +1,5 @@
+import time
+import traceback
 import credentials
 import requests
 import threading
@@ -59,11 +61,36 @@ def getMessages(token: str, chat_id: str):
 def sendMessage(message: str, notification:bool = False):
   user = credentials.telegramBot_User_id
   params = {"chat_id": user, "text": message}
+
   token = credentials.telegramBot_Logs_token
-  r = requests.get(f"https://api.telegram.org/bot{token}/sendMessage", params=params)
+  while True:
+    try:
+      r = requests.post(f"https://api.telegram.org/bot{token}/sendMessage", data=params)
+      print(r.json())
+      break
+    except requests.exceptions.ConnectionError as e:
+      print(e)
+      # print(traceback.format_exc())
+      time.sleep(2)
+      # print("Retrying to send:", message)
+      continue
+      break
+  
   if notification:
     token = credentials.telegramBot_Notifications_token
-    r = requests.get(f"https://api.telegram.org/bot{token}/sendMessage", params=params)
+    while True:
+      try:
+        r = requests.post(f"https://api.telegram.org/bot{token}/sendMessage", data=params)
+        print(r.json())
+        break
+      except requests.exceptions.ConnectionError as e:
+        print(e)
+        # print(traceback.format_exc())
+        time.sleep(2)
+        # print("Retrying to send:", message)
+        continue
+        break
+
   if not r.ok:
     raise Exception(r.text)
   else:
