@@ -66,7 +66,7 @@ def sendMessage(message: str, notification:bool = False):
   while True:
     try:
       r = requests.post(f"https://api.telegram.org/bot{token}/sendMessage", data=params)
-      print(r.json())
+      # print(r.json())
       break
     except requests.exceptions.ConnectionError as e:
       print(e)
@@ -81,7 +81,7 @@ def sendMessage(message: str, notification:bool = False):
     while True:
       try:
         r = requests.post(f"https://api.telegram.org/bot{token}/sendMessage", data=params)
-        print(r.json())
+        # print(r.json())
         break
       except requests.exceptions.ConnectionError as e:
         print(e)

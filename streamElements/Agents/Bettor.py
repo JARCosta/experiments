@@ -13,7 +13,7 @@ from .WebSocket import WebSocket, ping, close, send
 
 TELEGRAM_MESSAGE = ""
 BALANCE = None
-REFERENCE_DELAY = 2
+REFERENCE_DELAY = 1.75
 LAST_BET = None
 
 ############################################################
@@ -51,9 +51,9 @@ def sleep_until(end:datetime.datetime, kill_thread:threading.Event) -> None:
         time.sleep(sleep_time % 1)
         return True
     else:
-        print("Time has already passed")
-        print("Now: ", now)
-        print("End: ", end)
+        # print("Time has already passed")
+        # print("Now: ", now)
+        # print("End: ", end)
         return False
 
 def sleep_interrupt(duration:int, kill_thread:threading.Event):
@@ -91,6 +91,23 @@ def increase_variable_delay(amount:float=0.1) -> None:
 ############################################################
 # BETTING
 ############################################################
+
+def contest_found(bettor_username:str, channel:str, kill_thread:threading.Event):
+    runah_contests, el_pipow_contests = "5a2ae33308308f00016e684e", "5e46e43e8d514cea9ae5bfb4"
+    contests = runah_contests if channel.lower() == "runah" else el_pipow_contests
+
+    response_json = requests.get(f"https://api.streamelements.com/kappa/v2/contests/{contests}/active", timeout=10).json()
+    # print(response_json)
+    end = datetime.datetime.strptime(response_json["contest"]["startedAt"],"%Y-%m-%dT%H:%M:%S.%fZ") + datetime.timedelta(hours=time.localtime().tm_isdst) + datetime.timedelta(minutes=response_json["contest"]["duration"])
+
+    telegram_message = "Contest found\n"
+    telegram_message += f"Follow it through: https://streamelements.com/{channel}/contest/{response_json['contest']['_id']}\n"
+    telegram_message += f"You have {get_balance(bettor_username)} points\n"
+    # print(datetime.datetime.now(), end)
+    if datetime.datetime.now() < end:
+        telegramBot.sendMessage(telegram_message, notification=True)
+
+    return sleep_until(end - datetime.timedelta(seconds=get_variable_delay()), kill_thread=kill_thread), response_json, end
 
 def optimal_bet(options:dict) -> tuple[str, int]:
     little_option = "lose" if options["lose"] < options["win"] else "win"
@@ -154,40 +171,46 @@ def calculate_bet(options:dict, balance:int) -> tuple[str, int]:
 
     return bet_option, bet_amount
 
-def bet(ws, username, channel):
-    
-    global TELEGRAM_MESSAGE, BALANCE
-    TELEGRAM_MESSAGE += "Time to place your bets\n"
-    now = datetime.datetime.now()
-    
-    runah_contests, el_pipow_contests = "5a2ae33308308f00016e684e", "5e46e43e8d514cea9ae5bfb4"
-    contest_json = requests.get(f"https://api.streamelements.com/kappa/v2/contests/{runah_contests}/active", timeout=10).json()
-    end = datetime.datetime.strptime(contest_json["contest"]["startedAt"],"%Y-%m-%dT%H:%M:%S.%fZ") + datetime.timedelta(hours=time.localtime().tm_isdst) + datetime.timedelta(minutes=contest_json["contest"]["duration"])
-    TELEGRAM_MESSAGE += f"There is still {round((end - now).total_seconds(), 2)} seconds left\n\n"
+def bet(ws, username, channel, kill_thread):
+    succ, _, _ = contest_found(username, channel.lower(), kill_thread=kill_thread)
+    if succ:
 
-    BALANCE = get_balance(username) if BALANCE == None else BALANCE
-    options = {option["command"]: int(option["totalAmount"]) for option in contest_json["contest"]["options"]}
-    bet_option, bet_amount = calculate_bet(options, BALANCE)
+        global TELEGRAM_MESSAGE, BALANCE
+        TELEGRAM_MESSAGE += "Time to place your bets\n"
+        now = datetime.datetime.now()
+        
+        runah_contests, el_pipow_contests = "5a2ae33308308f00016e684e", "5e46e43e8d514cea9ae5bfb4"
+        contests = runah_contests if channel.lower() == "runah" else el_pipow_contests
 
-    balance_checkpoints = [0, 13500, 32500, 62500, 120000, 230000, 550000]
-    bet_amount = BALANCE if bet_amount > BALANCE else bet_amount
+        contest_json = requests.get(f"https://api.streamelements.com/kappa/v2/contests/{contests}/active", timeout=10).json()
+        end = datetime.datetime.strptime(contest_json["contest"]["startedAt"],"%Y-%m-%dT%H:%M:%S.%fZ") + datetime.timedelta(hours=time.localtime().tm_isdst) + datetime.timedelta(minutes=contest_json["contest"]["duration"])
+        if (end - now).total_seconds() > 5:
+            return bet(ws, username, channel, kill_thread)
+        TELEGRAM_MESSAGE += f"There is still {round((end - now).total_seconds(), 2)} seconds left\n\n"
 
-    for checkpoint in balance_checkpoints:
-        temp_bet:int = bet_amount - checkpoint
-        if temp_bet > 0:
-            temp_bet = "all" if temp_bet >= BALANCE else str(int(temp_bet))
-            send(ws, channel.lower(), f"!bet {bet_option} {temp_bet.replace('.0', '')}")
-            break
+        BALANCE = get_balance(username) if BALANCE == None else BALANCE
+        options = {option["command"]: int(option["totalAmount"]) for option in contest_json["contest"]["options"]}
+        bet_option, bet_amount = calculate_bet(options, BALANCE)
 
-    now = datetime.datetime.now()
+        balance_checkpoints = [0, 13500, 32500, 62500, 120000, 230000, 550000]
+        bet_amount = BALANCE if bet_amount > BALANCE else bet_amount
 
-    TELEGRAM_MESSAGE += f"There is still {round((end - datetime.datetime.now()).total_seconds(), 2)} seconds left\n\n"
-    if (end - now).total_seconds() > REFERENCE_DELAY: # betting too early
-        decrease_variable_delay(((end - now).total_seconds() - REFERENCE_DELAY)/4)
-    if (end - now).total_seconds() < REFERENCE_DELAY: # betting too late
-        increase_variable_delay((REFERENCE_DELAY - (end - now).total_seconds())/4)
+        for checkpoint in balance_checkpoints:
+            temp_bet:int = bet_amount - checkpoint
+            if temp_bet > 0:
+                temp_bet = "all" if temp_bet >= BALANCE else str(int(temp_bet))
+                send(ws, channel.lower(), f"!bet {bet_option} {temp_bet.replace('.0', '')}")
+                break
 
-    send_message()
+        now = datetime.datetime.now()
+
+        TELEGRAM_MESSAGE += f"There is still {round((end - datetime.datetime.now()).total_seconds(), 2)} seconds left\n\n"
+        if (end - now).total_seconds() > REFERENCE_DELAY: # betting too early
+            decrease_variable_delay(((end - now).total_seconds() - REFERENCE_DELAY)/4)
+        if (end - now).total_seconds() < REFERENCE_DELAY: # betting too late
+            increase_variable_delay((REFERENCE_DELAY - (end - now).total_seconds())/4)
+
+        send_message()
 
 
 
@@ -212,20 +235,6 @@ def bet(ws, username, channel):
 #         return reconnect(wst, ws, username, oauth_key, counters, kill_thread)
 #     return wst, ws
 
-def contest_found(bettor_username:str, kill_thread:threading.Event):
-    runah_contests, el_pipow_contests = "5a2ae33308308f00016e684e", "5e46e43e8d514cea9ae5bfb4"
-
-    response_json = requests.get(f"https://api.streamelements.com/kappa/v2/contests/{runah_contests}/active", timeout=10).json()
-    # print(response_json)
-    end = datetime.datetime.strptime(response_json["contest"]["startedAt"],"%Y-%m-%dT%H:%M:%S.%fZ") + datetime.timedelta(hours=time.localtime().tm_isdst) + datetime.timedelta(minutes=response_json["contest"]["duration"])
-
-    telegram_message = "Contest found\n"
-    telegram_message += f"Follow it through: https://streamelements.com/runah/contest/{response_json['contest']['_id']}\n"
-    telegram_message += f"You have {get_balance(bettor_username)} points\n"
-    telegramBot.sendMessage(telegram_message, notification=True)
-
-    return sleep_until(end - datetime.timedelta(seconds=get_variable_delay()), kill_thread=kill_thread), response_json, end
-
 class Bettor:
 
     def on_open(ws:websocket.WebSocketApp, oauth_key:str, username:str, counters:list, kill_thread:threading.Event, channel:str):
@@ -245,13 +254,12 @@ class Bettor:
             return
 
         if user.lower() == "StreamElements".lower():
+            print(msg)
 
             if "a new contest has started" in msg: # New bet
-                succ, contest_json, end = contest_found(username, kill_thread=kill_thread)
-                if succ:
-                    bet(ws=ws, username=username, channel=channel)
-                    print(datetime.datetime.now())
-            
+                print("betting")
+                bet(ws=ws, username=username, channel=channel, kill_thread=kill_thread)
+
             elif "no longer accepting bets for" in msg:
                 print(datetime.datetime.now())
 
@@ -266,18 +274,19 @@ class Bettor:
                     print(mention.lower(), mention.lower() == username.lower())
 
             elif "won the contest" in msg:
-                winner_option = msg.split('"')
+                winner_option = msg.split('"')[1]
+                # print(winner_option)
                 global LAST_BET
 
                 if LAST_BET:
-                    if winner_option[0].lower() == LAST_BET[0]:
-                        telegram_message = f"Won a bet of {LAST_BET[1]} points"
-                        telegram_message += f"b values was {LAST_BET[3][0]} points"
-                        telegram_message += f"profited {LAST_BET[3][2]} points"
+                    if winner_option.lower() == LAST_BET[0]:
+                        telegram_message = f"Won a bet of {LAST_BET[1]} points\n"
+                        telegram_message += f"b value was {LAST_BET[3][0]}\n"
+                        telegram_message += f"profited {LAST_BET[3][2]} points\n"
                         telegramBot.sendMessage(telegram_message, True)
                     else:
-                        telegram_message += f"Lost a bet of {LAST_BET[1]} points"
-                        telegram_message += f"b values was {LAST_BET[3][0]} points"
+                        telegram_message += f"Lost a bet of {LAST_BET[1]} points\n"
+                        telegram_message += f"b value was {LAST_BET[3][0]}\n"
                         telegramBot.sendMessage(telegram_message, True)
         
         elif f"@{username.lower()}" in message.lower() and not f":{username.lower()}" in message: # I was mentioned
@@ -318,11 +327,7 @@ def launch_bettor(channel:str, username:str, oauth_key:str, counters:list, kill_
     counters[1] += 1
 
     print("checking contest open")
-    succ, contest_json, end = contest_found(username, kill_thread=kill_thread_event)
-    # print(succ, contest_json, end)
-    if succ:
-        bet(ws=ws, username=username, channel=channel)
-        print(datetime.datetime.now())
+    bet(ws=ws, username=username, channel=channel, kill_thread=kill_thread_event)
 
 
     kill_thread_event.wait()

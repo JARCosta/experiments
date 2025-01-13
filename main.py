@@ -61,8 +61,8 @@ if __name__ == "__main__":
     threads.append(threading.Thread(target=Collector.launch_data_collector, args=("Runah", "El_pipow", EL_PIPOW_OAUTH, counters, kill_threads)))
     threads.append(threading.Thread(target=Viewer.launch_viewer, args=("Runah", "JRCosta", JRCOSTA_OAUTH, counters, kill_threads)))
     threads.append(threading.Thread(target=Controller.launch_controller, args=("El_Pipow", "JRCosta", JRCOSTA_OAUTH, counters, kill_threads)))
-    threads.append(threading.Thread(target=Bettor.launch_bettor, args=("Runah", "El_pipow", EL_PIPOW_OAUTH, counters, kill_threads))) # this guy is not allowing to keyInterrupt
-    # threading.Thread(target=streamElements.bettor_agent, args=("El_pipow", "El_pipow", EL_PIPOW_OAUTH, counters)).start()
+    threads.append(threading.Thread(target=Bettor.launch_bettor, args=("Runah", "El_pipow", EL_PIPOW_OAUTH, counters, kill_threads)))
+    # threads.append(threading.Thread(target=Bettor.launch_bettor, args=("El_pipow", "JRCosta", JRCOSTA_OAUTH, counters, kill_threads)))
 
     [i.start() for i in threads]
 
