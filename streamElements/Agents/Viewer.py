@@ -2,7 +2,7 @@ from functools import partial
 import threading
 import websocket
 
-from streamElements.twitch_message_sender import WebSocket
+from .WebSocket import WebSocket
 
 
 def launch_viewer(channel:str, username:str, oauth_key:str, counters:list, kill_thread_event:threading.Event) -> tuple[threading.Thread, websocket.WebSocketApp]:

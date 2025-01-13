@@ -6,8 +6,8 @@ import credentials
 import telegramBot
 import websocket
 
-from streamElements import main
-from streamElements.twitch_message_sender import WebSocket
+from .WebSocket import WebSocket
+from .Bettor import get_balance
 
 
 class DataCollector:
@@ -29,8 +29,8 @@ class DataCollector:
             user = message.split("display-name=")[1].split(";")[0]
             msg = message.split(f"PRIVMSG #{channel.lower()} :")[1].split('ACTION ')[1].split("!")[0] + "!\n"
             telegram_message = user + ": " + msg + "\n"
-            telegram_message += "You have {} points\n".format(main.get_balance())
-            telegramBot.sendMessage(credentials.telegramBot_Notifications_token, telegram_message, credentials.telegramBot_User_id)
+            telegram_message += "You have {} points\n".format(get_balance(username))
+            telegramBot.sendMessage(telegram_message)
             print(telegram_message)
 
             timestamp = datetime.datetime.now()

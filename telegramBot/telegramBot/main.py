@@ -1,3 +1,4 @@
+import credentials
 import requests
 import threading
 
@@ -55,18 +56,19 @@ def getMessages(token: str, chat_id: str):
 ####################  SENDER FUNCTIONS  ####################
 ############################################################
 
-def sendMessage(token: str, message: str, user : str):
+def sendMessage(message: str, notification:bool = False):
+  user = credentials.telegramBot_User_id
   params = {"chat_id": user, "text": message}
-  try:
+  token = credentials.telegramBot_Logs_token
+  r = requests.get(f"https://api.telegram.org/bot{token}/sendMessage", params=params)
+  if notification:
+    token = credentials.telegramBot_Notifications_token
     r = requests.get(f"https://api.telegram.org/bot{token}/sendMessage", params=params)
-  except requests.exceptions.ConnectionError:
-    print("telegramBot.sendMessage Error")
-    return requests.Response()
   if not r.ok:
     raise Exception(r.text)
   else:
     return r.json()["result"]
   
-def sendMessage_threaded(token: str, message: str, user : str):
-  threading.Thread(target=sendMessage, args=(token, message, user)).start()
+def sendMessage_threaded(message: str, notification:bool = False):
+  threading.Thread(target=sendMessage, args=(message, notification)).start()
 

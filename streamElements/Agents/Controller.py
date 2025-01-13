@@ -5,38 +5,40 @@ import credentials
 import telegramBot
 import websocket
 
-from streamElements.twitch_message_sender import WebSocket, send
+from .WebSocket import WebSocket, send
 
 
 class Controller:
 
-    def on_message(ws:websocket.WebSocketApp, message:str, controller_username:str, controller_channel:str, counters:list, connection_open_event:threading.Event):
-        WebSocket.connect(ws, message, controller_username, controller_channel, counters, connection_open_event, launch_controller)
+    def on_message(ws:websocket.WebSocketApp, message:str, controller_username:str, controlled_channel:str, counters:list, connection_open_event:threading.Event):
+        WebSocket.connect(ws, message, controller_username, controlled_channel, counters, connection_open_event, launch_controller)
 
         allowed_users = ["el_pipow", "jrcosta"]
         try:
             user = message.split("display-name=")[1].split(";")[0]
-            msg = message.split(f"PRIVMSG #{controller_channel.lower()} :")[1]
+            msg = message.split(f"PRIVMSG #{controlled_channel.lower()} :")[1]
         except IndexError:
             return
-        if user.lower() in allowed_users:
-            telegram_message = user + ": " + msg
+        
+        if f"@{controller_username.lower()}" in message.lower() and not f":{controller_username.lower()}" in message: # I was mentioned
+            if user.lower() in allowed_users:
+                telegram_message = user + ": " + msg
 
-            command_idx = msg.find(" ")
-            command = msg[command_idx+1:].replace("\n", "").replace("\r", "")
-            print("Detected command: " + command)
-            if command == "reboot":
-                telegram_message += "Rebooting..."
-                os.system('systemctl reboot -i')
-            elif command == "reconnect":
-                WebSocket.connect(ws, ":tmi.twitch.tv RECONNECT", controller_username, controller_channel, connection_open_event, launch_controller)
-            elif command == "shutdown":
-                telegram_message += "Shutting down..."
-                os.system('systemctl poweroff -i')
-            elif command == "help":
-                send(ws=ws, channel=controller_channel, message="Command List:\nreboot\nreconnect\nshutdown\nhelp")
-            telegramBot.sendMessage(credentials.telegramBot_Notifications_token, telegram_message, credentials.telegramBot_User_id)
-            print(telegram_message)
+                command_idx = msg.find(" ")
+                command = msg[command_idx+1:].replace("\n", "").replace("\r", "")
+                print("Detected command: " + command)
+                if command == "reboot":
+                    telegram_message += "Rebooting..."
+                    os.system('systemctl reboot -i')
+                elif command == "reconnect":
+                    WebSocket.connect(ws, ":tmi.twitch.tv RECONNECT", controller_username, controlled_channel, connection_open_event, launch_controller)
+                elif command == "shutdown":
+                    telegram_message += "Shutting down..."
+                    os.system('systemctl poweroff -i')
+                elif command == "help":
+                    send(ws=ws, channel=controlled_channel, message="Command List:\nreboot\nreconnect\nshutdown\nhelp")
+                telegramBot.sendMessage(telegram_message)
+                print(telegram_message)
 
 def launch_controller(channel:str, username:str, oauth_key:str, counters:list, kill_thread_event:threading.Event) -> tuple[threading.Thread, websocket.WebSocketApp]:
     connection_open_event = threading.Event()
@@ -45,7 +47,7 @@ def launch_controller(channel:str, username:str, oauth_key:str, counters:list, k
     try:
         ws = websocket.WebSocketApp(
             websocket_url,
-            on_message=partial(Controller.on_message, controller_username=username, controller_channel=channel, counters=counters, connection_open_event=connection_open_event),
+            on_message=partial(Controller.on_message, controller_username=username, controlled_channel=channel, counters=counters, connection_open_event=connection_open_event),
             on_error=WebSocket.on_error,
             on_open=partial(WebSocket.on_open, oauth_key=oauth_key, username=username, counters=counters)
             )

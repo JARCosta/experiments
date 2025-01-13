@@ -3,10 +3,9 @@ import subprocess
 import time
 
 import requests
-from streamElements import main as streamElements, twitch_message_sender
 import credentials
 import telegramBot
-from streamElements.Agents import Collector, Controller, Viewer
+from streamElements.Agents import Collector, Controller, Viewer, Bettor
 from wallapopNotificator import main as wallapopNotificator
 import traceback
 
@@ -51,7 +50,7 @@ if __name__ == "__main__":
 
     os.chdir(os.path.dirname(os.path.realpath(__file__)))
     
-    telegramBot.sendMessage(credentials.telegramBot_Notifications_token, "Twitch bettor launched", credentials.telegramBot_User_id)
+    telegramBot.sendMessage("Twitch bettor launched")
 
     EL_PIPOW_OAUTH = check_oauth_token("El_Pipow")
     JRCOSTA_OAUTH = check_oauth_token("JRCosta")
@@ -62,7 +61,7 @@ if __name__ == "__main__":
     threads.append(threading.Thread(target=Collector.launch_data_collector, args=("Runah", "El_pipow", EL_PIPOW_OAUTH, counters, kill_threads)))
     threads.append(threading.Thread(target=Viewer.launch_viewer, args=("Runah", "JRCosta", JRCOSTA_OAUTH, counters, kill_threads)))
     threads.append(threading.Thread(target=Controller.launch_controller, args=("El_Pipow", "JRCosta", JRCOSTA_OAUTH, counters, kill_threads)))
-    threads.append(threading.Thread(target=streamElements.bettor_agent, args=("Runah", "El_pipow", EL_PIPOW_OAUTH, counters, kill_threads))) # this guy is not allowing to keyInterrupt
+    threads.append(threading.Thread(target=Bettor.launch_bettor, args=("Runah", "El_pipow", EL_PIPOW_OAUTH, counters, kill_threads))) # this guy is not allowing to keyInterrupt
     # threading.Thread(target=streamElements.bettor_agent, args=("El_pipow", "El_pipow", EL_PIPOW_OAUTH, counters)).start()
 
     [i.start() for i in threads]
