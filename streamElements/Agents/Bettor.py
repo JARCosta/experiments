@@ -102,7 +102,8 @@ def contest_found(bettor_username:str, channel:str, kill_thread:threading.Event)
     except TypeError:
         print(f"https://api.streamelements.com/kappa/v2/contests/{contests}/active")
         print(response_json)
-        return contest_found(bettor_username, channel, kill_thread)
+        print("No contest Found")
+        return False, None, None
 
     telegram_message = "Contest found\n"
     telegram_message += f"Follow it through: https://streamelements.com/{channel}/contest/{response_json['contest']['_id']}\n"

@@ -2,7 +2,6 @@ import math
 
 import numpy as np
 from sklearn.decomposition import PCA
-from streamElements import main
 import random
 import matplotlib.pyplot as plt
 
@@ -76,7 +75,6 @@ def odd():
 
     plt.show()
 
-import streamElements.main as main
 import random
 import matplotlib.pyplot as plt
 import json
