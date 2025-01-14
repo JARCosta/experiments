@@ -97,8 +97,12 @@ def contest_found(bettor_username:str, channel:str, kill_thread:threading.Event)
     contests = runah_contests if channel.lower() == "runah" else el_pipow_contests
 
     response_json = requests.get(f"https://api.streamelements.com/kappa/v2/contests/{contests}/active", timeout=10).json()
-    # print(response_json)
-    end = datetime.datetime.strptime(response_json["contest"]["startedAt"],"%Y-%m-%dT%H:%M:%S.%fZ") + datetime.timedelta(hours=time.localtime().tm_isdst) + datetime.timedelta(minutes=response_json["contest"]["duration"])
+    try:
+        end = datetime.datetime.strptime(response_json["contest"]["startedAt"],"%Y-%m-%dT%H:%M:%S.%fZ") + datetime.timedelta(hours=time.localtime().tm_isdst) + datetime.timedelta(minutes=response_json["contest"]["duration"])
+    except TypeError:
+        print(f"https://api.streamelements.com/kappa/v2/contests/{contests}/active")
+        print(response_json)
+        return contest_found(bettor_username, channel, kill_thread)
 
     telegram_message = "Contest found\n"
     telegram_message += f"Follow it through: https://streamelements.com/{channel}/contest/{response_json['contest']['_id']}\n"
