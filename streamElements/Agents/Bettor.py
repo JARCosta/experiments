@@ -178,6 +178,15 @@ def calculate_bet(options:dict, balance:int) -> tuple[str, int]:
 
 def bet(ws, username, channel, kill_thread):
     succ, _, _ = contest_found(username, channel.lower(), kill_thread=kill_thread)
+
+    # test connection:
+    try:
+        ping(ws)
+    except Exception as e:
+        print(e)
+        print(traceback.format_exc())
+        telegramBot.sendMessage_threaded(traceback.format_exc())
+
     if succ:
 
         global TELEGRAM_MESSAGE, BALANCE
@@ -263,7 +272,7 @@ class Bettor:
 
             if "a new contest has started" in msg: # New bet
                 print("betting")
-                bet(ws=ws, username=username, channel=channel, kill_thread=kill_thread)
+                threading.Thread(target=bet, args=[ws, username, channel, kill_thread]).start()
 
             elif "no longer accepting bets for" in msg:
                 print(datetime.datetime.now())
@@ -290,7 +299,7 @@ class Bettor:
                         telegram_message += f"profited {LAST_BET[3][2]} points\n"
                         telegramBot.sendMessage(telegram_message, True)
                     else:
-                        telegram_message += f"Lost a bet of {LAST_BET[1]} points\n"
+                        telegram_message = f"Lost a bet of {LAST_BET[1]} points\n"
                         telegram_message += f"b value was {LAST_BET[3][0]}\n"
                         telegramBot.sendMessage(telegram_message, True)
         
