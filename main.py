@@ -43,10 +43,12 @@ def check_oauth_token(username):
         return os.getenv(username.upper() + "_OAUTH")
 
 if __name__ == "__main__":
+    print("testing connection")
     try:
         requests.get("http://google.com")
     except requests.exceptions.ConnectionError:
         input("No wi-fi connection, continue?")
+    print("connection stablished")
 
     os.chdir(os.path.dirname(os.path.realpath(__file__)))
     

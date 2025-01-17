@@ -138,17 +138,15 @@ def bet_stats(options:dict, bet_amount:int, bet_option:str):
     
     b = options[bet_option] / options[oposite_option] if options[oposite_option] > 0 else None
 
+    pot_ratio = bet_amount / (options[bet_option] + bet_amount)
+    bet_profit = pot_ratio * options[oposite_option]
+    bet_return = bet_amount + bet_profit
+    bet_odd = bet_return / bet_amount if bet_amount > 0 else None
+    
     global LAST_BET
-    if bet_amount > 0:
-        pot_ratio = bet_amount / (options[bet_option] + bet_amount)
-        bet_profit = pot_ratio * options[oposite_option]
-        bet_return = bet_amount + bet_profit
-        bet_odd = bet_return / bet_amount
-        LAST_BET = [bet_option, bet_amount, options, [b, pot_ratio, bet_profit, bet_return, bet_odd]]
-        return b, pot_ratio, bet_profit, bet_return, bet_odd
-    else:
-        LAST_BET = None
-    return b, None, None, None, None
+    LAST_BET = [bet_option, bet_amount, options, [b, pot_ratio, bet_profit, bet_return, bet_odd]] if bet_amount > 0 else None
+    
+    return b, pot_ratio, bet_profit, bet_return, bet_odd
 
 def bet(ws, username, channel, kill_thread):
 
@@ -193,17 +191,19 @@ def bet(ws, username, channel, kill_thread):
                 break
 
         # Get the stats for a given bet on a given contest
-        b, opt_pot_ratio, opt_bet_profit, opt_bet_return, opt_bet_odd = bet_stats(options, bet_amount, bet_option)
-        if b:
-            telegram_notification += f"Betting\nb: {round(b, 3)}\n\n"
-            telegram_log += f"b = {round(b, 3)}\n\n"
+        b, pot_ratio, bet_profit, bet_return, bet_odd = bet_stats(options, bet_amount, bet_option)
         if bet_amount > 0:
-            telegram_notification += f"amount: {round(bet_amount)}\n\n"
-            telegram_log += f"The optimal bet is {round(bet_amount)} points\n"
-            telegram_log += f"Which represents {round(100*opt_pot_ratio)}% of the winning pot\n"
-            telegram_log += f"Profits {round(opt_bet_profit)} points\n"
-            telegram_log += f"Returns {round(opt_bet_return)} points\n"
-            telegram_log += f"Has an odd of {round(opt_bet_odd, 2)}\n"
+            telegram_notification += f"Betting {round(bet_amount)} points\n\n"
+            telegram_notification += f"b: {round(b,3)}\n"
+            telegram_notification += f"odd: {round(bet_odd, 2)}\n"
+        elif b:
+            telegram_notification += f"Skipping bet\n"
+            telegram_notification += f"b: {round(b,3)}\n\n"
+            telegram_notification += f"odd: {round(bet_odd, 2)}\n"
+        telegram_log += f"The optimal bet is {round(bet_amount)} points, {round(100*pot_ratio)}% of the winning pot\n"
+        telegram_log += f"b value is {round(b,3)}\n"
+        telegram_log += f"Profits {round(bet_profit)} points\n"
+        telegram_log += f"Has an odd of {round(bet_odd, 2)}\n\n" if bet_amount > 0 else "\n"
 
         telegram_log += f"Started with {round((end - now).total_seconds(), 2)} seconds left\n\n"
         now = datetime.datetime.now()
