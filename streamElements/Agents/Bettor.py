@@ -29,7 +29,7 @@ def get_balance(username:str) -> int:
     BALANCE = int(response_json['points'])
     return response_json['points']
 
-def send_message(message:str=None, notification:bool=False) -> None:
+def send_message(message:str=None, log:bool=True, notification:bool=False) -> None:
 
     global TELEGRAM_MESSAGE
     if not message:
@@ -39,7 +39,7 @@ def send_message(message:str=None, notification:bool=False) -> None:
         print("No message to send")
         return
 
-    telegramBot.sendMessage_threaded(message, notification)
+    telegramBot.sendMessage_threaded(message, log, notification)
     print(message, end="\n\n")
 
 def sleep_until(end:datetime.datetime, kill_thread:threading.Event) -> None:
@@ -110,7 +110,7 @@ def contest_found(bettor_username:str, channel:str, kill_thread:threading.Event)
     telegram_message += f"You have {get_balance(bettor_username)} points\n"
     # print(datetime.datetime.now(), end)
     if datetime.datetime.now() < end:
-        telegramBot.sendMessage(telegram_message, notification=True)
+        telegramBot.sendMessage(telegram_message, notification=False)
 
     return sleep_until(end - datetime.timedelta(seconds=get_variable_delay()), kill_thread=kill_thread), response_json, end
 
@@ -136,49 +136,25 @@ def optimal_bet(options:dict) -> tuple[str, int]:
 def bet_stats(options:dict, bet_amount:int, bet_option:str):
     oposite_option = "lose" if bet_option == "win" else "win"
     
-    b = options[bet_option] / options[oposite_option] if options[oposite_option] > 0 else False
+    b = options[bet_option] / options[oposite_option] if options[oposite_option] > 0 else None
 
+    global LAST_BET
     if bet_amount > 0:
         pot_ratio = bet_amount / (options[bet_option] + bet_amount)
         bet_profit = pot_ratio * options[oposite_option]
         bet_return = bet_amount + bet_profit
         bet_odd = bet_return / bet_amount
-        global LAST_BET
         LAST_BET = [bet_option, bet_amount, options, [b, pot_ratio, bet_profit, bet_return, bet_odd]]
         return b, pot_ratio, bet_profit, bet_return, bet_odd
+    else:
+        LAST_BET = None
     return b, None, None, None, None
 
-def calculate_bet(options:dict, balance:int) -> tuple[str, int]:
-
-    global TELEGRAM_MESSAGE
-    TELEGRAM_MESSAGE += f"The pot is at {options['win']+options['lose']} points\n"
-    for i in options.keys():
-        TELEGRAM_MESSAGE += f"\tOption {i}: {options[i]} points\n"
-    TELEGRAM_MESSAGE += "\n"
-    TELEGRAM_MESSAGE += f"You have {balance} points\n"
-    TELEGRAM_MESSAGE += "\n"
-
-    bet_option, opt_bet_amount = optimal_bet(options)
-
-    b, opt_pot_ratio, opt_bet_profit, opt_bet_return, opt_bet_odd = bet_stats(options, opt_bet_amount, bet_option)
-
-    if b:
-        TELEGRAM_MESSAGE += f"b = {round(b, 3)}\n\n"
-
-    if opt_bet_amount > 0:
-        TELEGRAM_MESSAGE += f"The optimal bet is {round(opt_bet_amount)} points\n"
-        TELEGRAM_MESSAGE += f"Which represents {round(100*opt_pot_ratio)}% of the winning pot\n"
-        TELEGRAM_MESSAGE += f"Profits {round(opt_bet_profit)} points\n"
-        TELEGRAM_MESSAGE += f"Returns {round(opt_bet_return)} points\n"
-        TELEGRAM_MESSAGE += f"Has an odd of {round(opt_bet_odd, 2)}\n"
-
-    bet_amount = opt_bet_amount
-
-    return bet_option, bet_amount
-
 def bet(ws, username, channel, kill_thread):
-    succ, _, _ = contest_found(username, channel.lower(), kill_thread=kill_thread)
 
+    global BALANCE
+    BALANCE = get_balance(username) if BALANCE == None else BALANCE
+    
     # test connection:
     try:
         ping(ws)
@@ -186,45 +162,59 @@ def bet(ws, username, channel, kill_thread):
         print(e)
         print(traceback.format_exc())
         telegramBot.sendMessage_threaded(traceback.format_exc())
+    
+    # Check if there is a contest open to bet, if so, wait until it's time to bet
+    succ, _, _ = contest_found(username, channel.lower(), kill_thread=kill_thread) 
 
     if succ:
 
-        global TELEGRAM_MESSAGE, BALANCE
-        TELEGRAM_MESSAGE += "Time to place your bets\n"
+        telegram_notification = ""
+        telegram_log = ""
         now = datetime.datetime.now()
         
+        # Contest info
         runah_contests, el_pipow_contests = "5a2ae33308308f00016e684e", "5e46e43e8d514cea9ae5bfb4"
         contests = runah_contests if channel.lower() == "runah" else el_pipow_contests
-
         contest_json = requests.get(f"https://api.streamelements.com/kappa/v2/contests/{contests}/active", timeout=10).json()
         end = datetime.datetime.strptime(contest_json["contest"]["startedAt"],"%Y-%m-%dT%H:%M:%S.%fZ") + datetime.timedelta(hours=time.localtime().tm_isdst) + datetime.timedelta(minutes=contest_json["contest"]["duration"])
-        if (end - now).total_seconds() > 5:
-            return bet(ws, username, channel, kill_thread)
-        TELEGRAM_MESSAGE += f"There is still {round((end - now).total_seconds(), 2)} seconds left\n\n"
-
-        BALANCE = get_balance(username) if BALANCE == None else BALANCE
+        # if (end - now).total_seconds() > 5:
+            # return bet(ws, username, channel, kill_thread)
+        
+        # get best bet, if not enough, or too close to checkpoint, make it the maximum we can bet
         options = {option["command"]: int(option["totalAmount"]) for option in contest_json["contest"]["options"]}
-        bet_option, bet_amount = calculate_bet(options, BALANCE)
-
-        balance_checkpoints = [0, 13500, 32500, 62500, 120000, 230000, 550000]
+        # Get the most profitable bet option and amount
+        bet_option, bet_amount = optimal_bet(options)
         bet_amount = BALANCE if bet_amount > BALANCE else bet_amount
-
-        for checkpoint in balance_checkpoints:
+        for checkpoint in [0, 13500, 32500, 62500, 120000, 230000, 550000]:
             temp_bet:int = bet_amount - checkpoint
             if temp_bet > 0:
                 temp_bet = "all" if temp_bet >= BALANCE else str(int(temp_bet))
                 send(ws, channel.lower(), f"!bet {bet_option} {temp_bet.replace('.0', '')}")
                 break
 
-        now = datetime.datetime.now()
+        # Get the stats for a given bet on a given contest
+        b, opt_pot_ratio, opt_bet_profit, opt_bet_return, opt_bet_odd = bet_stats(options, bet_amount, bet_option)
+        if b:
+            telegram_notification += f"Betting\nb: {round(b, 3)}\n\n"
+            telegram_log += f"b = {round(b, 3)}\n\n"
+        if bet_amount > 0:
+            telegram_notification += f"amount: {round(bet_amount)}\n\n"
+            telegram_log += f"The optimal bet is {round(bet_amount)} points\n"
+            telegram_log += f"Which represents {round(100*opt_pot_ratio)}% of the winning pot\n"
+            telegram_log += f"Profits {round(opt_bet_profit)} points\n"
+            telegram_log += f"Returns {round(opt_bet_return)} points\n"
+            telegram_log += f"Has an odd of {round(opt_bet_odd, 2)}\n"
 
-        TELEGRAM_MESSAGE += f"There is still {round((end - datetime.datetime.now()).total_seconds(), 2)} seconds left\n\n"
+        telegram_log += f"Started with {round((end - now).total_seconds(), 2)} seconds left\n\n"
+        now = datetime.datetime.now()
+        telegram_log += f"Placed bet with {round((end - now).total_seconds(), 2)} seconds left\n\n"
         if (end - now).total_seconds() > REFERENCE_DELAY: # betting too early
             decrease_variable_delay(((end - now).total_seconds() - REFERENCE_DELAY)/4)
         if (end - now).total_seconds() < REFERENCE_DELAY: # betting too late
             increase_variable_delay((REFERENCE_DELAY - (end - now).total_seconds())/4)
 
-        send_message()
+        telegramBot.sendMessage(telegram_log)
+        telegramBot.sendMessage(telegram_notification, False, True)
 
 
 
@@ -295,13 +285,13 @@ class Bettor:
                 if LAST_BET:
                     if winner_option.lower() == LAST_BET[0]:
                         telegram_message = f"Won a bet of {LAST_BET[1]} points\n"
-                        telegram_message += f"b value was {LAST_BET[3][0]}\n"
-                        telegram_message += f"profited {LAST_BET[3][2]} points\n"
-                        telegramBot.sendMessage(telegram_message, True)
+                        telegram_message += f"b value was {round(LAST_BET[3][0], 3)}\n"
+                        telegram_message += f"profited {round(LAST_BET[3][2])} points\n"
+                        telegramBot.sendMessage(telegram_message, notification=True)
                     else:
                         telegram_message = f"Lost a bet of {LAST_BET[1]} points\n"
-                        telegram_message += f"b value was {LAST_BET[3][0]}\n"
-                        telegramBot.sendMessage(telegram_message, True)
+                        telegram_message += f"b value was {round(LAST_BET[3][0], 3)}\n"
+                        telegramBot.sendMessage(telegram_message, notification=True)
         
         elif f"@{username.lower()}" in message.lower() and not f":{username.lower()}" in message: # I was mentioned
             print("Got mentioned")
@@ -322,15 +312,13 @@ def launch_bettor(channel:str, username:str, oauth_key:str, counters:list, kill_
     connection_open_event = threading.Event()
 
     websocket_url = "wss://irc-ws.chat.twitch.tv/"
-    try:
-        ws = websocket.WebSocketApp(
-            websocket_url,
-            on_message=partial(Bettor.on_message, username=username, channel=channel, counters=counters, connection_open_event=connection_open_event, kill_thread=kill_thread_event),
-            on_error=WebSocket.on_error,
-            on_open=partial(Bettor.on_open, oauth_key=oauth_key, username=username, counters=counters, kill_thread=kill_thread_event, channel=channel)
-            )
-    except Exception as e:
-        print(e)
+    ws = websocket.WebSocketApp(
+        websocket_url,
+        on_message=partial(Bettor.on_message, username=username, channel=channel, counters=counters, connection_open_event=connection_open_event, kill_thread=kill_thread_event),
+        on_error=WebSocket.on_error,
+        on_open=partial(Bettor.on_open, oauth_key=oauth_key, username=username, counters=counters, kill_thread=kill_thread_event, channel=channel)
+        )
+
     # Run the WebSocket connection in a separate thread to avoid blocking
     wst = threading.Thread(target=ws.run_forever)
     wst.daemon = True

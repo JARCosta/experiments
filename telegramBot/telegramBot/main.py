@@ -58,16 +58,12 @@ def getMessages(token: str, chat_id: str):
 ####################  SENDER FUNCTIONS  ####################
 ############################################################
 
-def sendMessage(message: str, notification:bool = False):
-  user = credentials.telegramBot_User_id
-  params = {"chat_id": user, "text": message}
-
-  token = credentials.telegramBot_Logs_token
+def _send_request(token, params):
   while True:
     try:
       r = requests.post(f"https://api.telegram.org/bot{token}/sendMessage", data=params)
       # print(r.json())
-      break
+      return r
     except requests.exceptions.ConnectionError as e:
       print(e)
       # print(traceback.format_exc())
@@ -75,22 +71,15 @@ def sendMessage(message: str, notification:bool = False):
       # print("Retrying to send:", message)
       continue
       break
-  
-  if notification:
-    token = credentials.telegramBot_Notifications_token
-    while True:
-      try:
-        r = requests.post(f"https://api.telegram.org/bot{token}/sendMessage", data=params)
-        # print(r.json())
-        break
-      except requests.exceptions.ConnectionError as e:
-        print(e)
-        # print(traceback.format_exc())
-        time.sleep(2)
-        # print("Retrying to send:", message)
-        continue
-        break
 
+def sendMessage(message: str, log:bool = True, notification:bool = False):
+  user = credentials.telegramBot_User_id
+  params = {"chat_id": user, "text": message}
+  if log:
+    r = _send_request(credentials.telegramBot_Logs_token, params)
+  if notification:
+    r = _send_request(credentials.telegramBot_Notifications_token, params)
+  
   if not r.ok:
     raise Exception(r.text)
   else:
