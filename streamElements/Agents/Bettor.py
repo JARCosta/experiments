@@ -47,7 +47,11 @@ def sleep_until(end:datetime.datetime, kill_thread:threading.Event) -> None:
     if now < end:
         sleep_time = (end - now).total_seconds()
         print(f"Sleeping for {sleep_time} seconds")
-        sleep_interrupt(int(sleep_time), kill_thread)
+        telegramBot.sendMessage(f"Sleeping for {sleep_time} seconds")
+        for _ in range(int(sleep_time)):
+            time.sleep(1)
+            if kill_thread.is_set():
+                break
         time.sleep(sleep_time % 1)
         return True
     else:
@@ -55,12 +59,6 @@ def sleep_until(end:datetime.datetime, kill_thread:threading.Event) -> None:
         # print("Now: ", now)
         # print("End: ", end)
         return False
-
-def sleep_interrupt(duration:int, kill_thread:threading.Event):
-    for i in range(duration):
-        time.sleep(1)
-        if kill_thread.is_set():
-            break
 
 ############################################################
 # VARIABLE DELAY 
@@ -92,7 +90,7 @@ def increase_variable_delay(amount:float=0.1) -> None:
 # BETTING
 ############################################################
 
-def contest_found(bettor_username:str, channel:str, kill_thread:threading.Event):
+def check_contest(bettor_username:str, channel:str, kill_thread:threading.Event):
     runah_contests, el_pipow_contests = "5a2ae33308308f00016e684e", "5e46e43e8d514cea9ae5bfb4"
     contests = runah_contests if channel.lower() == "runah" else el_pipow_contests
 
@@ -110,7 +108,7 @@ def contest_found(bettor_username:str, channel:str, kill_thread:threading.Event)
     telegram_message += f"You have {get_balance(bettor_username)} points\n"
     # print(datetime.datetime.now(), end)
     if datetime.datetime.now() < end:
-        telegramBot.sendMessage(telegram_message, notification=False)
+        telegramBot.sendMessage(telegram_message)
 
     return sleep_until(end - datetime.timedelta(seconds=get_variable_delay()), kill_thread=kill_thread), response_json, end
 
@@ -162,7 +160,7 @@ def bet(ws, username, channel, kill_thread):
         telegramBot.sendMessage_threaded(traceback.format_exc())
     
     # Check if there is a contest open to bet, if so, wait until it's time to bet
-    succ, _, _ = contest_found(username, channel.lower(), kill_thread=kill_thread) 
+    succ, _, _ = check_contest(username, channel.lower(), kill_thread=kill_thread) 
 
     if succ:
 
@@ -216,33 +214,7 @@ def bet(ws, username, channel, kill_thread):
         telegramBot.sendMessage(telegram_log)
         telegramBot.sendMessage(telegram_notification, False, True)
 
-
-
-############################################################
-# NETWORK CONNECTION
-############################################################
-
-# WST, WS = None, None
-
-# def reconnect(wst:threading.Thread, ws:websocket.WebSocketApp, username:str, oauth_key:str, counters:list, kill_thread:threading.Event):
-#     global telegram_message
-#     twitch_message_sender.close(wst, ws)
-#     wst, ws = Bettor.launch_bettor("Runah", username, oauth_key, counters, kill_thread)
-#     telegram_message += "Reconnected to Twitch\n"
-#     return wst, ws
-
-# def check_websocket(wst:threading.Thread, ws:websocket.WebSocketApp, username:str, oauth_key:str, counters:list, kill_thread:threading.Event):
-#     try:
-#         twitch_message_sender.ping(ws)
-#     except (websocket._exceptions.WebSocketConnectionClosedException, ):
-#         print("Handled exception:\n", traceback.format_exc())
-#         return reconnect(wst, ws, username, oauth_key, counters, kill_thread)
-#     return wst, ws
-
 class Bettor:
-
-    def on_open(ws:websocket.WebSocketApp, oauth_key:str, username:str, counters:list, kill_thread:threading.Event, channel:str):
-        WebSocket.on_open(ws, oauth_key, username, counters)
 
     def on_message(ws:websocket.WebSocketApp, message:str, username:str, channel:str, counters:list, connection_open_event:threading.Event, kill_thread:threading.Event):
         WebSocket.connect(ws, message, username, channel, counters, connection_open_event, launch_bettor)
@@ -257,32 +229,28 @@ class Bettor:
         except IndexError:
             return
 
+        # StreamElements talked to someone
         if user.lower() == "StreamElements".lower():
-            print(msg)
+            telegram_message = user + ": " + msg.replace("\r", "")
+            print(telegram_message)
+            telegramBot.sendMessage(telegram_message)
 
             if "a new contest has started" in msg: # New bet
-                print("betting")
                 threading.Thread(target=bet, args=[ws, username, channel, kill_thread]).start()
 
             elif "no longer accepting bets for" in msg:
-                print(datetime.datetime.now())
+                pass
 
-            elif f", there is no contest currently running." in msg: # Bet placed too late
-                print(user, ":", msg.replace("\n", "").replace("\r", ""))
-                print(user.lower(), user.lower() == "StreamElements".lower())
-                print(mention.lower(), username.lower(), mention.lower() == username.lower())
-                print()
-                if user.lower() == "StreamElements".lower():
-                    print("StreamElements")
+            elif f", there is no contest currently running." in msg or "an error occured while placing your bet: No contest found" in msg: # Bet placed too late
+                # We were the one who bet late
                 if mention.lower() == username.lower():
-                    print(mention.lower(), mention.lower() == username.lower())
+                    telegramBot.sendMessage("Betting to late!", notification=True)
+                    increase_variable_delay()
 
             elif "won the contest" in msg:
-                winner_option = msg.split('"')[1]
-                # print(winner_option)
                 global LAST_BET
-
                 if LAST_BET:
+                    winner_option = msg.split('"')[1]
                     if winner_option.lower() == LAST_BET[0]:
                         telegram_message = f"Won a bet of {LAST_BET[1]} points\n"
                         telegram_message += f"b value was {round(LAST_BET[3][0], 3)}\n"
@@ -293,17 +261,9 @@ class Bettor:
                         telegram_message += f"b value was {round(LAST_BET[3][0], 3)}\n"
                         telegramBot.sendMessage(telegram_message, notification=True)
         
-        elif f"@{username.lower()}" in message.lower() and not f":{username.lower()}" in message: # I was mentioned
-            print("Got mentioned")
-            user = message.split("display-name=")[1].split(";")[0]
-            msg = message.split(f"PRIVMSG #{channel.lower()} :")[1]
-
-            if "an error occured while placing your bet: No contest found" in msg or "there is no contest currently running" in msg:
-                if user.lower() == "StreamElements".lower():
-                    print("I bet too late")
-                    increase_variable_delay()
-
-            telegram_message = user + ": " + msg
+        # We were mentioned
+        if f"@{username.lower()}" in message.lower() and not f":{username.lower()}" in message:
+            telegram_message = user + ": " + msg.replace("\r", "")
             telegramBot.sendMessage(telegram_message)
             print(telegram_message)
 
@@ -316,7 +276,7 @@ def launch_bettor(channel:str, username:str, oauth_key:str, counters:list, kill_
         websocket_url,
         on_message=partial(Bettor.on_message, username=username, channel=channel, counters=counters, connection_open_event=connection_open_event, kill_thread=kill_thread_event),
         on_error=partial(WebSocket.on_error, channel, username, oauth_key, counters, kill_thread_event, launch_bettor),
-        on_open=partial(Bettor.on_open, oauth_key=oauth_key, username=username, counters=counters, kill_thread=kill_thread_event, channel=channel)
+        on_open=partial(WebSocket.on_open, oauth_key=oauth_key, username=username, counters=counters, kill_thread=kill_thread_event, channel=channel)
         )
 
     # Run the WebSocket connection in a separate thread to avoid blocking
@@ -328,7 +288,7 @@ def launch_bettor(channel:str, username:str, oauth_key:str, counters:list, kill_
     connection_open_event.wait()
     counters[1] += 1
 
-    print("checking contest open")
+    print("checking for open contest")
     bet(ws=ws, username=username, channel=channel, kill_thread=kill_thread_event)
 
 
