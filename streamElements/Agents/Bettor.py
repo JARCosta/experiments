@@ -315,7 +315,7 @@ def launch_bettor(channel:str, username:str, oauth_key:str, counters:list, kill_
     ws = websocket.WebSocketApp(
         websocket_url,
         on_message=partial(Bettor.on_message, username=username, channel=channel, counters=counters, connection_open_event=connection_open_event, kill_thread=kill_thread_event),
-        on_error=WebSocket.on_error,
+        on_error=partial(WebSocket.on_error, channel, username, oauth_key, counters, kill_thread_event, launch_bettor),
         on_open=partial(Bettor.on_open, oauth_key=oauth_key, username=username, counters=counters, kill_thread=kill_thread_event, channel=channel)
         )
 

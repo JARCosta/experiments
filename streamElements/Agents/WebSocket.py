@@ -30,9 +30,14 @@ class WebSocket:
             ws.send("PONG")
             ws.send("PING")
 
-    def on_error(ws:websocket.WebSocketApp, error:Exception):
+    def on_error(ws:websocket.WebSocketApp, error:Exception, channel:str, username:str, oauth_key:str, counters:list, kill_thread_event:threading.Event, creator_function:callable):
         telegram_message = "Websocket error:\n"
+        telegram_message += f"error, {error == websocket._exceptions.WebSocketConnectionClosedException}\n"
         telegram_message += traceback.format_exc() + "\n"
+        if error == websocket._exceptions.WebSocketConnectionClosedException:
+            creator_function(channel, username, oauth_key, counters, kill_thread_event)
+            threading.Thread(target=creator_function, args=(channel, username, oauth_key, counters, kill_thread_event)).start()
+            telegram_message += "launching new agent"
         print(telegram_message)
         telegramBot.sendMessage(telegram_message, notification=True)
 

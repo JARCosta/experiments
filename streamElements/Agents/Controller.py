@@ -44,15 +44,13 @@ def launch_controller(channel:str, username:str, oauth_key:str, counters:list, k
     connection_open_event = threading.Event()
 
     websocket_url = "wss://irc-ws.chat.twitch.tv/"
-    try:
-        ws = websocket.WebSocketApp(
-            websocket_url,
-            on_message=partial(Controller.on_message, controller_username=username, controlled_channel=channel, counters=counters, connection_open_event=connection_open_event),
-            on_error=WebSocket.on_error,
-            on_open=partial(WebSocket.on_open, oauth_key=oauth_key, username=username, counters=counters)
-            )
-    except Exception as e:
-        print(e)
+    ws = websocket.WebSocketApp(
+        websocket_url,
+        on_message=partial(Controller.on_message, controller_username=username, controlled_channel=channel, counters=counters, connection_open_event=connection_open_event),
+        on_error=partial(WebSocket.on_error, channel, username, oauth_key, counters, kill_thread_event, launch_controller),
+        on_open=partial(WebSocket.on_open, oauth_key=oauth_key, username=username, counters=counters)
+        )
+
     # Run the WebSocket connection in a separate thread to avoid blocking
     wst = threading.Thread(target=ws.run_forever)
     wst.daemon = True
