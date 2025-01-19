@@ -12,8 +12,8 @@ from .Bettor import get_balance
 
 class DataCollector:
 
-    def on_message(ws:websocket.WebSocketApp, message:str, username:str, channel:str, counters:list, connection_open_event:threading.Event):
-        WebSocket.connect(ws, message, username, channel, counters, connection_open_event, launch_data_collector)
+    def on_message(ws:websocket.WebSocketApp, message:str, username:str, channel:str, oauth_key:str, counters:list, connection_open_event:threading.Event, kill_thread_event:threading.Event):
+        WebSocket.connect(ws, message, username, channel, oauth_key, counters, connection_open_event, kill_thread_event, launch_data_collector)
 
         if "a new contest has started" in message: # New bet
             timestamp = datetime.datetime.now()
@@ -55,9 +55,9 @@ def launch_data_collector(channel:str, username:str, oauth_key:str, counters:lis
     websocket_url = "wss://irc-ws.chat.twitch.tv/"
     ws = websocket.WebSocketApp(
         websocket_url,
-        on_message=partial(DataCollector.on_message, username=username, channel=channel, counters=counters, connection_open_event=connection_open_event),
-        on_error=partial(WebSocket.on_error, channel, username, oauth_key, counters, kill_thread_event, launch_data_collector),
-        on_open=partial(WebSocket.on_open, oauth_key=oauth_key, username=username, counters=counters)
+        on_message=partial(DataCollector.on_message, username=username, channel=channel, oauth_key=oauth_key, counters=counters, connection_open_event=connection_open_event, kill_thread_event=kill_thread_event),
+        on_error=partial(WebSocket.on_error, channel=channel, username=username, oauth_key=oauth_key, counters=counters, kill_thread_event=kill_thread_event, creator_function=launch_data_collector),
+        on_open=partial(WebSocket.on_open, username=username, oauth_key=oauth_key, counters=counters)
         )
     
     # Run the WebSocket connection in a separate thread to avoid blocking
@@ -71,6 +71,7 @@ def launch_data_collector(channel:str, username:str, oauth_key:str, counters:lis
 
     kill_thread_event.wait()
     ws.close()
-    wst.join()
+    # wst.join()
+    print(f"{launch_data_collector.__name__.replace('launch_', '').capitalize()} left")
 
     return wst, ws

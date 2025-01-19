@@ -197,7 +197,8 @@ def bet(ws, username, channel, kill_thread):
         elif b:
             telegram_notification += f"Skipping bet\n"
             telegram_notification += f"b: {round(b,3)}\n\n"
-            telegram_notification += f"odd: {round(bet_odd, 2)}\n"
+            if bet_odd:
+                telegram_notification += f"odd: {round(bet_odd, 2)}\n"
         telegram_log += f"The optimal bet is {round(bet_amount)} points, {round(100*pot_ratio)}% of the winning pot\n"
         telegram_log += f"b value is {round(b,3)}\n"
         telegram_log += f"Profits {round(bet_profit)} points\n"
@@ -216,11 +217,11 @@ def bet(ws, username, channel, kill_thread):
 
 class Bettor:
 
-    def on_message(ws:websocket.WebSocketApp, message:str, username:str, channel:str, counters:list, connection_open_event:threading.Event, kill_thread:threading.Event):
-        WebSocket.connect(ws, message, username, channel, counters, connection_open_event, launch_bettor)
+    def on_message(ws:websocket.WebSocketApp, message:str, username:str, channel:str, oauth_key:str, counters:list, connection_open_event:threading.Event, kill_thread_event:threading.Event):
+        WebSocket.connect(ws, message, username, channel, oauth_key, counters, connection_open_event, kill_thread_event, launch_bettor)
         try:
             user = message.split("display-name=")[1].split(";")[0]
-            msg = message.split(f"PRIVMSG #{channel.lower()} :")[1]
+            msg = message.split(f"PRIVMSG #{channel.lower()} :")[1].replace('ACTION ', '')
             mention = message.split("@")[-1].split(" ")[0].replace(",", "")
             # print(user, ":", msg.replace("\n", "").replace("\r", ""))
             # print(user.lower(), user.lower() == "StreamElements".lower())
@@ -236,7 +237,7 @@ class Bettor:
             telegramBot.sendMessage(telegram_message)
 
             if "a new contest has started" in msg: # New bet
-                threading.Thread(target=bet, args=[ws, username, channel, kill_thread]).start()
+                threading.Thread(target=bet, args=[ws, username, channel, kill_thread_event]).start()
 
             elif "no longer accepting bets for" in msg:
                 pass
@@ -262,7 +263,7 @@ class Bettor:
                         telegramBot.sendMessage(telegram_message, notification=True)
         
         # We were mentioned
-        if f"@{username.lower()}" in message.lower() and not f":{username.lower()}" in message:
+        if f"@{username.lower()}" in msg.lower():
             telegram_message = user + ": " + msg.replace("\r", "")
             telegramBot.sendMessage(telegram_message)
             print(telegram_message)
@@ -274,9 +275,9 @@ def launch_bettor(channel:str, username:str, oauth_key:str, counters:list, kill_
     websocket_url = "wss://irc-ws.chat.twitch.tv/"
     ws = websocket.WebSocketApp(
         websocket_url,
-        on_message=partial(Bettor.on_message, username=username, channel=channel, counters=counters, connection_open_event=connection_open_event, kill_thread=kill_thread_event),
-        on_error=partial(WebSocket.on_error, channel, username, oauth_key, counters, kill_thread_event, launch_bettor),
-        on_open=partial(WebSocket.on_open, oauth_key=oauth_key, username=username, counters=counters, kill_thread=kill_thread_event, channel=channel)
+        on_message=partial(Bettor.on_message, username=username, channel=channel, oauth_key=oauth_key, counters=counters, connection_open_event=connection_open_event, kill_thread_event=kill_thread_event),
+        on_error=partial(WebSocket.on_error, channel=channel, username=username, oauth_key=oauth_key, counters=counters, kill_thread_event=kill_thread_event, creator_function=launch_bettor),
+        on_open=partial(WebSocket.on_open, username=username, oauth_key=oauth_key, counters=counters)
         )
 
     # Run the WebSocket connection in a separate thread to avoid blocking
@@ -293,10 +294,8 @@ def launch_bettor(channel:str, username:str, oauth_key:str, counters:list, kill_
 
 
     kill_thread_event.wait()
-    print("massive quitting 1")
     ws.close()
-    print("massive quitting 2")
     # wst.join()
-    # print("massive quitting 3")
+    print(f"{launch_bettor.__name__.replace('launch_', '').capitalize()} left")
 
     return wst, ws

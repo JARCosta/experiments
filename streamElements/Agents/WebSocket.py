@@ -11,7 +11,7 @@ import telegramBot
 import traceback
 
 class WebSocket:
-    def connect(ws:websocket.WebSocketApp, message:str, username:str, channel:str, counters:list, connection_open_event:threading.Event, creator_function:callable):
+    def connect(ws:websocket.WebSocketApp, message:str, username:str, channel:str, oauth_key:str , counters:list, connection_open_event:threading.Event, kill_thread_event:threading.Event, creator_function:callable):
         if f":Welcome, GLHF!" in message:
             ws.send(f"JOIN #{channel}")
         
@@ -22,20 +22,19 @@ class WebSocket:
         elif ":tmi.twitch.tv RECONNECT" in message:
             telegram_message = f"Received RECONNECT message from Twitch on a {creator_function.__name__} WebSocket\n"
             telegram_message += f"Reconnecting viewer {username} to {channel}\n"
-            threading.Thread(target=creator_function, args=(channel, username, os.getenv(username.upper() + "_OAUTH"), counters, connection_open_event)).start()
             telegramBot.sendMessage(telegram_message)
             print(telegram_message)
-        
+            threading.Thread(target=creator_function, args=(channel, username, oauth_key, counters, kill_thread_event)).start()
+
         elif "PING :tmi.twitch.tv" in message:
             ws.send("PONG")
             ws.send("PING")
 
     def on_error(ws:websocket.WebSocketApp, error:Exception, channel:str, username:str, oauth_key:str, counters:list, kill_thread_event:threading.Event, creator_function:callable):
         telegram_message = "Websocket error:\n"
-        telegram_message += f"error, {error == websocket._exceptions.WebSocketConnectionClosedException}\n"
+        telegram_message += f"error,{error}, {error.__traceback__}, {type(error) == websocket._exceptions.WebSocketConnectionClosedException}\n"
         telegram_message += traceback.format_exc() + "\n"
-        if error == websocket._exceptions.WebSocketConnectionClosedException:
-            creator_function(channel, username, oauth_key, counters, kill_thread_event)
+        if type(error) == websocket._exceptions.WebSocketConnectionClosedException or error == websocket._exceptions.WebSocketConnectionClosedException:
             threading.Thread(target=creator_function, args=(channel, username, oauth_key, counters, kill_thread_event)).start()
             telegram_message += "launching new agent"
         print(telegram_message)
@@ -46,13 +45,12 @@ class WebSocket:
         print(telegram_message)
         telegramBot.sendMessage(telegram_message, notification=True)
 
-    def on_open(ws:websocket.WebSocketApp, oauth_key:str, username:str, counters:list):
+    def on_open(ws:websocket.WebSocketApp, username:str, oauth_key:str, counters:list):
+        print(f"Logging {username} {oauth_key}")
         ws.send("CAP REQ :twitch.tv/tags twitch.tv/commands")
         ws.send(f"PASS oauth:{oauth_key}")
         ws.send(f"NICK {username}")
         ws.send(f"USER {username} 8 * :{username}")
-
-        print(f"Logging {username} {oauth_key}")
         counters[0] += 1
 
 def send(ws:websocket.WebSocketApp, channel:str, message:str):
