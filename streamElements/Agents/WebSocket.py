@@ -36,7 +36,7 @@ class WebSocket:
         telegram_message += traceback.format_exc() + "\n"
         if type(error) == websocket._exceptions.WebSocketConnectionClosedException or error == websocket._exceptions.WebSocketConnectionClosedException:
             threading.Thread(target=creator_function, args=(channel, username, oauth_key, counters, kill_thread_event)).start()
-            telegram_message += "launching new agent"
+            telegram_message += f"launching new {creator_function.__name__.replace('launch_', '').capitalize()} agent"
         print(telegram_message)
         telegramBot.sendMessage(telegram_message, notification=True)
 
