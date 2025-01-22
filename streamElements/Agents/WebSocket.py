@@ -29,14 +29,15 @@ class WebSocket:
         elif "PING :tmi.twitch.tv" in message:
             ws.send("PONG")
             ws.send("PING")
+            telegramBot.sendMessage(f"{creator_function.__name__.replace('launch_', '').capitalize()} returned a PING")
 
     def on_error(ws:websocket.WebSocketApp, error:Exception, channel:str, username:str, oauth_key:str, counters:list, kill_thread_event:threading.Event, creator_function:callable):
         telegram_message = "Websocket error:\n"
         telegram_message += f"error,{error}, {error.__traceback__}, {type(error) == websocket._exceptions.WebSocketConnectionClosedException}\n"
         telegram_message += traceback.format_exc() + "\n"
         if type(error) == websocket._exceptions.WebSocketConnectionClosedException or error == websocket._exceptions.WebSocketConnectionClosedException:
-            threading.Thread(target=creator_function, args=(channel, username, oauth_key, counters, kill_thread_event)).start()
             telegram_message += f"launching new {creator_function.__name__.replace('launch_', '').capitalize()} agent"
+            ws.run_forever()
         print(telegram_message)
         telegramBot.sendMessage(telegram_message, notification=True)
 
