@@ -48,11 +48,11 @@ def sleep_until(end:datetime.datetime, kill_thread:threading.Event) -> None:
         sleep_time = (end - now).total_seconds()
         print(f"Sleeping for {sleep_time} seconds")
         telegramBot.sendMessage(f"Sleeping for {sleep_time} seconds")
-        for _ in range(int(sleep_time)):
-            time.sleep(1)
+        for _ in range(int(sleep_time)//10):
+            time.sleep(10)
             if kill_thread.is_set():
                 break
-        time.sleep(sleep_time % 1)
+        time.sleep(sleep_time % 10)
         return True
     else:
         # print("Time has already passed")
@@ -95,20 +95,23 @@ def check_contest(bettor_username:str, channel:str, kill_thread:threading.Event)
     contests = runah_contests if channel.lower() == "runah" else el_pipow_contests
 
     response_json = requests.get(f"https://api.streamelements.com/kappa/v2/contests/{contests}/active", timeout=10).json()
+    print(response_json)
     try:
         end = datetime.datetime.strptime(response_json["contest"]["startedAt"],"%Y-%m-%dT%H:%M:%S.%fZ") + datetime.timedelta(hours=time.localtime().tm_isdst) + datetime.timedelta(minutes=response_json["contest"]["duration"])
     except TypeError:
         print(f"https://api.streamelements.com/kappa/v2/contests/{contests}/active")
-        print(response_json)
         print("No contest Found")
         return False, None, None
 
-    telegram_message = "Contest found\n"
-    telegram_message += f"Follow it through: https://streamelements.com/{channel}/contest/{response_json['contest']['_id']}\n"
-    telegram_message += f"You have {get_balance(bettor_username)} points\n"
-    # print(datetime.datetime.now(), end)
     if datetime.datetime.now() < end:
+        telegram_message = "Open contest found\n"
+        telegram_message += f"Follow it through: https://streamelements.com/{channel}/contest/{response_json['contest']['_id']}\n"
+        telegram_message += f"You have {get_balance(bettor_username)} points\n"
         telegramBot.sendMessage(telegram_message)
+    else:
+        telegram_message = "Closed contest found\n"
+        telegram_message += f"Follow it through: https://streamelements.com/{channel}/contest/{response_json['contest']['_id']}\n"
+        print(telegram_message)
 
     return sleep_until(end - datetime.timedelta(seconds=get_variable_delay()), kill_thread=kill_thread), response_json, end
 
@@ -173,8 +176,9 @@ def bet(ws, username, channel, kill_thread):
         contests = runah_contests if channel.lower() == "runah" else el_pipow_contests
         contest_json = requests.get(f"https://api.streamelements.com/kappa/v2/contests/{contests}/active", timeout=10).json()
         end = datetime.datetime.strptime(contest_json["contest"]["startedAt"],"%Y-%m-%dT%H:%M:%S.%fZ") + datetime.timedelta(hours=time.localtime().tm_isdst) + datetime.timedelta(minutes=contest_json["contest"]["duration"])
-        # if (end - now).total_seconds() > 5:
-            # return bet(ws, username, channel, kill_thread)
+        # check if contest got restarted
+        if (end - now).total_seconds() > 5:
+            return bet(ws, username, channel, kill_thread)
         
         # get best bet, if not enough, or too close to checkpoint, make it the maximum we can bet
         options = {option["command"]: int(option["totalAmount"]) for option in contest_json["contest"]["options"]}
@@ -186,6 +190,7 @@ def bet(ws, username, channel, kill_thread):
             if temp_bet > 0:
                 temp_bet = "all" if temp_bet >= BALANCE else str(int(temp_bet))
                 send(ws, channel.lower(), f"!bet {bet_option} {temp_bet.replace('.0', '')}")
+                # now = datetime.datetime.now()
                 break
 
         # Get the stats for a given bet on a given contest
@@ -194,19 +199,21 @@ def bet(ws, username, channel, kill_thread):
             telegram_notification += f"Betting {round(bet_amount)} points\n\n"
             telegram_notification += f"b: {round(b,3)}\n"
             telegram_notification += f"odd: {round(bet_odd, 2)}\n"
+            telegram_log += f"The optimal bet is {round(bet_amount)} points, {round(100*pot_ratio)}% of the winning pot\n"
+            telegram_log += f"b value is {round(b,3)}\n"
+            # for i in options.keys:
+                # telegram_log += ""
+            telegram_log += options.__str__() + "\n"
+            telegram_log += f"Profits {round(bet_profit)} points\n"
+            telegram_log += f"Has an odd of {round(bet_odd, 2)}\n\n" if bet_amount > 0 else "\n"
         elif b:
             telegram_notification += f"Skipping bet\n"
             telegram_notification += f"b: {round(b,3)}\n\n"
             if bet_odd:
                 telegram_notification += f"odd: {round(bet_odd, 2)}\n"
-        telegram_log += f"The optimal bet is {round(bet_amount)} points, {round(100*pot_ratio)}% of the winning pot\n"
-        telegram_log += f"b value is {round(b,3)}\n"
-        telegram_log += f"Profits {round(bet_profit)} points\n"
-        telegram_log += f"Has an odd of {round(bet_odd, 2)}\n\n" if bet_amount > 0 else "\n"
 
-        telegram_log += f"Started with {round((end - now).total_seconds(), 2)} seconds left\n\n"
-        now = datetime.datetime.now()
-        telegram_log += f"Placed bet with {round((end - now).total_seconds(), 2)} seconds left\n\n"
+        if now:
+            telegram_log += f"Placed bet with {round((end - now).total_seconds(), 2)} seconds left\n\n"
         if (end - now).total_seconds() > REFERENCE_DELAY: # betting too early
             decrease_variable_delay(((end - now).total_seconds() - REFERENCE_DELAY)/4)
         if (end - now).total_seconds() < REFERENCE_DELAY: # betting too late
@@ -234,7 +241,7 @@ class Bettor:
         if user.lower() == "StreamElements".lower():
             telegram_message = user + ": " + msg.replace("\r", "")
             print(telegram_message)
-            telegramBot.sendMessage(telegram_message)
+            # telegramBot.sendMessage(telegram_message)
 
             if "a new contest has started" in msg: # New bet
                 threading.Thread(target=bet, args=[ws, username, channel, kill_thread_event]).start()
@@ -245,7 +252,7 @@ class Bettor:
             elif f", there is no contest currently running." in msg or "an error occured while placing your bet: No contest found" in msg: # Bet placed too late
                 # We were the one who bet late
                 if mention.lower() == username.lower():
-                    telegramBot.sendMessage("Betting to late!", notification=True)
+                    telegramBot.sendMessage("Betting too late!", notification=True)
                     increase_variable_delay()
 
             elif "won the contest" in msg:
