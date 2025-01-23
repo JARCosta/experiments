@@ -85,6 +85,6 @@ def sendMessage(message: str, log:bool = True, notification:bool = False):
   else:
     return r.json()["result"]
   
-def sendMessage_threaded(message: str, notification:bool = False):
+def sendMessage_threaded(message: str, log:bool = True, notification:bool = False):
   threading.Thread(target=sendMessage, args=(message, notification)).start()
 

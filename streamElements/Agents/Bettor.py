@@ -174,8 +174,13 @@ def bet(ws, username, channel, kill_thread):
         # Contest info
         runah_contests, el_pipow_contests = "5a2ae33308308f00016e684e", "5e46e43e8d514cea9ae5bfb4"
         contests = runah_contests if channel.lower() == "runah" else el_pipow_contests
-        contest_json = requests.get(f"https://api.streamelements.com/kappa/v2/contests/{contests}/active", timeout=10).json()
-        end = datetime.datetime.strptime(contest_json["contest"]["startedAt"],"%Y-%m-%dT%H:%M:%S.%fZ") + datetime.timedelta(hours=time.localtime().tm_isdst) + datetime.timedelta(minutes=contest_json["contest"]["duration"])
+        while True:
+            try:
+                contest_json = requests.get(f"https://api.streamelements.com/kappa/v2/contests/{contests}/active", timeout=10).json()
+                end = datetime.datetime.strptime(contest_json["contest"]["startedAt"],"%Y-%m-%dT%H:%M:%S.%fZ") + datetime.timedelta(hours=time.localtime().tm_isdst) + datetime.timedelta(minutes=contest_json["contest"]["duration"])
+                break
+            except TypeError as e:
+                telegramBot.sendMessage_threaded("Retrying request", notification=True)
         # check if contest got restarted
         if (end - now).total_seconds() > 5:
             return bet(ws, username, channel, kill_thread)
