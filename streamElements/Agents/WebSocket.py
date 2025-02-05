@@ -29,7 +29,7 @@ class WebSocket:
         elif "PING :tmi.twitch.tv" in message:
             ws.send("PONG")
             ws.send("PING")
-            telegramBot.sendMessage(f"{creator_function.__name__.replace('launch_', '').capitalize()} returned a PING")
+            # telegramBot.sendMessage(f"{creator_function.__name__.replace('launch_', '').capitalize()} returned a PING")
 
     def on_error(ws:websocket.WebSocketApp, error:Exception, channel:str, username:str, oauth_key:str, counters:list, kill_thread_event:threading.Event, creator_function:callable):
         telegram_message = "Websocket error:\n"
