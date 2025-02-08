@@ -180,7 +180,7 @@ def bet(ws, username, channel, kill_thread):
                 end = datetime.datetime.strptime(contest_json["contest"]["startedAt"],"%Y-%m-%dT%H:%M:%S.%fZ") + datetime.timedelta(hours=time.localtime().tm_isdst) + datetime.timedelta(minutes=contest_json["contest"]["duration"])
                 break
             except TypeError as e:
-                telegramBot.sendMessage_threaded("Retrying request", notification=True)
+                telegramBot.sendMessage_threaded(f"TypeError:\n {contest_json}", notification=True)
         # check if contest got restarted
         if (end - now).total_seconds() > 5:
             return bet(ws, username, channel, kill_thread)
