@@ -28,7 +28,6 @@ class Controller:
                 print("Detected command: " + command)
                 if command == "reboot" or command == "restart":
                     send(ws=ws, channel=channel, message="Rebooting")
-                    telegram_message += "Rebooting..."
                     os.system('systemctl reboot -i')
                 elif command == "reconnect":
                     send(ws=ws, channel=channel, message="Reconnecting")
