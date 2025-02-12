@@ -6,7 +6,7 @@ import requests
 import credentials
 import telegramBot
 import buffxSteamComparison.alert
-from streamElements.Agents import Collector, Controller, Viewer, Bettor
+from streamElements.Agents import ChatBettor, Collector, Controller, Viewer
 from wallapopNotificator import main as wallapopNotificator
 import traceback
 import buffxSteamComparison
@@ -63,7 +63,7 @@ if __name__ == "__main__":
     threads.append(threading.Thread(target=Collector.launch_data_collector, args=("Runah", "JRCosta", JRCOSTA_OAUTH, counters, kill_threads)))
     threads.append(threading.Thread(target=Viewer.launch_viewer, args=("Runah", "El_Pipow", EL_PIPOW_OAUTH, counters, kill_threads)))
     threads.append(threading.Thread(target=Controller.launch_controller, args=("El_Pipow", "El_Pipow", EL_PIPOW_OAUTH, counters, kill_threads)))
-    threads.append(threading.Thread(target=Bettor.launch_bettor, args=("Runah", "JRCosta", JRCOSTA_OAUTH, counters, kill_threads)))
+    threads.append(threading.Thread(target=ChatBettor.launch_bettor, args=("Runah", "JRCosta", JRCOSTA_OAUTH, counters, kill_threads)))
     # threads.append(threading.Thread(target=Bettor.launch_bettor, args=("El_pipow", "JRCosta", JRCOSTA_OAUTH, counters, kill_threads)))
 
     [i.start() for i in threads]

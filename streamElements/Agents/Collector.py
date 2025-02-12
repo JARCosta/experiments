@@ -7,7 +7,7 @@ import telegramBot
 import websocket
 
 from .WebSocket import WebSocket
-from .Bettor import get_balance
+from .ChatBettor import get_balance
 
 
 class DataCollector:
