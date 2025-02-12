@@ -37,6 +37,7 @@ class WebSocket:
         telegram_message += traceback.format_exc() + "\n"
         if type(error) == websocket._exceptions.WebSocketConnectionClosedException or error == websocket._exceptions.WebSocketConnectionClosedException:
             telegram_message += f"launching new {creator_function.__name__.replace('launch_', '').capitalize()} agent"
+            ws.close()
             time.sleep(5)
             ws.run_forever()
         print(telegram_message)
