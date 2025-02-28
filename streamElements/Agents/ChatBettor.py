@@ -172,15 +172,23 @@ def bet(ws, username, channel, kill_thread):
         now = datetime.datetime.now()
         
         # Contest info
-        runah_contests, el_pipow_contests = "5a2ae33308308f00016e684e", "5e46e43e8d514cea9ae5bfb4"
-        contests = runah_contests if channel.lower() == "runah" else el_pipow_contests
+        streamElements_ids = {
+            "runah": "5a2ae33308308f00016e684e",
+            "el_pipow": "5e46e43e8d514cea9ae5bfb4"
+        }
+        try:
+            contests = streamElements_ids[channel.lower()]
+        except ValueError:
+            telegramBot.sendMessage_threaded(f"ValueError:\n No StreamElements id found", notification=True)
         while True:
             try:
                 contest_json = requests.get(f"https://api.streamelements.com/kappa/v2/contests/{contests}/active", timeout=10).json()
                 end = datetime.datetime.strptime(contest_json["contest"]["startedAt"],"%Y-%m-%dT%H:%M:%S.%fZ") + datetime.timedelta(hours=time.localtime().tm_isdst) + datetime.timedelta(minutes=contest_json["contest"]["duration"])
                 break
             except TypeError as e:
+                # Contest was probabily canceled
                 telegramBot.sendMessage_threaded(f"TypeError:\n {contest_json}", notification=True)
+                time.sleep(3)
         # check if contest got restarted
         if (end - now).total_seconds() > 5:
             return bet(ws, username, channel, kill_thread)
