@@ -16,7 +16,7 @@ def alert(kill_thread:threading.Event, id:int):
         new_price = float(r["data"]["items"][0]["price"])
         if last_price != new_price:
             print("new price")
-            telegramBot.sendMessage(f"{r['data']['goods_infos'][str(id)]['name']}: {last_price}$ ({new_price - last_price if last_price != None else "new"})", notification=True)
+            telegramBot.sendMessage(f"{r['data']['goods_infos'][str(id)]['name']}: {last_price}$ ({new_price - last_price if last_price != None else 'new'})", notification=True)
             last_price = new_price
         for _ in range(int(60)//5):
             time.sleep(5)
