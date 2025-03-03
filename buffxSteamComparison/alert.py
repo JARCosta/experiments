@@ -21,7 +21,7 @@ def alert(kill_thread:threading.Event, id:int):
         else:
             r = requests.get(f"https://api.buff.market/api/market/goods/sell_order?game=csgo&page_num=1&page_size=10&goods_id={id}&sort_by=default").json()
             new_price = float(r["data"]["items"][0]["price"])
-            diff_price = new_price - last_price
+            diff_price = round(new_price - last_price, 2)
             
             if diff_price != 0:
                 print("new price")
