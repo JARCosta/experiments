@@ -344,8 +344,8 @@ def get_items(key_word:str, filter:str=None):
                 store_item(item)
         else:
             for i in response["data"]["items"]:
-                if 30551 == i["id"] or "30551" == i["id"]:
-                    breakpoint()
+                # if 30551 == i["id"] or "30551" == i["id"]:
+                #     breakpoint()
                 item = Item(
                     datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), # date,
                     i["id"], # id,
