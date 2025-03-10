@@ -400,8 +400,8 @@ def run(UPDATE_BUFF:bool=True, UPDATE_STEAM:bool=True, STEAM_TO_BUFF:bool=False,
 
         to_update, has_median_counter, counter = get_best_items(and_filters, or_filters, steam_to_buff=STEAM_TO_BUFF), 0, 0
 
-        print("aaaa\n", [str(i) for i in to_update[:10]])
-        breakpoint()
+        # print("aaaa\n", [str(i) for i in to_update[:10]])
+        # breakpoint()
 
         while has_median_counter < 30:
             print(to_update[counter])
