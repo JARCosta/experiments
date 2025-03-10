@@ -162,21 +162,30 @@ def get_price_ratio(item:Item, steam_to_buff=False):
         price_ratio = round(100*steam_price_after_tax/item.buff_price,1)
     return price_ratio
 
-def get_best_items(value_filters:list=[], steam_to_buff:bool=False, highlights:list=[], graph:bool=False):
+def get_best_items(and_filters:list=[], or_filters:list=[], steam_to_buff:bool=False, highlights:list=[], graph:bool=False):
     items = load_latest_items()
 
     items = sorted(items, key=lambda x: get_price_ratio(x, steam_to_buff), reverse=True)
 
-    open("best_items.txt", "w").close()
+    filtered_items = []
+
+    open("buffxSteamComparison/best_items.txt", "w").close()
     rank, plot_data, item_info_storage = 1, [], ""
     for item in items:
 
-        continuer = False
-        for variable,operator,value in value_filters:
+        good = True
+        for variable,operator,value in and_filters:
             if not type(getattr(item, variable)) == type(None) and  not operator(getattr(item, variable), value):
-                continuer = True
+                good = False
                 break
-        if continuer:
+        if not good:
+            continue
+
+        good = False if len(or_filters) > 0 else True
+        for variable,operator,value in or_filters:
+            if operator(getattr(item, variable), value):
+                good = True
+        if not good:
             continue
     
         price_ratio = get_price_ratio(item, steam_to_buff)
@@ -190,9 +199,9 @@ def get_best_items(value_filters:list=[], steam_to_buff:bool=False, highlights:l
         plot_data.append((rank, price_ratio, item.market_hash_name, item.type))
 
         item_info_storage += item_info
-        
+        filtered_items.append(item)
         rank += 1
-    with open("best_items.txt", "a", encoding='utf-8') as file:
+    with open("buffxSteamComparison/best_items.txt", "a", encoding='utf-8') as file:
         file.write(item_info_storage)
     
     if graph:
@@ -274,7 +283,7 @@ def get_best_items(value_filters:list=[], steam_to_buff:bool=False, highlights:l
         plt.colorbar().set_ticks(ticks=ticks, labels=highlights)
         plt.show()
 
-    return items
+    return filtered_items
 
 def get_items(key_word:str, filter:str=None):
 
@@ -375,18 +384,25 @@ def run(UPDATE_BUFF:bool=True, UPDATE_STEAM:bool=True, STEAM_TO_BUFF:bool=False,
         get_items("Music Kit", "category=csgo_type_musickit&quality=normal&")
 
     if UPDATE_STEAM:
-        filters = [
+        and_filters = [
             ["buff_price", operator.le, 100],
             ["buff_price",operator.ge, 0.1],
             # ["date", operator.ge, (datetime.datetime.now() - datetime.timedelta(weeks=1)),
+        ]
+        or_filters = [
             ["type", operator.eq, "Gallery"],
             ["type", operator.eq, "Agent"],
             ["type", operator.eq, "Charm"],
             ["type", operator.eq, "Patch"],
             ["type", operator.eq, "Inventory"],
+            ["type", operator.eq, "Music Kit"],
         ]
 
-        to_update, has_median_counter, counter = get_best_items(filters, steam_to_buff=STEAM_TO_BUFF), 0, 0
+        to_update, has_median_counter, counter = get_best_items(and_filters, or_filters, steam_to_buff=STEAM_TO_BUFF), 0, 0
+
+        print("aaaa\n", [str(i) for i in to_update[:10]])
+        breakpoint()
+
         while has_median_counter < 30:
             print(to_update[counter])
             if update_steam_price(to_update[counter]):
@@ -396,28 +412,36 @@ def run(UPDATE_BUFF:bool=True, UPDATE_STEAM:bool=True, STEAM_TO_BUFF:bool=False,
             time.sleep(max(0, random.normalvariate(3, 1)))
 
     
-    filters = [
+    and_filters = [
         ["buff_last_update", operator.ge, (datetime.datetime.now() - datetime.timedelta(weeks=1))],
         ["steam_last_update", operator.ge, (datetime.datetime.now() - datetime.timedelta(weeks=1))],
         ["id", operator.ne, 20004]
     ]
+
+    or_filters = [
+        ["type", operator.eq, "Bookmarked"],
+        ["type", operator.eq, "Inventory"],
+        ["type", operator.eq, "Agent"],
+        ["type", operator.eq, "Patch"],
+        # ["type", operator.eq, "Music Kit"],
+    ]
     
     
-    top10 = get_best_items(value_filters=filters)[:10]
+    top10 = get_best_items(and_filters=and_filters)[:10]
     telegram_message = "Top10:\n"
     for i in top10:
-        telegram_message += f"{i.market_hash_name} {get_price_ratio(i)} {i.buff_price} {after_steam_tax(i.steam_price)}\n"
+        telegram_message += f"{i.market_hash_name}\n\t{get_price_ratio(i)}\t {i.buff_price}$ -> {i.steam_price}$({after_steam_tax(i.steam_price)}$)\n"
 
 
     highlights =["Bookmarked", "Inventory", "Agent", "Charm", "Patch", "Music Kit"]
     # highlights += ["Lieutenant Rex Krikey | SEAL Frogman", "Lt. Commander Ricksaw | NSWC SEAL", "'Medium Rare' Crasswater | Guerrilla Warfare", "Sir Bloody Silent Darryl | The Professionals", "Antwerp 2022 Viewer Pass"]
-    ranking = get_best_items(value_filters=filters,highlights=highlights, steam_to_buff=STEAM_TO_BUFF, graph=graph)
-    
+    ranking = get_best_items(and_filters, or_filters,highlights=highlights, steam_to_buff=STEAM_TO_BUFF, graph=graph)
+
     telegram_message += "\n Filtered:\n"
     for i in ranking[:10]:
-        telegram_message += f"{i.market_hash_name} {get_price_ratio(i)} {i.buff_price} {after_steam_tax(i.steam_price)}\n"
+        telegram_message += f"{i.market_hash_name}\n\t{get_price_ratio(i)}\t {i.buff_price}$ -> {i.steam_price}$({after_steam_tax(i.steam_price)}$)\n"
     telegramBot.sendMessage(telegram_message, notification=True)
     print(telegram_message)
 
 if __name__ == "__main__":
-    run()
+    run(False, False)
