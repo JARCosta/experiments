@@ -404,16 +404,20 @@ def run(UPDATE_BUFF:bool=True, UPDATE_STEAM:bool=True, STEAM_TO_BUFF:bool=False,
     
     
     top10 = get_best_items(value_filters=filters)[:10]
-    telegram_message = ""
+    telegram_message = "Top10:\n"
     for i in top10:
         telegram_message += f"{i.market_hash_name} {get_price_ratio(i)} {i.buff_price} {after_steam_tax(i.steam_price)}\n"
-    telegramBot.sendMessage(telegram_message)
-    print(telegram_message)
 
 
     highlights =["Bookmarked", "Inventory", "Agent", "Charm", "Patch", "Music Kit"]
     # highlights += ["Lieutenant Rex Krikey | SEAL Frogman", "Lt. Commander Ricksaw | NSWC SEAL", "'Medium Rare' Crasswater | Guerrilla Warfare", "Sir Bloody Silent Darryl | The Professionals", "Antwerp 2022 Viewer Pass"]
     ranking = get_best_items(value_filters=filters,highlights=highlights, steam_to_buff=STEAM_TO_BUFF, graph=graph)
+    
+    telegram_message += "\n Filtered:\n"
+    for i in ranking[:10]:
+        telegram_message += f"{i.market_hash_name} {get_price_ratio(i)} {i.buff_price} {after_steam_tax(i.steam_price)}\n"
+    telegramBot.sendMessage(telegram_message, notification=True)
+    print(telegram_message)
 
 if __name__ == "__main__":
     run()
