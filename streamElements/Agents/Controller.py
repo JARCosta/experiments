@@ -30,7 +30,7 @@ class Controller:
                 if command == "reboot" or command == "restart":
                     send(ws=ws, channel=channel, message="Rebooting")
                     os.system('systemctl reboot -i')
-                elif command == "reconnect":
+                elif command == "reload":
                     send(ws=ws, channel=channel, message="Reconnecting")
                     # WebSocket.connect(ws, ":tmi.twitch.tv RECONNECT", username, channel, oauth_key, counters, connection_open_event, kill_thread_event, launch_controller)
                     os.execv(sys.executable, [sys.executable] + sys.argv)
@@ -38,7 +38,7 @@ class Controller:
                     send(ws=ws, channel=channel, message="Shutting down")
                     os.system('systemctl poweroff -i')
                 elif command == "help":
-                    send(ws=ws, channel=channel, message="Command List: reboot, restart, reconnect, shutdown, buff, help")
+                    send(ws=ws, channel=channel, message="Command List: reboot, restart, reload, shutdown, buff, help")
                 elif command == "buff":
                     credentials.buff_cookies = "lalala"
                     run()
