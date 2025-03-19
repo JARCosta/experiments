@@ -32,7 +32,10 @@ class WebSocket:
             # telegramBot.sendMessage(f"{creator_function.__name__.replace('launch_', '').capitalize()} returned a PING")
         
         elif ":Login authentication failed":
-            os.remove(username.upper() + '_OAUTH')
+            try:
+                os.remove(username.upper() + '_OAUTH')
+            except FileNotFoundError:
+                pass
             telegramBot.sendMessage("Invalid OAuth key", notification=True)
 
     def on_error(ws:websocket.WebSocketApp, error:Exception, channel:str, username:str, oauth_key:str, counters:list, kill_thread_event:threading.Event, creator_function:callable):
