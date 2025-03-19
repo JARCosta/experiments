@@ -31,7 +31,7 @@ class WebSocket:
             ws.send("PING")
             # telegramBot.sendMessage(f"{creator_function.__name__.replace('launch_', '').capitalize()} returned a PING")
         
-        elif ":Login authentication failed":
+        elif ":Login authentication failed" in message:
             try:
                 os.remove(username.upper() + '_OAUTH')
             except FileNotFoundError:
