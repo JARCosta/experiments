@@ -43,7 +43,10 @@ def send_message(message:str=None, log:bool=True, notification:bool=False) -> No
     print(message, end="\n\n")
 
 def sleep_until(end:datetime.datetime, kill_thread:threading.Event) -> None:
-    now = datetime.datetime.now() + datetime.timedelta(hours=time.localtime().tm_isdst)
+    
+    # it is summer time, and time.localtime().tm_isdst is 1
+    now = datetime.datetime.now() #+ datetime.timedelta(hours=time.localtime().tm_isdst)
+    
     if now < end:
         sleep_time = (end - now).total_seconds()
         print(f"Sleeping for {sleep_time} seconds")
@@ -55,9 +58,10 @@ def sleep_until(end:datetime.datetime, kill_thread:threading.Event) -> None:
         time.sleep(sleep_time % 10)
         return True
     else:
-        # print("Time has already passed")
-        # print("Now: ", now)
-        # print("End: ", end)
+        print("Time has already passed")
+        print("Now: ", now)
+        print("End: ", end)
+        telegramBot.sendMessage(f"Timers are out of sync\nNow: {now}\nEnd: {end}", notification=True)
         return False
 
 ############################################################
@@ -164,6 +168,7 @@ def bet(ws, username, channel, kill_thread):
     
     # Check if there is a contest open to bet, if so, wait until it's time to bet
     succ, _, _ = check_contest(username, channel.lower(), kill_thread=kill_thread) 
+    # print(succ)
 
     if succ:
 
@@ -239,6 +244,7 @@ class Bettor:
 
     def on_message(ws:websocket.WebSocketApp, message:str, username:str, channel:str, oauth_key:str, counters:list, connection_open_event:threading.Event, kill_thread_event:threading.Event):
         WebSocket.connect(ws, message, username, channel, oauth_key, counters, connection_open_event, kill_thread_event, launch_bettor)
+        # print(message)
         try:
             user = message.split("display-name=")[1].split(";")[0]
             msg = message.split(f"PRIVMSG #{channel.lower()} :")[1].replace('ACTION ', '')
