@@ -122,6 +122,8 @@ def check_contest(bettor_username:str, channel:str, kill_thread:threading.Event)
 def optimal_bet(options:dict) -> tuple[str, int]:
     little_option = "lose" if options["lose"] < options["win"] else "win"
     little_option_amount = options[little_option]
+    if options["win"] + options["lose"] == 0:
+        return little_option, 0
     if little_option_amount == 0:
         return little_option, 1
 
