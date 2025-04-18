@@ -226,9 +226,10 @@ def bet(ws, username, channel, kill_thread):
             telegram_log += options.__str__() + "\n"
             telegram_log += f"Profits {round(bet_profit)} points\n"
             telegram_log += f"Has an odd of {round(bet_odd, 2)}\n\n" if bet_amount > 0 else "\n"
-        elif b:
+        else:
             telegram_notification += f"Skipping bet\n"
-            telegram_notification += f"b: {round(b,3)}\n\n"
+            if not b is None:
+                telegram_notification += f"b: {round(b,3)}\n\n"
             if bet_odd:
                 telegram_notification += f"odd: {round(bet_odd, 2)}\n"
 

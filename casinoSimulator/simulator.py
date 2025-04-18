@@ -128,7 +128,7 @@ if __name__ == "__main__":
             POSSIBLE_ITEMS[i["name"]] = {"prob": i["prob"], "price_eur": i["price_eur"], "upper_range": i["range"][1]}
         
         for i in range(len(POSSIBLE_ITEMS)):
-            print(f"Item {i+1}: {list(POSSIBLE_ITEMS.keys())[i]}, Probability: {round(list(POSSIBLE_ITEMS.values())[i]['prob'], 3)}%, Price: {list(POSSIBLE_ITEMS.values())[i]['price_eur']}€")
+            print(f"Item {i+1}: {list(POSSIBLE_ITEMS.keys())[i]}, Probability: {list(POSSIBLE_ITEMS.values())[i]['prob']}%, Price: {list(POSSIBLE_ITEMS.values())[i]['price_eur']}€")
 
         success = input("Identify the goal items: ")
 
@@ -184,15 +184,17 @@ if __name__ == "__main__":
         plt.xlabel("Balance")
         plt.ylabel("Frequency")
         plt.title("Balance distribution")
-        plt.savefig(f"resources/{CASE_INFO['id']}-{balance}.png")
+        plt.show(block=False)
+        # plt.savefig(f"resources/{CASE_INFO['id']}-{balance}.png")
         plt.clf()
 
         plt.hist(SUCCESS_COUNTER, bins=20, color="skyblue", edgecolor="black")
         plt.xlabel("Cases")
         plt.ylabel("Frequency")
         plt.title("Cases distribution")
-        plt.savefig(f"resources/{CASE_INFO['id']}-{balance}-cases.png")
-        plt.clf()
+        # plt.savefig(f"resources/{CASE_INFO['id']}-{balance}-cases.png")
+        plt.show()
+        # plt.clf()
 
         SUCCESS_BALANCE = []
         SUCCESS_RATE = []

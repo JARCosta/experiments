@@ -3,5 +3,6 @@ run.sh
 test
 test.py
 buffxSteamComparison/best_items.txt
+buffxSteamComparison/csfloat.json
 *_OAUTH
 streamElements/resources/latest_error.txt
