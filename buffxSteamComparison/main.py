@@ -21,19 +21,25 @@ sys.path.append('..')
 import telegramBot
 import credentials
 
-BUFF_COOKIES = { # https://api.buff.market/account/api/bookmark/goods?game=csgo&page_num=1&page_size=80
-    'session': credentials.buff_cookies
-}.__str__().replace(": ", "=").replace(", ", ";").replace("{", "").replace("}", "").replace("'", "")
 
-STEAM_COOKIES = { # https://steamcommunity.com/market/pricehistory/?appid=730
-    'steamLoginSecure': credentials.steam_cookies, # needs to be updated
-}.__str__().replace(": ", "=").replace(", ", ";").replace("{", "").replace("}", "").replace("'", "")
+BUFF_HEADERS = {
+    'cookie': { # https://api.buff.market/account/api/bookmark/goods?game=csgo&page_num=1&page_size=80
+        'session': credentials.buff_cookies
+    }.__str__().replace(": ", "=").replace(", ", ";").replace("{", "").replace("}", "").replace("'", "")
+}
 
-CSFLOAT_COOKIES ={
-    'session': credentials.csfloat_cookies, # needs to be updated
-}.__str__().replace(": ", "=").replace(", ", ";").replace("{", "").replace("}", "").replace("'", "")
+STEAM_HEADERS = {
+    'cookie': { # https://steamcommunity.com/market/pricehistory/?appid=730
+        'steamLoginSecure': credentials.steam_cookies, # needs to be updated
+    }.__str__().replace(": ", "=").replace(", ", ";").replace("{", "").replace("}", "").replace("'", "")
+}
 
-
+CSFLOAT_HEADERS = {
+    # 'cookie': {
+    #     'session': credentials.csfloat_cookies, # needs to be updated
+    # }.__str__().replace(": ", "=").replace(", ", ";").replace("{", "").replace("}", "").replace("'", "")
+    'Authorization': credentials.csfloat_api_key
+}
 
 
 
@@ -137,7 +143,7 @@ def update_buff_price(key_word:str, filter:str=None):
             url = f"https://api.buff.market/api/market/steam_inventory?game=csgo&page_num={page}&page_size=40"
         else:
             url = f"https://api.buff.market/api/market/goods?{filter}game=csgo&page_num={page}&page_size=80"
-        response = requests.get(url, headers={"cookie": BUFF_COOKIES}).json()
+        response = requests.get(url, headers=BUFF_HEADERS).json()
         try:
             response["data"]
         except KeyError:
@@ -210,10 +216,11 @@ def update_buff_price(key_word:str, filter:str=None):
 
 def update_csfloat_price(item:Item):
     url = f"https://csfloat.com/api/v1/listings?type=buy_now&sort_by=lowest_price&market_hash_name={parse.quote(item.market_hash_name, safe='')}"
-    response = requests.get(url, headers={"cookie": CSFLOAT_COOKIES}).json()
+    response = requests.get(url, headers=CSFLOAT_HEADERS).json()
     with open("buffxSteamComparison/csfloat.json", "w", encoding='utf-8') as file:
         json.dump(response, file, indent=4, ensure_ascii=False)
     if "data" not in response.keys():
+        print(url)
         raise Exception(f"Got banned from csfloat") # 200 requests 
     if len(response["data"]) == 0:
         print("No data")
@@ -245,7 +252,7 @@ def update_steam_price(item:Item):
 
     url = f"https://steamcommunity.com/market/pricehistory/?appid=730&market_hash_name={ parse.quote(item.market_hash_name, safe='')}"
 
-    response = requests.get(url, headers={"cookie": STEAM_COOKIES}).json()
+    response = requests.get(url, headers=STEAM_HEADERS).json()
     try:
         _ = response["prices"]
     except (KeyError, TypeError):
@@ -318,7 +325,7 @@ def get_items_to_update(and_filters:list=[], or_filters:list=[], highlights:list
 
     nulls = [item for item in items if getattr(item, max_from_var) is None or getattr(item, max_to_var) is None]
     items = sorted(items, key=lambda x: get_price_ratio(getattr(x, max_from_var), getattr(x, max_to_var), no_tax), reverse=True) # TODO: make selling site independent
-    items = nulls
+    items = nulls + items
 
     ranking:list[Item] = []
     for rank in range(len(items)):
@@ -523,6 +530,7 @@ def run(UPDATE_BUFF:bool=True, UPDATE_STEAM:bool=True, UPDATE_CSFLOAT:bool=True,
             ["buff_price", operator.le, 100],
             ["buff_price",operator.ge, 0.1],
             ["csfloat_last_update", operator.le, (datetime.datetime.now() - datetime.timedelta(minutes=30))],
+            ["type", operator.ne, "Music Kit"],
         ]
 
         to_update = get_items_to_update(and_filters, or_filters, max_from_var="buff_price", max_to_var="csfloat_price")
@@ -530,12 +538,13 @@ def run(UPDATE_BUFF:bool=True, UPDATE_STEAM:bool=True, UPDATE_CSFLOAT:bool=True,
         counter, has_data_counter = 0, 0
         
         # while has_data_counter < 30 and counter < len(to_update):
+        print(f"Updating {len(to_update)} items...")
         while counter < len(to_update):
             print(to_update[counter])
             has_data_counter += 1 if update_csfloat_price(to_update[counter]) else 0
             counter += 1
             print(counter, has_data_counter)
-            time.sleep(max(0, random.normalvariate(3, 1)))
+            time.sleep(max(0, random.normalvariate(5, 1)))
     
     
     
