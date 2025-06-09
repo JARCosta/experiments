@@ -7,7 +7,7 @@ import telegramBot
 import websocket
 
 from .WebSocket import WebSocket, send
-from buffxSteamComparison.main import run
+import buffxSteamComparison
 import credentials
 
 class Controller:
@@ -41,7 +41,7 @@ class Controller:
                     send(ws=ws, channel=channel, message="Command List: reboot, restart, reload, shutdown, buff, help")
                 elif command == "buff":
                     credentials.buff_cookies = "lalala"
-                    run()
+                    buffxSteamComparison.run()
 
 def launch_controller(channel:str, username:str, oauth_key:str, counters:list, kill_thread_event:threading.Event) -> tuple[threading.Thread, websocket.WebSocketApp]:
     connection_open_event = threading.Event()

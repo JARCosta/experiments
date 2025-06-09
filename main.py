@@ -62,10 +62,15 @@ if __name__ == "__main__":
     # threading.Thread(target=buffxSteamComparison.alert.alert, args=(kill_threads, 19909)).start()
     # threading.Thread(target=buffxSteamComparison.alert.alert, args=(kill_threads, 20360)).start()
     
+    threads.append(threading.Thread(target=Controller.launch_controller, args=("El_Pipow", "El_Pipow", EL_PIPOW_OAUTH, counters, kill_threads)))
+    
     threads.append(threading.Thread(target=Collector.launch_data_collector, args=("Runah", "JRCosta", JRCOSTA_OAUTH, counters, kill_threads)))
     threads.append(threading.Thread(target=Viewer.launch_viewer, args=("Runah", "El_Pipow", EL_PIPOW_OAUTH, counters, kill_threads)))
-    threads.append(threading.Thread(target=Controller.launch_controller, args=("El_Pipow", "El_Pipow", EL_PIPOW_OAUTH, counters, kill_threads)))
     threads.append(threading.Thread(target=ChatBettor.launch_bettor, args=("Runah", "JRCosta", JRCOSTA_OAUTH, counters, kill_threads)))
+    
+    threads.append(threading.Thread(target=Collector.launch_data_collector, args=("prcs", "JRCosta", JRCOSTA_OAUTH, counters, kill_threads)))
+    threads.append(threading.Thread(target=Viewer.launch_viewer, args=("prcs", "El_Pipow", EL_PIPOW_OAUTH, counters, kill_threads)))
+    threads.append(threading.Thread(target=ChatBettor.launch_bettor, args=("prcs", "JRCosta", JRCOSTA_OAUTH, counters, kill_threads)))
     
     # threads.append(threading.Thread(target=ChatBettor.launch_bettor, args=("El_Pipow", "JRCosta", JRCOSTA_OAUTH, counters, kill_threads)))
     
