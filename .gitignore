@@ -3,6 +3,7 @@ run.sh
 .venv
 test
 test.py
+.venv
 buffxSteamComparison/best_items.txt
 buffxSteamComparison/csfloat.json
 *_OAUTH
