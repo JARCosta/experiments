@@ -1,65 +1,45 @@
-import os
-import subprocess
 import time
-
-import requests
-import credentials
-import telegramBot
-import buffxSteamComparison.alert
-from streamElements.Agents import ChatBettor, Collector, Controller, Viewer
-from wallapopNotificator import main as wallapopNotificator
-import traceback
-import buffxSteamComparison
-
 import threading
 
-from streamElements.oauth import check_oauth_token
+import signal
+import sys
+
+from streamElements.Agent import Agent
+from streamElements import oauth
+
+def signal_handler(sig, frame):
+    print("\nReceived interrupt signal, shutting down...")
+    kill_event.set()
+    sys.exit(0)
 
 if __name__ == "__main__":
-    print("testing connection")
-    try:
-        requests.get("http://google.com")
-    except requests.exceptions.ConnectionError:
-        input("No wi-fi connection, continue?")
-    print("connection stablished")
+    print("Starting agent")
+    kill_event = threading.Event()
+    
+    # Set up signal handler for graceful shutdown
+    signal.signal(signal.SIGINT, signal_handler)
+    
+    EL_PIPOW_OAUTH = oauth.check_oauth_token("El_Pipow")
+    JRCOSTA_OAUTH = oauth.check_oauth_token("JRCosta")
 
-    os.chdir(os.path.dirname(os.path.realpath(__file__)))
-    
-    telegramBot.sendMessage("Twitch bettor launched")
 
-    EL_PIPOW_OAUTH = check_oauth_token("El_Pipow")
-    JRCOSTA_OAUTH = check_oauth_token("JRCosta")
-    counters = [0, 0]
-    threads = []
 
-    kill_threads = threading.Event()
-    # threading.Thread(target=buffxSteamComparison.alert.alert, args=(kill_threads, 19909)).start()
-    # threading.Thread(target=buffxSteamComparison.alert.alert, args=(kill_threads, 20360)).start()
+    thread_list = []
+    # thread_list.append(threading.Thread(target=lambda: Agent("el_pipow", "JRCosta", "bfrjqg8xuc6vuz7m6d36uyq5qmren3", kill_event), daemon=True))
+    thread_list.append(threading.Thread(target=lambda: Agent("runah", "JRCosta", "sly83jiacujt1vjjple63fh14c7b75", kill_event), daemon=True))
+    thread_list.append(threading.Thread(target=lambda: Agent("prcs", "JRCosta", "bfrjqg8xuc6vuz7m6d36uyq5qmren3", kill_event), daemon=True))
     
-    threads.append(threading.Thread(target=Controller.launch_controller, args=("El_Pipow", "El_Pipow", EL_PIPOW_OAUTH, counters, kill_threads)))
-    
-    threads.append(threading.Thread(target=Collector.launch_data_collector, args=("Runah", "JRCosta", JRCOSTA_OAUTH, counters, kill_threads)))
-    threads.append(threading.Thread(target=Viewer.launch_viewer, args=("Runah", "El_Pipow", EL_PIPOW_OAUTH, counters, kill_threads)))
-    threads.append(threading.Thread(target=ChatBettor.launch_bettor, args=("Runah", "JRCosta", JRCOSTA_OAUTH, counters, kill_threads)))
-    
-    threads.append(threading.Thread(target=Collector.launch_data_collector, args=("prcs", "JRCosta", JRCOSTA_OAUTH, counters, kill_threads)))
-    threads.append(threading.Thread(target=Viewer.launch_viewer, args=("prcs", "El_Pipow", EL_PIPOW_OAUTH, counters, kill_threads)))
-    threads.append(threading.Thread(target=ChatBettor.launch_bettor, args=("prcs", "JRCosta", JRCOSTA_OAUTH, counters, kill_threads)))
-    
-    # threads.append(threading.Thread(target=ChatBettor.launch_bettor, args=("El_Pipow", "JRCosta", JRCOSTA_OAUTH, counters, kill_threads)))
-    
-    [i.start() for i in threads]
+    [thread.start() for thread in thread_list]
 
-    while not counters[0] == len(threads) and counters[1] == 0:
-        pass
-    print()
-    while not counters[1] == len(threads):
-        pass
-    print()
 
     try:
-        while True:
-            time.sleep(1)
+        # Keep the main thread alive
+        while not kill_event.is_set():
+            time.sleep(0.5)
     except KeyboardInterrupt:
-        print("quitting")
-        kill_threads.set()
+        print("\nKeyboard interrupt received, shutting down...")
+        kill_event.set()
+    
+    print("Waiting for agent to finish...")
+    [thread.join(timeout=3) for thread in thread_list]
+    print("Agent stopped.")
