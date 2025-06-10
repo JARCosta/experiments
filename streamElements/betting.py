@@ -185,7 +185,6 @@ def bet(ws, username, channel, kill_thread):
 
     if succ:
 
-        telegram_notification = ""
         telegram_log = ""
         now = datetime.datetime.now()
 
@@ -220,9 +219,6 @@ def bet(ws, username, channel, kill_thread):
         # Get the stats for a given bet on a given contest
         b, pot_ratio, bet_profit, bet_return, bet_odd = bet_stats(options, bet_amount, bet_option)
         if bet_amount > 0:
-            telegram_notification += f"Betting {round(bet_amount)} points\n\n"
-            telegram_notification += f"b: {round(b,3)}\n"
-            telegram_notification += f"odd: {round(bet_odd, 2)}\n"
             telegram_log += f"The optimal bet is {round(bet_amount)} points, {round(100*pot_ratio)}% of the winning pot\n"
             telegram_log += f"b value is {round(b,3)}\n"
             # for i in options.keys:
@@ -230,12 +226,18 @@ def bet(ws, username, channel, kill_thread):
             telegram_log += options.__str__() + "\n"
             telegram_log += f"Profits {round(bet_profit)} points\n"
             telegram_log += f"Has an odd of {round(bet_odd, 2)}\n\n" if bet_amount > 0 else "\n"
+            
+            telegram_log += f"Betting {round(bet_amount)} points\n"
+            telegram_log += f"b: {round(b,3)}\n"
+            telegram_log += f"odd: {round(bet_odd, 2)}\n"
+            telegram_log += "\n"
         else:
-            telegram_notification += f"Skipping bet\n"
+            telegram_log += f"Skipping bet\n"
             if not b is None:
-                telegram_notification += f"b: {round(b,3)}\n\n"
+                telegram_log += f"b: {round(b,3)}\n\n"
             if bet_odd:
-                telegram_notification += f"odd: {round(bet_odd, 2)}\n"
+                telegram_log += f"odd: {round(bet_odd, 2)}\n"
+            telegram_log += "\n"
 
         if now:
             telegram_log += f"Placed bet with {round(time_left, 2)} seconds left\n\n"
@@ -243,5 +245,4 @@ def bet(ws, username, channel, kill_thread):
         add_variable_delay(((REFERENCE_DELAY - time_left)/4))
 
         telegramBot.add_telegram_log(telegram_log)
-        telegramBot.send_telegram_notification(telegram_notification)
     telegramBot.send_telegram_log()
