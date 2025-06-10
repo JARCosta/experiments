@@ -397,9 +397,9 @@ def get_best_items(and_filters:list=[], or_filters:list=[], highlights:list=[], 
     if graph:
         print(max_from_var, max_to_var)
 
-        # ratios = [i[1] for i in plot_data]
-        # quantile = np.quantile(ratios, 0.5)
-        # plot_data = [i for i in plot_data if i[1] > quantile]
+        ratios = [i[1] for i in plot_data]
+        quantile = np.quantile(ratios, 0.5)
+        plot_data = [i for i in plot_data if i[1] > quantile]
         
         fig, ax = plt.subplots()
         x = [i[0] for i in plot_data]
@@ -576,12 +576,3 @@ def run(UPDATE_BUFF:bool=True, UPDATE_STEAM:bool=True, UPDATE_CSFLOAT:bool=True,
     telegramBot.sendMessage(telegram_message, notification=True)
     print(telegram_message)
 
-if __name__ == "__main__":
-    UPDATE_BUFF = True
-    UPDATE_STEAM = True
-    UPDATE_CSFLOAT = True
-    # UPDATE_BUFF = False
-    UPDATE_STEAM = False
-    # UPDATE_CSFLOAT = False
-    
-    run(UPDATE_BUFF, UPDATE_STEAM, UPDATE_CSFLOAT, graph=True)

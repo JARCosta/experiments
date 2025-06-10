@@ -95,8 +95,15 @@ def increase_variable_delay(amount:float=0.1) -> None:
 ############################################################
 
 def check_contest(bettor_username:str, channel:str, kill_thread:threading.Event):
-    runah_contests, el_pipow_contests = "5a2ae33308308f00016e684e", "5e46e43e8d514cea9ae5bfb4"
-    contests = runah_contests if channel.lower() == "runah" else el_pipow_contests
+    streamElements_ids = {
+        "runah": "5a2ae33308308f00016e684e",
+        "prcs": "604ccb6ffc51b34f88198de3",
+        "el_pipow": "5e46e43e8d514cea9ae5bfb4"
+    }
+    try:
+        contests = streamElements_ids[channel.lower()]
+    except ValueError:
+        telegramBot.sendMessage_threaded(f"ValueError:\n No StreamElements id found", notification=True)
 
     response_json = requests.get(f"https://api.streamelements.com/kappa/v2/contests/{contests}/active", timeout=10).json()
     print(response_json)
@@ -181,6 +188,7 @@ def bet(ws, username, channel, kill_thread):
         # Contest info
         streamElements_ids = {
             "runah": "5a2ae33308308f00016e684e",
+            "prcs": "604ccb6ffc51b34f88198de3",
             "el_pipow": "5e46e43e8d514cea9ae5bfb4"
         }
         try:

@@ -1,5 +1,6 @@
 __pycache__
 run.sh
+.venv
 test
 test.py
 .venv
