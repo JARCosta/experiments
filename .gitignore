@@ -2,6 +2,7 @@ __pycache__
 run.sh
 test
 test.py
+.venv
 buffxSteamComparison/best_items.txt
 buffxSteamComparison/csfloat.json
 *_OAUTH
