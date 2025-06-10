@@ -6,5 +6,6 @@ test.py
 .venv
 buffxSteamComparison/best_items.txt
 buffxSteamComparison/csfloat.json
-*_OAUTH
+OAUTH.json
 streamElements/resources/latest_error.txt
+streamElements/resources/variable_delay.txt
