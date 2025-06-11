@@ -210,7 +210,11 @@ def bet(ws, username, channel, kill_thread):
                 break
 
         # Get the stats for a given bet on a given contest
-        b, pot_ratio, bet_profit, bet_return, bet_odd = bet_stats(options, bet_amount, bet_option)
+        if options["win"] + options["lose"] != 0:
+            b, pot_ratio, bet_profit, bet_return, bet_odd = bet_stats(options, bet_amount, bet_option)
+        else:
+            b, bet_odd = 0, 0
+        
         if bet_amount > 0:
             telegram_log += f"The optimal bet is {round(bet_amount)} points, {round(100*pot_ratio)}% of the winning pot\n"
             telegram_log += f"b value is {round(b,3)}\n"
