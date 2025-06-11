@@ -39,7 +39,11 @@ class Agent:
 
         self.open_event.wait()
         
-        betting.bet(self.ws, self.username, self.channel, self.kill_event)
+        try:
+            betting.bet(self.ws, self.username, self.channel, self.kill_event)
+        except Exception as e:
+            telegramBot.sendMessage(traceback.format_exc(), notification=True)
+
 
         self.kill_event.wait()
         print("Kill event received, closing websocket...")
@@ -95,7 +99,10 @@ class Agent:
 
             if sender == 'streamelements':
                 if "a new contest has started" in message_text: # New bet
-                    threading.Thread(target=betting.bet, args=[ws, self.username, self.channel, self.kill_event]).start()
+                    try:
+                        threading.Thread(target=betting.bet, args=[ws, self.username, self.channel, self.kill_event]).start()
+                    except Exception as e:
+                        telegramBot.sendMessage(traceback.format_exc(), notification=True)
                     # telegramBot.sendMessage(f"[{self.channel}] {sender}: {message_text}")
 
                 elif "no longer accepting bets for" in message_text: # Bet's closed
