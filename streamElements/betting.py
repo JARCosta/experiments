@@ -95,13 +95,6 @@ def add_variable_delay(amount:float=0.1) -> None:
         telegramBot.add_telegram_log(log)
     update_variable_delay()
 
-
-def decrease_variable_delay(amount:float=0.1) -> None:
-    add_variable_delay(-amount)
-
-def increase_variable_delay(amount:float=0.1) -> None:
-    add_variable_delay(amount)
-
 ############################################################
 # BETTING
 ############################################################

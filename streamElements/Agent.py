@@ -1,5 +1,7 @@
 import os
 import threading
+import time
+import traceback
 import websocket
 
 
@@ -128,7 +130,17 @@ class Agent:
 
 
     def on_error(self, ws:websocket.WebSocketApp, error:str):
-        print(error)
+        telegram_message = "Websocket error:\n"
+        telegram_message += f"error,{error}, {error.__traceback__}, {type(error) == websocket._exceptions.WebSocketConnectionClosedException}\n"
+        telegram_message += traceback.format_exc() + "\n"
+        if type(error) == websocket._exceptions.WebSocketConnectionClosedException or error == websocket._exceptions.WebSocketConnectionClosedException:
+            telegram_message += f"launching new {self.__class__.__name__}\n"
+            self.ws.close()
+            time.sleep(5)
+            self.ws.run_forever()
+        print(telegram_message)
+        telegramBot.sendMessage(telegram_message, notification=True)
+
 
     def on_open(self, ws:websocket.WebSocketApp):
         self.open_event.set()
