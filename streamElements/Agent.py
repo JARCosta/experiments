@@ -95,7 +95,7 @@ class Agent:
 
             message_text = parsed['message']
             sender = parsed['source']['nick']
-            mentioned = message_parser.check_if_mentioned(parsed['message'], self.username)
+            mentioned = message_parser.check_if_mentioned(message_text, self.username)
 
             if sender == 'streamelements':
                 if "a new contest has started" in message_text: # New bet
@@ -129,7 +129,7 @@ class Agent:
                 return
 
             elif mentioned:
-                telegramBot.sendMessage(f"[{self.channel}] {sender}: {parsed['message_text']}")
+                telegramBot.sendMessage(f"[{self.channel}] {sender}: {message_text}")
                 
 
 
