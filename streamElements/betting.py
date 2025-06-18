@@ -21,7 +21,7 @@ def get_streamelements_id(channel:str) -> str:
     streamElements_ids = {
         "runah": "5a2ae33308308f00016e684e",
         "prcs": "604ccb6ffc51b34f88198de3",
-        "el_pipow": "5e46e43e8d514cea9ae5bfb4"
+        "el_pipow": "5e46e43e8d514cea9ae5bfb4",
         "nopeej": "602f143f4e93066392d5dcb0",
     }
     try:
