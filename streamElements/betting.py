@@ -15,7 +15,7 @@ BALANCE = None
 LAST_BET = None
 
 DEFAULT_DELAY = 2.05
-REFERENCE_DELAY = 1.75
+REFERENCE_DELAY = 1
 
 def get_streamelements_id(channel:str) -> str:
     streamElements_ids = {
