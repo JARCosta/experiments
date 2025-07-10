@@ -12,12 +12,13 @@ from . import betting
 
 class Agent:
 
-    def __init__(self, channel:str, username:str, oauth_key:str, kill_event:threading.Event):
+    def __init__(self, channel:str, username:str, oauth_key:str, kill_event:threading.Event, bettor:bool=False):
         self.channel = channel
         self.username = username
         self.oauth_key = oauth_key
         self.open_event = threading.Event()
         self.kill_event = kill_event
+        self.bettor = bettor
 
         self.bets_close_stamp = None
 
@@ -83,7 +84,7 @@ class Agent:
                 os.remove(self.username.upper() + '_OAUTH')
             except FileNotFoundError:
                 pass
-            telegramBot.sendMessage(f"{self.creator_function.__name__.replace('launch_', '').capitalize()}: Invalid {self.username}'s OAuth key", notification=True)
+            telegramBot.sendMessage(f"{self.__class__.__name__.capitalize()}: Invalid {self.username}'s OAuth key", notification=True)
 
 
     def on_message(self, ws:websocket.WebSocketApp, message:str):
@@ -98,7 +99,7 @@ class Agent:
             mentioned = message_parser.check_if_mentioned(message_text, self.username)
 
             if sender == 'streamelements':
-                if "a new contest has started" in message_text: # New bet
+                if "a new contest has started" in message_text and self.bettor: # New bet
                     try:
                         threading.Thread(target=betting.bet, args=[ws, self.username, self.channel, self.kill_event]).start()
                     except Exception as e:

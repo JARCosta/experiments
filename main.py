@@ -30,9 +30,11 @@ if __name__ == "__main__":
 
     thread_list = []
     # thread_list.append(threading.Thread(target=lambda: Agent("el_pipow", "JRCosta", "bfrjqg8xuc6vuz7m6d36uyq5qmren3", kill_event), daemon=True))
-    thread_list.append(threading.Thread(target=lambda: Agent("runah", "El_Pipow", OAUTH["el_pipow"], kill_event), daemon=True))
-    thread_list.append(threading.Thread(target=lambda: Agent("prcs", "JRCosta", OAUTH["jrcosta"], kill_event), daemon=True))
-    thread_list.append(threading.Thread(target=lambda: Agent("nopeej", "JRCosta", OAUTH["jrcosta"], kill_event), daemon=True))
+    thread_list.append(threading.Thread(target=lambda: Agent("runah", "El_Pipow", OAUTH["el_pipow"], kill_event, bettor=True), daemon=True))
+    thread_list.append(threading.Thread(target=lambda: Agent("runah", "JRCosta", OAUTH["jrcosta"], kill_event, bettor=False), daemon=True))
+    thread_list.append(threading.Thread(target=lambda: Agent("prcs", "JRCosta", OAUTH["jrcosta"], kill_event, bettor=True), daemon=True))
+    thread_list.append(threading.Thread(target=lambda: Agent("prcs", "El_Pipow", OAUTH["el_pipow"], kill_event, bettor=False), daemon=True))
+    thread_list.append(threading.Thread(target=lambda: Agent("nopeej", "JRCosta", OAUTH["jrcosta"], kill_event, bettor=True), daemon=True))
     
     [thread.start() for thread in thread_list]
 
