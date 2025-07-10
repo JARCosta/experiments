@@ -237,10 +237,10 @@ def bet(ws, username, channel, kill_thread):
                 telegram_log += f"odd: {round(bet_odd, 2)}\n"
             telegram_log += "\n"
 
-        if now:
-            telegram_log += f"Placed bet with {round(time_left, 2)} seconds left\n\n"
-        
-        add_variable_delay(((REFERENCE_DELAY - time_left)/4))
+        time_left = (end - now).total_seconds()
+        telegram_log += f"Placed bet with {round(time_left, 2)} seconds left\n\n"
+        print((REFERENCE_DELAY - time_left)/4)
+        add_variable_delay((REFERENCE_DELAY - time_left)/4)
 
         telegramBot.add_telegram_log(telegram_log)
     telegramBot.send_telegram_log()
