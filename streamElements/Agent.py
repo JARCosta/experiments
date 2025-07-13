@@ -91,7 +91,7 @@ class Agent:
         self.connect(ws, message)
         
         parsed = message_parser.parse_twitch_message(message)
-        if parsed and parsed['command'] == 'PRIVMSG':
+        if parsed and parsed['command'] == 'PRIVMSG' and self.bettor:
             # print(message_parser.format_message_json(parsed)['message'])
 
             message_text = parsed['message']
@@ -99,7 +99,7 @@ class Agent:
             mentioned = message_parser.check_if_mentioned(message_text, self.username)
 
             if sender == 'streamelements':
-                if "a new contest has started" in message_text and self.bettor: # New bet
+                if "a new contest has started" in message_text: # New bet
                     try:
                         threading.Thread(target=betting.bet, args=[ws, self.username, self.channel, self.kill_event]).start()
                     except Exception as e:
